@@ -1,0 +1,245 @@
+<?php
+
+    $origem = "";
+    $localizacao = "";
+    $session = "";
+    $dispositivo = "";
+    if ($this->historicos->num_rows) {
+        foreach ($this->historicos->rows as $row) {
+            if ($row['pais'] != "" && $row['estado'] != "" && $row['cidade'] != "" && $localizacao == "") {
+                $localizacao = $row['localizacao'];
+            }
+            if ($row['origem'] != "" && $origem == "") {
+                $origem = $row['origem'];
+            }
+            if ($row['session'] != "" && $session == "") {
+                $session = $row['session'];
+            }
+            if ($row['dispositivo'] == 1 && $dispositivo == "") {
+                $dispositivo = "Desktop";
+            } else if ($row['dispositivo'] == 2 && $dispositivo == "") {
+                $dispositivo = "Tablet";
+            } else if ($row['dispositivo'] == 3 && $dispositivo == "") {
+                $dispositivo = "Mobile"; 
+            } else if ($dispositivo == "") {
+                $dispositivo = "Indefinido"; 
+            }
+        }
+    }
+
+
+    require_once "layouts/headers.phtml";
+?>
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+    
+    </head>  
+    
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                    <i class="s16 <?php echo $this->module_icon; ?>"></i>                                    
+                                </a>
+                            </li>
+                            <span class="divider">
+                                <i class="s16 icomoon-icon-arrow-right-3"></i>
+                            </span>
+                            <li class="active">Registro</li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+                  
+                    <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                        <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                        <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados do Newsletter</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="data">Data:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="data" id="data"  type="text" value="<?php echo $this->registro['data'] ?>" readonly />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="email">Email:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="email" id="email"  type="text" value="<?php echo $this->registro['email'] ?>" readonly />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados da Navegação</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="ip">IP:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="ip" id="ip"  type="text" value="<?php echo $this->registro['ip'] ?>" readonly />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="">Sessão:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="" id=""  type="text" value="<?php echo $session ?>" readonly />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="">Origem:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="" id=""  type="text" value="<?php echo $origem ?>" readonly />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="">Localização:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="" id=""  type="text" value="<?php echo $localizacao ?>" readonly />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="">Dispositivo:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="" id=""  type="text" value="<?php echo $dispositivo ?>" readonly />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                    </div>
+                                </div><!-- End .panel -->
+                            </div><!-- End .span12 -->
+                        </div><!-- End .row -->
+                    </form>
+                    
+                    <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Histórico da Navegação</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                    <table cellpadding="0" cellspacing="0" border="0" class="tabletools table table-striped table-bordered" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th style="display:none"></th>
+                                                <th width="10%" class="tal">Data</th>
+                                                <th class="tal" width="20%">Página</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if($this->historicos->num_rows){ ?>
+                                                <?php foreach($this->historicos->rows as $row){ ?>
+                                                    <tr>
+                                                        <td style="display:none"><?php echo $row['date']; ?>"></td>
+                                                        <td class="tal"><?php echo $row['registro']; ?></td>
+                                                        <td class="tal"><?php echo $row['titulo']; ?></td>
+                                                    </tr>
+                                                <?php } ?>
+                                            <?php } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+        <!-- Table plugins -->
+        <script src="plugins/tables/dataTables/jquery.dataTables.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.tableTools.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.bootstrap.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.responsive.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                //--------------- Data tables ------------------//
+                if($('table').hasClass('tabletools')){
+                    $('.tabletools').dataTable( {
+                        
+                        "oLanguage": {                                       
+                            "sSearch": "",
+                            "sLengthMenu": "<span>_MENU_</span>",
+                            "sProcessing":   "Processando...",                    
+                            "sZeroRecords":  "Não foram encontrados resultados",
+                            "sInfo":         "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                            "sInfoEmpty":    "Mostrando de 0 até 0 de 0 registros",
+                            "sInfoFiltered": "(filtrado de _MAX_ registros no total)",
+                            "sInfoPostFix":  "",
+                            "sUrl":         "",
+
+                            "oPaginate": {
+                                "sFirst":    "Primeiro",
+                                "sPrevious": "Anterior",
+                                "sNext":     "Seguinte",
+                                "sLast":     "Último"
+                            }
+                        },
+                        "sDom": "T<'row'<'col-md-6 col-xs-12 'l><'col-md-6 col-xs-12'f>r>t<'row'<'col-md-4 col-xs-12'i><'col-md-8 col-xs-12'p>>",
+                        "aaSorting":[[0,"desc"]],
+                        tableTools: {
+                            "sSwfPath": "http://cdn.datatables.net/tabletools/2.2.2/swf/copy_csv_xls_pdf.swf",
+                            "aButtons": [
+                          ]
+                        }
+
+
+                    });
+
+                }
+            });
+        </script>
+    </body>
+</html>

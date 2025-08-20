@@ -1,0 +1,291 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+</head>
+
+<body class="remessa">
+    <?php require_once "layouts/header.phtml"; ?>
+
+    <!-- / #header -->
+    <div id="wrapper">
+    <!-- #wrapper -->
+
+        <?php  require_once "layouts/sidebar.phtml"; ?>
+
+        <!--Body content-->
+        <div id="content" class="page-content clearfix">
+            <!--Content wrapper-->
+            <div class="contentwrapper">
+                <!-- .heading -->
+                <div class="heading">
+                    <h3><?php echo $this->module_title; ?></h3>
+                    <ul class="breadcrumb">
+                        <li>Você está aqui:</li>
+                        <li>
+                            <a href="#" class="tip" title="Painel">
+                                <i class="s16 icomoon-icon-screen-2"></i>
+                            </a>
+                            <span class="divider">
+                                <i class="s16 icomoon-icon-arrow-right-3"></i>
+                            </span>
+                        </li>
+                        <li>
+                            <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                <i class="s16 <?php echo $this->module_icon; ?>"></i>                                    
+                            </a>
+                        </li>
+                        <span class="divider">
+                            <i class="s16 icomoon-icon-arrow-right-3"></i>
+                        </span>
+                        <li class="active">Registro</li>
+                    </ul>
+                </div>
+                <!-- End .heading-->
+
+                <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                    <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                    <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+                    <input class="form-control" name="entrega_" type="hidden" value="<?= $this->registro['entrega'] ?>" />
+                    <input class="form-control" name="saida_" type="hidden" value="<?= $this->registro['saida'] ?>" />
+
+                    <div class="row">
+                        <!-- REMESSAS -->
+                        <div class="col-lg-12">
+                            <!-- Start .panel -->
+                            <!-- <form name="salvarRemessa" enctype="multipart/form-data" method="post" class="form-horizontal group-border"> -->
+                            <input class="clickformSalvarRemessa" type="hidden" name="id" value="<?php echo $this->id; ?>" />
+
+                            <div class="panel panel-default toggle" style="margin-bottom: 10px;">
+                                <div class="panel-heading min">
+                                    <h4 class="panel-title">Remessa #<?= $this->registro['titulo'] ?></h4>
+                                </div>
+                                <!-- Start .panel-body -->
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="update_entrega">Entrega:</label>
+                                        <div class="col-lg-2">
+                                            <input class="form-control data_picker" name="update_entrega" type="text" value="<?= $this->registro['nova_entrega_formatted'] ? $this->registro['nova_entrega_formatted'] : $this->registro['entrega_formatted'] ?>" />
+                                        </div>
+
+                                        <label class="col-lg-1 control-label" for="update_saida">Saída:</label>
+                                        <div class="col-lg-2">
+                                            <input class="form-control data_picker" name="update_saida" type="text" value="<?= $this->registro['nova_saida_formatted'] ? $this->registro['nova_saida_formatted'] : $this->registro['saida_formatted'] ?>" />
+                                        </div>
+
+                                        <label class="col-lg-1 control-label" for="n_nota">Nota:</label>
+                                        <div class="col-lg-4">
+                                            <input class="form-control" name="n_nota" type="text" value="<?= $this->registro['n_nota'] ?>" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="nome">Cliente:</label>
+                                        <div class="col-lg-10">
+                                            <input class="form-control" name="nome" type="text" value="<?= $this->registro['nome'] ?>" />
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="telefone">Telefone:</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" id="telefone" name="telefone" type="text" value="<?= $this->registro['telefone'] ?>" />
+                                        </div>
+
+                                        <label class="col-lg-1 control-label" for="cpf_cnpj">CPF / CNPJ:</label>
+                                        <div class="col-lg-4">
+                                            <input class="form-control" name="cpf_cnpj" type="text" value="<?= $this->registro['cpf_cnpj'] ?>" />
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="cep">CEP:</label>
+                                        <div class="col-lg-10">
+                                            <input class="form-control" id="cep" name="cep" type="text" value="<?= $this->registro['cep'] ?>" />
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="endereco">Endereço:</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" id="endereco" name="endereco" type="text" value="<?= $this->registro['endereco'] ?>" />
+                                        </div>
+
+                                        <label class="col-lg-1 control-label" for="numero">Número:</label>
+                                        <div class="col-lg-4">
+                                            <input class="form-control" name="numero" type="text" value="<?= $this->registro['numero'] ?>" />
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="complemento">Complemento:</label>
+                                        <div class="col-lg-10">
+                                            <input class="form-control" name="complemento" type="text" value="<?= $this->registro['complemento'] ?>" />
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="id_estado">Estado:</label>
+                                        <div class="col-lg-2">
+                                            <select class="form-control input-sm getcidades" id="id_estado" name="id_estado" data-auto-select-estado="<?php echo $this->registro['id_estado']; ?>" data-auto-select-cidade="<?php echo $this->registro['id_cidade']; ?>">
+                                                <option value="">Selecione..</option>
+                                                <?php foreach ($this->estados->rows as $estado) : ?>
+                                                    <option data-uf="<?php echo $estado['uf'];?>" value="<?php echo $estado['id']; ?>" <?php echo $estado['id'] == $this->registro['id_estado'] ? 'selected' : ''; ?>><?php echo $estado['estado']; ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+
+                                        <label class="col-lg-1 control-label" for="id_cidade">Cidade:</label>
+                                        <div class="col-lg-2">
+                                            <select class="form-control input-sm" id="id_cidade" name="id_cidade" value="<?= $this->registro['id_cidade'] ?>">
+                                                <option value="">Selecione..</option>
+                                                <!-- Adicionado por javascript -->
+                                            </select>
+                                        </div>
+
+                                        <label class="col-lg-1 control-label" for="bairro">Bairro:</label>
+                                        <div class="col-lg-4">
+                                            <input class="form-control" id="bairro" name="bairro" type="text" value="<?= $this->registro['bairro'] ?>" />
+                                            <br>
+                                            <br>
+                                            <button type="button" class="btn btn-success clickformSalvarRemessa_" style="float: right;">Salvar Alterações</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                </div>
+                                <!-- End .panel-body -->
+                            </div>
+                            <!-- </form> -->
+                            <!-- End .panel -->
+                        </div>
+                    </div>
+
+                    <!-- Start .row -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <!-- Start .panel -->
+                            <div class="panel panel-default toggle">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">Produtos</h4>
+                                </div>
+                                <div class="panel-body orcamento">
+                                    <table cellpadding="0" cellspacing="0" border="0" class="tabletools table table-striped table-bordered" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th class="tal">Nome</th>
+                                                <th class="tal">Categoria</th>
+                                                <th class="tal">Produção</th>
+                                                <th class="tal">Conclusão</th>
+                                                <th class="tal">Porcentagem</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Mesa de poker profissional</td>
+                                                <td>Mesa de Poker</td>
+                                                <td>03/04/2024</td>
+                                                <td>22/04/2025</td>
+                                                <td>50%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- End .panel -->
+                        </div>
+                    </div>
+                    <!-- End .row -->
+                </form>
+
+                <?php require_once "layouts/options.phtml"; ?>
+            </div>
+            <!-- End contentwrapper -->
+        </div>
+        <!-- End #content -->
+
+        <?php  require_once "layouts/footer.phtml"; ?>
+    </div>
+
+    <?php  require_once "layouts/plugins.phtml"; ?>
+    <script src="../../js/jquery.inputmask.bundle.min.js"></script>
+    <script src="js/jquery.form.js"></script>
+
+    <!-- Init plugins only for page -->
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#cep').inputmask({'mask': '99.999-999'});
+            $('#telefone').inputmask({'mask': '(99) 99999-9999'});
+            $('#cep').on('keyup', () => preencherEndereco());
+            $(".data_picker").datepicker();
+
+            $("form[name=main]").clickform({"validateUrl": controller, 'submitButton': '.clickformSalvarRemessa', 'blockScroll': false, 'activateEnterKey' : false, 'clearFields': false}, function (data) {
+                if (data.type == "success") {
+                    window.location.href = retorno;
+                }
+                continuar = false;
+            });
+            $('.clickformSalvarRemessa_').click(function(){
+                continuar = false;
+                $('.clickformSalvarRemessa').trigger('click');
+            });
+
+            function carregar_cidades() {
+                $(`#id_estado`).change(function () {
+                    if ($(this).val() != "") {
+                        var id_estado = $(this).find("option:selected").val();
+                        
+                        var cidade = $(this).data('auto-select-cidade');
+                        $(`#id_cidade`).load("client/cidades/?id=" + id_estado, function() {
+                            // Seleciona automaticamente uma, caso esteja marcada no estado
+                            $(`#id_cidade option[data-cidade="${cidade}"]`).prop('selected', true);
+                            $(`#id_cidade option[value="${cidade}"]`).prop('selected', true);
+                            $(`#id_estado`).removeData('auto-select-cidade');
+                        });
+                    }
+                });
+
+                $(`#id_estado`).trigger("change");
+
+                // Seleciona automaticamente um estado, se registrado
+                if (id_estado = $(`#id_estado`).data('auto-select-estado')) {
+                    $(`#id_estado`).val(id_estado).change();
+                }
+            }
+            carregar_cidades();
+
+            function preencherEndereco() {
+                cep = limpaCep($(`#cep`).val());
+                
+                if (cep.length == 8) {
+                    $.get('https://viacep.com.br/ws/' + cep + '/json/', function (resultadoCEP) {
+                        if (!("erro" in resultadoCEP)) {
+                            $(`#endereco`).val(resultadoCEP.logradouro);
+                            $(`#bairro`).val(resultadoCEP.bairro);
+                            $(`#id_estado option`).each(function () {
+                                if ($(this).attr("data-uf") == resultadoCEP.uf) {
+                                    $(this).prop("selected", true);
+                                    $(`#id_estado`).attr('data-auto-select-cidade', resultadoCEP.localidade);
+                                    $(`#id_estado`).trigger("change");
+                                }
+                            });
+                        }else{
+                            alert('Esse CEP não foi localizado em nossa base, por favor confira se o mesmo está correto.');
+                        }
+                    });
+                }
+            }
+
+            function limpaCep(cep) {
+                cep = cep.replace(/[^0-9.]/g, '');
+                cep = cep.replace('.', '');
+                return cep;
+            }
+        });
+    </script>
+
+</body>
+</html>

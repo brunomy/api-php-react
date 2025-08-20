@@ -1,0 +1,28 @@
+<div class="row">
+    <?php include '_inc_crm_cliente.phtml'?>
+    <?php foreach ($cliente['pedidos'] as $pedido) : ?>
+        <?php include "_inc_pedido_detalhe.phtml" ?>
+    <?php endforeach; ?>
+
+    <?php if (isset($cliente['pedido_desativado']) and count($cliente['pedido_desativado']) > 0) : ?>
+        <div class="col-sm-12" style="color: #9E9E9E; margin-top: -15px; margin-bottom: 5px">
+            <input onclick="mostrarDesativados('<?= 'cliente-' . $cliente['id_cliente']?>','<?= 'mostrarDesativados-' . $cliente['id_cliente']?>')"
+                   id="mostrarDesativados-<?=$cliente['id_cliente']?>"
+                   type="checkbox"/> <span > Mostrar (<?= count($cliente['pedido_desativado']) ?>) desativado(s)</span>
+            <div class="pull-right"
+                 style="font-size: 40px; margin-top: -20px; margin-bottom: -10px">
+                ...
+            </div>
+            <div class="desativados">
+            <hr  />
+            </div>
+        </div>
+        <div id="cliente-<?=$cliente['id_cliente']?>">
+        <?php foreach ($cliente['pedido_desativado'] as $pedido) : ?>
+            <div  class="desativados">
+            <?php include "_inc_pedido_detalhe.phtml" ?>
+            </div>
+        <?php endforeach ?>
+        </div>
+    <?php endif; ?>
+</div>

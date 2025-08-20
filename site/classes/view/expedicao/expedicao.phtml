@@ -1,0 +1,347 @@
+<?php
+    $user = mb_convert_case($this->user['nome'] ?? '', MB_CASE_TITLE);
+    $client = mb_convert_case($this->registro['nome'] ?? '', MB_CASE_TITLE);
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>REAL POKER - EXPEDIÇÃO</title>
+    
+    <style type="text/css">
+
+        * {
+            margin:0;
+            padding:0;
+            list-style:none;
+            text-decoration:none;
+            border:none;
+            line-height:inherit;
+            outline:none;
+            box-sizing: border-box;
+        }
+
+        body,html {
+            height: 100%;
+            background: #000;
+            font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            vertical-align: middle;
+        }
+
+        #main_form {
+            position: absolute;
+            width: 200px;
+            height: 50px;
+            bottom: 0;
+            right: 10px;
+        }
+
+        #main_form input[type=text] {
+            width: 100%;
+            height: 100%;
+            font-size: 20px;
+        }
+
+        .clear { clear: both; }
+
+        .container {
+            padding: 2%;
+        }
+
+        .transportadoras {
+            margin: 4% auto;
+        }
+
+        .transportadora {
+            width: 33%;
+            float: left;
+            margin-bottom: 5%;
+            border-top: 3px solid #fff;
+        }
+
+        .transportadora .cabecalho {
+            padding: 3% 5%;
+            border-left: 3px solid #fff;
+        }
+
+        .transportadora .body {
+            padding: 0 5%;
+            font-size: 25px;
+        }
+
+        .transportadora:nth-child(3n+1) .cabecalho {
+            border-left: none;
+        }
+
+        .transportadora .nome, 
+        .transportadora .head {
+            font-size: 25px;
+        }
+
+        .transportadora .nome {
+            margin-bottom: 10px;
+            font-size: 35px;
+            font-weight: bold;
+        }
+
+        .transportadora table {
+            border: 1px solid #fff;
+            border-collapse: collapse;
+        }
+
+        .transportadora table thead th,
+        .transportadora table tbody td {
+            padding: 5px;
+            border: 1px solid #fff;
+        }
+
+        .transportadora table tbody tr.atrasado td {
+            color: red;
+        }
+
+        .tela_registro .row {
+            padding: 1% 0;
+            border-bottom: 3px solid #fff;
+        }
+        .tela_registro .row:last-child { border-bottom: none; }
+
+        .tela_registro .row .col {
+            float: left;
+            padding: 1% 3%;
+            border-left: 3px solid #fff;
+            font-size: 25px;
+        }
+        .tela_registro .row:first-child .col { min-height: 110px; }
+        .tela_registro .row .col:first-child { border: none; }
+
+        .tela_registro .row .col1 { width: 500px; }
+        .tela_registro .row .col2 { width: 250px; }
+
+        .tela_registro .row .col span {
+            display: block;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .tela_registro .from_to {
+            width: 550px;
+            float: left;
+            font-size: 300px;
+            font-weight: bold;
+            color: yellow;
+            text-align: center;
+        }
+
+        .tela_registro .volumes {
+            width: 300px;
+            float: left;
+        }
+
+        .tela_registro .volumes .item {
+            width: 100px;
+            float: left;
+        }
+
+        .tela_registro .volumes { font-size: 40px; font-weight: bold; }
+
+        .box {
+            display: inline-flex;
+            justify-content: center; /* horizontal */
+            align-items: center; /* vertical */
+
+            min-width: 50%;
+            padding: 20px;
+            border-radius: 25px;
+            border: 2px solid grey;
+        }
+
+        .information {
+            font: 16px arial, sans-serif;
+            font-size: 2.2rem;
+            font-weight: bolder;
+            text-align: center;
+        }
+
+        /* From: https://mdbootstrap.com/docs/jquery/css/colors/ */
+        .bg-error {
+            background: #CC0000;
+        }
+        .bg-warning {
+            background: #FF8800;
+        }
+        .bg-success {
+            background: #007E33;
+        }
+        .bg-info {
+            background: #0099CC;
+        }
+
+        /* From: https://stackoverflow.com/a/25204020 */
+        .ui-hidden-accessible {
+            position: absolute !important;
+            height: 1px;
+            width: 1px;
+            overflow: hidden;
+            clip: rect(1px,1px,1px,1px);
+        }
+
+        /* From: https://css-tricks.com/quick-css-trick-how-to-center-an-object-exactly-in-the-center/ */
+        .centered {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            /* bring your own prefixes */
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <?php if ($this->registro): ?>
+        <div class="tela_registro">
+            <!-- Tela de leitura de códigos de barra -->
+            <div class="row">
+                <div class="col col2"><span>PEDIDO</span> <?php echo $this->registro['id_pedido']; ?></div>
+                <div class="col col2"><span>NOTA</span> <?php echo $this->registro['n_nota']; ?></div>
+                <div class="col col1"><span><?php echo $client; ?></span> <?php echo "{$this->registro['cidade']} / {$this->registro['uf']}"; ?></div>
+                <div class="clear"></div>
+            </div>
+
+            <div class="row">
+                <div class="col col1"><span><?php echo $user; ?></span></div>
+                <div class="col col1"><span><?php echo $this->registro['transportadora']; ?></span></div>
+                <div class="clear"></div>
+            </div>
+
+            <div class="row">
+                <div class="from_to">
+                    <?php echo count($this->volumes) . "/{$this->registro['volumes']}"; ?>
+                </div>
+                <div class="volumes">
+                    <?php foreach ($this->volumes as $el) {
+                        $el = ltrim($el, '0');
+                        echo "<div class='item'>{$el}/{$this->registro['volumes']}</div>";
+                    } ?>
+                </div>
+                <div class="clear"></div>
+
+            </div>
+        </div>
+    <?php else: ?>
+        <h1>Usuário: <?php echo $user; ?></h1>
+        <!-- Tela de listagem -->
+        <div class="transportadoras">
+            <?php foreach ($this->list as $transportadora => $lista): ?>
+                <div class="transportadora">
+                    <div class="cabecalho">
+                        <div class="nome"><?php echo $transportadora; ?></div>
+                    </div>
+                    <div class="body">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>PEDIDO</th>
+                                    <th>NOTA</th>
+                                    <th>VOL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($lista as $el) { ?>
+                                    <tr <?php echo ($el['data_coleta'] < date('Y-m-d')) ? ' class="atrasado"' : ''; ?>>
+                                        <td><?php echo $el['id_pedido']; ?></td>
+                                        <td><?php echo $el['n_nota']; ?></td>
+                                        <td><?php echo $el['volumes']; ?></td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+
+    <!-- Formulário oculto que permite edição -->
+    <form
+        id="main_form"
+        method="post"
+        action="."
+        autocomplete="off"
+        class="ui-hidden-accessible"
+    >
+        <input type="hidden" name="id" value="<?php echo $this->registro['id'] ?? ''; ?>"/>
+        <input type="hidden" name="id_agendor" value="<?php echo $this->user['id_agendor'] ?? ''; ?>"/>
+        <input type="hidden" name="departamentos" value="<?php echo $this->params['departamentos'] ?? ''; ?>"/>
+        <input type="hidden" name="volumes_lidos" value="<?php echo implode(',', $this->volumes ?? []); ?>"/>
+        <input type="text" name="input" id="main_input" value="" />
+        <button type="submit"></button>
+    </form>
+</div>
+
+    <!-- Mensagem (ALL_CAPS) -->
+    <?php if ($this->information ?? false) {
+        $message = mb_convert_case($this->information['message'], MB_CASE_UPPER);
+        echo "<div class='box centered information bg-{$this->information['type']}'>
+            <p>{$message}</p>
+        </div>";
+    } ?>
+
+    <!-- Scripts -->
+    <script type="text/javascript">
+        window.addEventListener('load', function () {
+            // Garante que o foco se mantém no input (executa a cada segundo)
+            var focus = function (id) {
+                var input = document.getElementById(id);
+                if (input && document.activeElement !== input) input.focus();
+                setTimeout(focus, 1000, id);
+            };
+
+            // Seta o valor de um input do form principal
+            var set = function (name, val) {
+                var form = document.getElementById('main_form');
+                if (form && form[name]) form[name].value = val || '';
+            };
+
+            // Seta os valores de inputs e envia o formulário principal
+            var submit = function (values) {
+                Object.keys(
+                    values || { input: '' }
+                ).map(
+                    function (k) { set(k, values[k]); }
+                );
+                var form = document.getElementById('main_form');
+                if (form) form.submit();
+            };
+
+            <?php if ($this->return ?? false) {
+                // Aguarda e envia o formulário para retornar à listagem
+                $wait = ($this->information ?? false) ? 1000 : 0;
+                $json = json_encode($this->params);
+                echo "setTimeout(submit, {$wait}, JSON.parse('{$json}'));";
+            } else {
+                // A página não vai atualizar, inicia o foco no input
+                echo "focus('main_input');";
+
+                // Atualiza a página de listagem a cada minuto
+                if (!isset($this->registro['id'])) {
+                    // E envia o ID do usuário logado (logout automático)
+                    $id = $this->user['id_agendor'] ?? null;
+                    echo "setTimeout(submit, 60000, { input: '{$id}' })";
+                }
+            } ?>
+        });
+    </script>
+</body>
+</html>

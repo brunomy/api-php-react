@@ -1,0 +1,9 @@
+{
+    "require": {
+        "developersrede/erede-php": "^2.0",
+        "inicial/itaucripto-php": "^1.0",
+        "zendframework/zend-barcode": "^2.7",
+        "vlucas/phpdotenv": "^5.4",
+        "robmorgan/phinx": "^0.12.10"
+    }
+}

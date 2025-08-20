@@ -1,0 +1,8 @@
+<?php
+
+$this->data->exportQuery = str_replace(Array("\\n", "\\r", 'width="100%"'), '', $this->data->exportQuery);
+$this->data->exportQuery = str_replace('border="0"', 'border="1"', $this->data->exportQuery);
+$this->data->exportQuery = stripslashes($this->data->exportQuery); 
+
+
+echo utf8_decode($this->data->exportQuery);

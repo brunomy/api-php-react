@@ -1,0 +1,77 @@
+<table border="1">
+    <tr>
+        <th>Pessoa</th>
+        <th><?php echo utf8_decode("Razão Social"); ?></th>
+        <th>CNPJ</th>
+        <th><?php echo utf8_decode("Inscrição Estadual"); ?></th>
+        <th>Nome</th>
+        <th>Telefone</th>
+        <th>CPF</th>
+        <th>E-mail</th>
+        <th>CEP</th>
+        <th><?php echo utf8_decode("Endereço"); ?></th>
+        <th>Bairro</th>
+        <th><?php echo utf8_decode("Número"); ?></th>
+        <th>Complemento</th>
+        <th>Estado</th>
+        <th>Cidade</th>
+        <th>Status</th>
+        <th>Data de Registro</th>
+        <th><?php echo utf8_decode("Último Acesso"); ?></th>
+        <th>Origem</th>
+        <th>UTM</th>
+    </tr>
+    <?php
+    if ($this->dados->num_rows) {
+        foreach ($this->dados->rows as $registro) {
+
+            $registro['utm'] = "";
+            if ($registro['utm_source'] != "") {
+                $registro['utm'] = "utm_source={$registro['utm_source']}";
+            }
+            if ($registro['utm_medium'] != "") {
+                $registro['utm'] .= "&utm_medium={$registro['utm_medium']}";
+            }
+            if ($registro['utm_term'] != "") {
+                $registro['utm'] .= "&utm_term={$registro['utm_term']}";
+            }
+            if ($registro['utm_content'] != "") {
+                $registro['utm'] .= "&utm_content={$registro['utm_content']}";
+            }
+            if ($registro['utm_campaign'] != "") {
+                $registro['utm'] .= "&utm_campaign={$registro['utm_campaign']}";
+            }
+
+            ?>
+            <tr>
+                <td><?php if ($registro["pessoa"] == 1) echo utf8_decode("Pessoa Física"); else if($registro["pessoa"]==2) echo utf8_decode("Pessoa Jurídica"); ?></td>
+                <td><?php echo utf8_decode($registro["razao_social"]); ?></td>
+                <td><?php echo utf8_decode($registro["cnpj"]); ?></td>
+                <td><?php echo utf8_decode($registro["inscricao_estadual"]); ?></td>
+                <td><?php echo utf8_decode($registro["nome"]); ?></td>
+                <td><?php echo $registro["telefone"]; ?></td>
+                <td><?php echo $registro["cpf"]; ?></td>
+                <td><?php echo $registro["email"]; ?></td>
+                <td><?php echo utf8_decode($registro["cep"]); ?></td>
+                <td><?php echo utf8_decode($registro["endereco"]); ?></td>
+                <td><?php echo utf8_decode($registro["bairro"]); ?></td>
+                <td><?php echo utf8_decode($registro["numero"]); ?></td>
+                <td><?php echo utf8_decode($registro["complemento"]); ?></td>
+                <td><?php echo utf8_decode($registro["estado"]); ?></td>
+                <td><?php echo utf8_decode($registro["cidade"]); ?></td>
+                <td><?php
+                    if ($registro["stats"])
+                        echo 'Ativo';
+                    else
+                        'Inativo';
+                    ?></td> 
+                <td><?php echo $registro["data_registro"]; ?></td> 
+                <td><?php echo $registro["ultimo_acesso"]; ?></td>
+                <td><?php echo $registro["origem"]; ?></td>
+                <td><?php echo $registro["utm"]; ?></td>
+            </tr>
+            <?php
+        }
+    }
+    ?>
+</table>

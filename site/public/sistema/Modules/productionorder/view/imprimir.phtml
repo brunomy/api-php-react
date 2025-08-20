@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real Poker - Produção - <?php echo $this->date ?></title>
+<meta charset="utf-8">
+<style>
+    * {
+        margin:0;
+        padding:0;
+        list-style:none;
+        text-decoration:none;
+        border:none;
+        line-height:inherit;
+        outline:none;
+    }
+
+    body {
+        padding: 50px;
+        font-family: Verdana, Geneva, sans-serif;
+        font-size:14px;
+        text-align: justify;
+        color:#222;
+    }
+
+    p {
+        margin: 30px 0;
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        vertical-align: middle;
+    }
+
+    .logomarca {
+        display: none;
+        width: 200px;
+        margin: 0 auto 60px;
+    }
+
+    .head_equipe {
+        margin: 25px 0;
+        font-size: 26px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .head_functionario {
+        margin: 10px 0;
+        font-size: 16px;
+        font-weight: bold;
+        font-style: italic;
+    }
+
+    .funcionario {
+        width: 550px;
+        float: left;
+        margin: 25px 50px 25px 0;
+    }
+
+    .funcionario table {
+        width: 100%;
+        border: 1px solid #000;
+        border-collapse: collapse;
+    }
+
+    .funcionario table td {
+        padding: 5px;
+        border: 1px solid #000;
+    }
+
+    .clear {
+        clear: both;
+    }
+
+    @media print {
+        .pagebreak { page-break-inside: avoid; }
+    }
+</style>
+</head>
+<body>
+<div class="logomarca"><img src="/sistema/images/logo-carta.png" alt=""></div>
+<?php if (!count($this->registro)): ?>
+    <div class="head_equipe">Nenhum registro para esta data <?php echo $this->date ?></div>
+<?php endif ?>
+<?php $i=0; ?>
+<?php foreach ($this->registro as $equipe): ?>
+    <?php foreach ($equipe->funcionarios as $funcionario): ?>
+        <div class="funcionario pagebreak" id="fun<?php echo $i ?>">
+            <div class="head_functionario"><?php echo $this->date ?> - <?php echo $funcionario->nome ?></div>
+        </div>
+        <?php $i++; ?>
+    <?php endforeach ?>
+    <div class="clear"></div>
+<?php endforeach ?>
+<div class="clear"></div>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script>
+    var servicos=[];
+<?php foreach ($this->registro as $i => $equipe): ?>
+<?php foreach ($equipe->funcionarios as $j => $funcionario): ?>
+    servicos.push(<?php echo json_encode($funcionario->servicos); ?>);
+<?php endforeach ?>
+<?php endforeach ?>
+    $(document).ready(function(){
+        for (var i = servicos.length - 1; i >= 0; i--) {
+            montaTabelaFuncionario(i, servicos[i]);
+        }
+    });
+    function montaTabelaFuncionario(index, servicos){
+        var inicio = 480; // 8 da manha + 15 min de reunião
+        var almoco = 720; // meio dia
+        var flag_almoco = false;
+        var timer = inicio;
+        var tabela = [];
+
+        tabela.push({servico:"REUNIÃO",tempo:15,inicio:timer,pedido:""});
+        timer += tabela[0].tempo;
+        tabela[0].fim = timer;
+
+        for(i=0;i<servicos.length;i++){
+            servico_replace = servicos[i].servico.replace(servicos[i].pedido+" - ","");
+            tabela.push({servico:servico_replace,tempo:parseInt(servicos[i].tempo),inicio:timer,pedido:servicos[i].pedido});
+            len = tabela.length-1;
+            timer += tabela[len].tempo;
+            tabela[len].fim = timer;
+
+            if(!flag_almoco && timer>almoco){
+                resto = timer-almoco;
+                timer = almoco;
+                tabela[len].fim = timer;
+                tabela[len].tempo = tabela[len].fim-tabela[len].inicio;
+                timer = almoco+75;
+                tabela.push({servico:"ALMOÇO", tempo:75, inicio:almoco, fim:timer, pedido:""});
+                tabela.push({servico:tabela[len].servico, tempo:resto, inicio:timer, fim:(timer+resto),pedido:tabela[len].pedido});
+                timer += resto;
+                flag_almoco = true;
+            }
+        }
+
+        if(tabela.length){
+            html='<table class="order-table"><tr><td>Pedido</td><td>Descrição</td><td>Início</td><td>Fim</td></tr>';
+            for(i=0;i<tabela.length;i++){
+                html += '<tr><td>'+tabela[i].pedido+'</td><td>'+tabela[i].servico+'</td><td>'+converterHoras(tabela[i].inicio)+'</td><td>'+converterHoras(tabela[i].fim)+'</td></tr>';
+            }
+            html+='</table>';
+            $("#fun"+index).append(html);
+        }
+    }
+
+    function converterHoras(num){
+        var hours = Math.floor(num / 60);
+        var minutes = num % 60;
+        return hours.toString().padStart(2,"0") + ":" + minutes.toString().padStart(2,"0");
+    }
+</script>
+</body>
+</html>

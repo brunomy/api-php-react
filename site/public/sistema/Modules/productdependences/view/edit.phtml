@@ -1,0 +1,234 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css" />
+
+    </head>  
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                    <i class="s16 <?php echo $this->module_icon; ?>"></i>                                    
+                                </a>
+                            </li>
+                            <span class="divider">
+                                <i class="s16 icomoon-icon-arrow-right-3"></i>
+                            </span>
+                            <li class="active">Registro</li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+                  
+                    <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                        <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                        <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados da dependência</h4>
+                                    </div>
+                                    <div class="panel-body">
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="nome">Nome:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="nome" id="nome" type="text" value="<?php echo $this->registro['nome'] ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="descricao">Descrição:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="descricao" id="descricao" type="text" value="<?php echo $this->registro['descricao'] ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="nome">Cor:</label>
+                                            <div class="col-lg-10">
+                                                <div id="color-picker"></div>
+                                                <input type="hidden" name="cor" id="cor" value="<?= $this->registro['cor'] ?: '#FFAB00' ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                        
+                                        <div class="form-group form-group-vertical">
+                                            <label class="col-lg-2 col-md-3 control-label">Requisitos relacionados:</label>
+                                            <div class="col-lg-10 col-md-9">
+
+                                                <div class="list_checkbox_type_1">
+                                                    <?php if ($this->requisitos->num_rows) : ?>
+                                                        <?php
+                                                            if(!empty($this->requisitos_selecionados->rows) && is_array($this->requisitos_selecionados->rows)){
+                                                                $requisitos_ids_selecionados = array_column($this->requisitos_selecionados->rows, 'id_pre');
+                                                            }
+                                                        ?>
+
+                                                        <?php foreach ($this->requisitos->rows as $requisito) : ?>
+                                                            <?php
+                                                                $checked = '';
+                                                                if(!empty($this->requisitos_selecionados->rows) && is_array($this->requisitos_selecionados->rows)){
+                                                                    $checked = in_array($requisito['id'], $requisitos_ids_selecionados) ? 'checked' : '';
+                                                                }
+                                                            ?>
+                                                            <div>
+                                                                <input <?= $checked ?> type="checkbox" name="requisitos_selected[]" class="no_script" id="dep_<?= $requisito['id'] ?>" value="<?= $requisito['id'] ?>">
+                                                                <label for="dep_<?= $requisito['id'] ?>"><?= $requisito['nome'] ?></label>
+                                                            </div>
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
+                                                </div>
+                                         
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <?php if ($this->id==""): ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['gravar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning "><span class="icon24 typ-icon-warning"></span>Você não tem permissão para gravar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar novo</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php else: ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['editar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning"><span class="icon24 icomoon-icon-warning "></span>Você não tem permissão para editar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar alterações</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php endif ?>
+                        </div><!-- End .row -->  
+                    </form>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+     
+<?php  require_once "layouts/plugins.phtml"; ?>
+        <!-- Init plugins only for page -->
+        
+        <script src="plugins/forms/autosize/jquery.autosize.js"></script>
+        <script type="text/javascript">
+            
+            /*
+            * ORDENA COMBOBOX CATEGORIAS
+            * @param {type} combo
+            * @returns {COMBO ORDENADA}
+            */
+
+        //    function ordenarLista(combo) {
+        //        var lb = document.getElementById(combo);
+        //        arr = new Array();                       
+
+        //        for(i=0; i<lb.length; i++) {              
+        //            arr.push({text:lb.options[i].text, value:lb.options[i].value}) 
+        //        }
+
+        //        arr.sort(function(a, b){
+        //            var a1= a.text, b1= b.text;
+        //            if(a1== b1) return 0;
+        //            return a1> b1? 1: -1;
+        //        });
+
+        //        for(i=0; i<lb.length; i++) {
+        //            lb.options[i].text = arr[i]['text'];
+        //            lb.options[i].value = arr[i]['value'];
+        //        }
+               
+        //        <?php if ($this->registro['id_pai'] != "") : ?>
+        //             $('#id_pai option[value=<?php echo $this->registro['id_pai'];?>]').attr('selected','selected');
+        //         <?php else :?>
+        //             $('#id_pai option[value=""]').attr('selected','selected');
+        //         <?php endif; ?>
+               
+        //    }
+        //    ordenarLista('id_pai');
+        
+            $(document).ready(function(){
+                saveKey(true);
+                $('.elastic').autosize();
+            });
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr"></script>
+
+        <script>
+            const pickr = Pickr.create({
+                el: '#color-picker',
+                theme: 'classic',
+                default: '<?= $this->registro['cor'] ?: '#FFAB00' ?>',
+                components: {
+                    preview: true,
+                    opacity: true,
+                    hue: true,
+                    interaction: {
+                        input: true,
+                        save: true
+                    }
+                }
+            });
+
+            pickr.on('save', (color) => {
+                document.getElementById('cor').value = color.toHEXA().toString();
+                pickr.hide();
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,1347 @@
+<?php
+require_once "layouts/headers.phtml";
+?>
+
+<script type="text/javascript">
+    var pagina = "<?php echo $this->getModule(); ?>";
+    var permissao = "<?php echo $this->permissao_ref; ?>";
+    var controller = "<?php echo $this->getModule(); ?>";
+    var site_url = "<?php echo $this->site_url; ?>";
+
+
+    function updateUser(id_crm, id_cliente, field, value = null) {
+
+        if(field == 'ultimo_contato') {
+            $('#ultimo_contato-' + id_crm).text('0 dia(s)');
+            $('#ultimo_contato-' + id_crm).css('color', 'black');
+        }
+
+        if(field == 'engajamento') {
+            var i = 1;
+            $('#engajamento-' + id_crm).find('i').each(function() {
+                console.log(value);
+                if(i <= value) {
+                    $(this).css('color', 'red');
+                } else {
+                    $(this).css('color', 'silver');
+                }
+               i++;
+            });
+        }
+
+        if(field == 'poder_aquisitivo') {
+            var i = 1;
+            $('#poder_aquisitivo-' + id_crm).find('img').each(function() {
+                if(i <= value) {
+                    $(this).attr('src', '/img/poder_arqusitivo_green.png');
+                } else {
+                    $(this).attr('src', '/img/poder_arqusitivo_silver.png');
+                }
+                i++;
+            });
+        }
+
+        if (value === null)
+            var value = $('#' + field + '-' + id_crm).val();
+
+        $('form.form-clientes input[name="id_crm"]').val(id_crm);
+        $('form.form-clientes input[name="id"]').val(id_cliente);
+        $('form.form-clientes input[name="field"]').val(field);
+        $('form.form-clientes input[name="value"]').val(value);
+        // Clica no submit do formulário
+        $('form.form-clientes button.clickformsubmit').trigger('click');
+    }
+
+    function mostrarContatos() {
+        var checkBox = document.getElementById("mostrarContatos");
+
+        var arrayOfElements = document.getElementsByClassName('mostrar');
+        var lengthOfArray = arrayOfElements.length;
+        console.log(arrayOfElements);
+        console.log(checkBox.checked);
+
+        if (checkBox.checked == true) {
+            var display = 'inline';
+        } else {
+            var display = "none";
+        }
+        console.log(display);
+        for (var i = 0; i < lengthOfArray; i++) {
+            arrayOfElements[i].style.display = display;
+        }
+    }
+
+    function mostrarDesativados(id, idCheckBox) {
+
+        var checkBox = document.getElementById(idCheckBox);
+
+        var arrayOfElements = document.getElementById(id).getElementsByClassName('desativados');
+        var lengthOfArray = arrayOfElements.length;
+
+
+        if (checkBox.checked == true) {
+            var display = 'inline';
+        } else {
+            var display = "none";
+        }
+
+        for (var i = 0; i < lengthOfArray; i++) {
+            arrayOfElements[i].style.display = display;
+        }
+    }
+
+    function mostrarTodosPedidos(id) {
+
+        var arrayOfElements = document.getElementById(id).getElementsByClassName('mostrarTodosPedidos');
+        var lengthOfArray = arrayOfElements.length;
+
+
+
+        for (var i = 0; i < lengthOfArray; i++) {
+            if(arrayOfElements[i].style.display == 'inline'){
+                arrayOfElements[i].style.display = 'none';
+            } else {
+                arrayOfElements[i].style.display = 'inline';
+            }
+        }
+    }
+
+
+    function modalAgendarCrm(id_crm, id_cliente, nome) {
+        $('a.nome_alerta_crm').attr("href", 'client/edit/id/' + id_cliente);
+        $('a.nome_alerta_crm').text(nome);
+        $('form.modal-agendar-crm input[name="id_cliente"]').val(id_cliente);
+        $('form.modal-agendar-crm input[name="id"]').val(id_crm);
+        $('form.form-finalizar-crm input[name="id"]').val(id_crm);
+        $('#modal-agendar-crm').modal('show');
+    }
+
+    function reativarOrçamento(id_orcamento, id_crm) {
+        $('form.form-etapa input[name="id_orcamento"]').val(id_orcamento);
+        $('form.form-etapa input[name="id_crm"]').val(id_crm);
+        $('form.form-etapa input[name="status"]').val('aberto');
+        $('form.form-etapa input[name="etapa"]').val('orcamento');
+        // Clica no submit do formulário
+        $('form.form-etapa button.clickformsubmit').trigger('click');
+    }
+
+
+
+</script>
+
+<style>
+    /* Checkbox de mostrar orçamentos completos (ganho e perda) */
+    .mostrar_status {
+        position: absolute;
+        top: 0px;
+        right: 390px;
+    }
+
+    /* Orçamento desativado */
+    .cortado {
+        text-decoration: line-through;
+        color: #d1d1d1;
+    }
+
+    /* Cores das etapas */
+    .orc_etapa[data-etapa="orcamento"], option[value="orcamento"], [data-key="orcamento"] {
+        color: #AFB42B;
+    }
+
+    .orc_etapa[data-etapa="followup"], option[value="followup"], [data-key="followup"] {
+        color: #4CAF50;
+    }
+
+    .orc_etapa[data-etapa="fechamento"], option[value="fechamento"], [data-key="fechamento"] {
+        color: #2E7D32;
+    }
+
+    .orc_etapa[data-etapa="desativado"], option[value="desativado"] {
+        color: #9E9E9E;
+    }
+
+    /* Cores dos status */
+    [data-key="ganho"] {
+        color: #1B5E20;
+    }
+
+    [data-key="perda"] {
+        color: #DD2C00;
+    }
+
+    /* Muda a cor do ícone de ganho/perda ao mover o mouse */
+    .orc_status[data-status="aberto"] a.orc_transfer:hover i {
+        color: #24AD24;
+    }
+
+    .orc_status[data-status="aberto"] a.orc_cancel:hover i {
+        color: #EC2222;
+    }
+
+    /* Muda a cor do ícone após ganho ou perda */
+    .orc_status[data-status="ganho"] a.checked i {
+        color: #24AD24;
+    }
+
+    .orc_status[data-status="perda"] a.checked i {
+        color: #EC2222;
+    }
+
+    /* Desativa o cursor após ganho ou perda */
+    .orc_status:not([data-status="aberto"]) a {
+        cursor: default;
+    }
+
+    hr {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        border: silver 0.5px solid;
+    }
+
+
+    hr.blue {
+        border-color: #3399cc;
+    }
+
+    .blue {
+        color: #3399cc;
+    }
+
+    .red {
+        color: red;
+    }
+
+    .silver {
+        color: #868680;
+    }
+
+    .mostrar {
+        display: none;
+    }
+
+    .desativados {
+        display: none;
+    }
+
+    .mostrarTodosPedidos {
+        display:none
+    }
+
+    .s14 {
+        font-size: 14px;
+    !important;
+    }
+
+    .checkbox-custom {
+        margin-right: -15px;
+    !important;
+    }
+
+    .noStyleInputCheckbox {
+      top: -4px;  !important;
+    }
+
+    table {
+        width: 95%;
+        margin: 20px 30px;
+    }
+
+    table tr td {
+        padding: 5px 3px;
+        text-align: right;
+    }
+
+
+</style>
+
+</head>
+
+
+<body>
+<?php require_once "layouts/header.phtml"; ?>
+
+<!-- / #header -->
+<div id="wrapper">
+    <!-- #wrapper -->
+
+    <?php require_once "layouts/sidebar.phtml"; ?>
+
+    <!--Body content-->
+    <div id="content" class="page-content clearfix">
+        <div class="contentwrapper">
+            <!--Content wrapper-->
+            <div class="heading">
+                <!--  .heading-->
+                <h3><?php echo $this->module_title; ?></h3>
+
+                <ul class="breadcrumb">
+                    <li>Você está aqui:</li>
+                    <li>
+                        <a href="#" class="tip" title="Painel">
+                            <i class="s14 icomoon-icon-screen-2"></i>
+                        </a>
+                        <span class="divider">
+                                    <i class="s14 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                    </li>
+                    <li class="active"><?php echo $this->module_title; ?></li>
+                </ul>
+            </div>
+        </div>
+        <!-- End  / heading-->
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel  panel-default pannel-collapse">
+                    <div class="panel-heading">
+                        <h4 class="panel-title"><i class="icomoon-icon-users"></i>Criar Conato</h4>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default pannel-collapse toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title"><i class="icomoon-icon-user"></i>Cliente Existente
+                                        </h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <form action="javascript:;" enctype="multipart/form-data" method="post"
+                                              class="form-crm-possui-cliente">
+                                            <div class="row">
+                                                <div class="form-group col-xs-12 col-md-8">
+                                                    <label for="nome" class="control-label">Buscar Clinete <span
+                                                                style="color: silver"> (nome, email, cpf/cnpj, telefone)</span></label>
+                                                    <!-- Select2 por AJAX precisa de input hidden
+                                                        Info: https://github.com/select2/select2/issues/679 -->
+                                                    <input type="hidden"
+                                                           class="form-control select2" name="id_cliente"
+                                                           id="id_cliente">
+                                                </div>
+                                                <div class="form-group col-xs-12 col-md-2">
+                                                    <label for="telefone" class="control-label">Vendedor</label>
+                                                    <select class="form-control input-sm" id="id_user" name="id_user">
+                                                        <option value="">Selecione..</option>
+                                                        <?php if ($this->users->num_rows) : ?>
+                                                            <?php foreach ($this->users->rows as $user) : ?>
+                                                                <option <?php if ($user['id'] == $_SESSION['admin_id']) {
+                                                                    echo "selected";
+                                                                } ?> value="<?php echo $user['id']; ?>"><?php echo $user['nome']; ?></option>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </select>
+                                                </div>
+                                                <!-- <div class="form-group col-xs-12 col-md-2">
+                                                    <label for="telefone" class="control-label">Origem</label>
+                                                    <select class="form-control input-sm" id="id_origem_existente" name="id_origem">
+                                                        <option value="">Selecione..</option>
+                                                        <?php if ($this->origins->num_rows) : ?>
+                                                            <?php foreach ($this->origins->rows as $origin) : ?>
+                                                                <option value="<?php echo $origin['id']; ?>"><?php echo $origin['nome']; ?></option>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </select>
+                                                </div> -->
+                                           
+                                                <input type="hidden" name="possui_orcamento" value="0" id="possui_orcamento"/>
+                                                <input type="hidden" name="aceita_outro_vendedor" value="0" id="possui_orcamento"/>
+
+                                                <div class="form-group col-xs-12 col-md-2">
+                                                    <button style="width: 100px; margin-top: 22px; float: right;"
+                                                            class="btn btn-success clickformsubmit">
+                                                        <i class="16 icomoon-icon-plus"></i></button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default pannel-collapse panel-closed toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title"><i class="icomoon-icon-user-2"></i>Novo Cliente</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <form style="" action="javascript:;" enctype="multipart/form-data"
+                                              method="post"
+                                              class="form-crm-nao-possui-cliente">
+                                            <div class="form-group col-xs-12 col-md-2">
+                                                <label for="email" class="control-label">Nome</label>
+                                                <input type="text" value='' name="nome" class="form-control"
+                                                >
+                                            </div>
+                                            <div class="form-group col-xs-12 col-md-2">
+                                                <label for="email" class="control-label">Email</label>
+                                                <input type="email" value='' class="form-control" name="email"
+                                                >
+                                            </div>
+                                            <div class="form-group col-xs-12 col-md-2">
+                                                <label for="cpf_cnpj" class="control-label">CPF ou CNPJ</label>
+                                                <input type="text" value='' name="cpf_cnpj" class="form-control cpf_cnpj"
+                                                >
+                                            </div>
+                                            <div class="form-group col-xs-12 col-md-2">
+                                                <label for="telefone" class="control-label">Telefone</label>
+                                                <input type="text" value='' name="telefone" class="form-control telefone"
+                                                >
+                                            </div>
+                                            <div class="form-group col-xs-12 col-md-2">
+                                                <label for="telefone" class="control-label">Vendedor</label>
+                                                <select class="form-control input-sm" id="id_user" name="id_user">
+                                                    <option value="">Selecione..</option>
+                                                    <?php if ($this->users->num_rows) : ?>
+                                                        <?php foreach ($this->users->rows as $user) : ?>
+                                                            <option <?php if ($user['id'] == $_SESSION['admin_id']) {
+                                                                echo "selected";
+                                                            } ?> value="<?php echo $user['id']; ?>"><?php echo $user['nome']; ?></option>
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-xs-12 col-md-2">
+                                                <label for="telefone" class="control-label">Origem</label>
+                                                <select class="form-control input-sm" id="id_origem" name="id_origem">
+                                                    <option value="">Selecione..</option>
+                                                    <?php if ($this->origins->num_rows) : ?>
+                                                        <?php foreach ($this->origins->rows as $origin) : ?>
+                                                            <option value="<?php echo $origin['id']; ?>"><?php echo $origin['nome']; ?></option>
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
+                                                </select>
+                                            </div>
+                                            <input type="hidden" name="possui_orcamento" value="0"
+                                                   id="possui_orcamento"/>
+                                            <input type="hidden" name="stats" value="1" id="stats"/>
+                                            <div class="form-group col-xs-12 col-md-2" style="float: right;">
+
+                                                <button style="width: 100px; margin-top: 22px;float: right;"
+                                                        class="btn btn-success clickformsubmit">
+                                                    <i class="16 icomoon-icon-plus"></i></button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-12">
+                <div class="panel panel-default toggle panelClose">
+                    <!-- Start .panel -->
+                    <div class="panel-heading">
+                        <h4 class="panel-title"><i class="icomoon-icon-bars"></i> Totais de Orçamentos</h4>
+                        <div class="pull-right" style="margin-right: 70px;margin-top: 4px">
+
+                            <select class="vendedor form-control input-sm">
+                                <option value="todos">Todos</option>
+                                <?php if ($this->users->num_rows) : ?>
+                                    <?php foreach ($this->users->rows as $user) : ?>
+                                        <option <?php if ($user['id'] == $this->id_vendedor) {
+                                            echo "selected";
+                                        } ?> value="<?php echo $user['id']; ?>"><?php echo $user['nome']; ?></option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="col-md-8">
+                            <div id="categorias">
+                                <?php foreach ($this->categorias as $cat) : ?>
+                                    <span style="margin-right: 10px;">
+                                            <label><input class="categorias" value="<?php echo $cat['id']; ?>"
+                                                          type="checkbox" <?= in_array($cat['id'],
+                                                    $this->categorias_selecionadas) ? "checked" : "" ?>>  <?php echo $cat['nome']; ?>
+                                            </label>
+                                         </span>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="ordenacao form-control input-sm" id="ordenacao" name="ordenacao">
+                                <option value="">Selecione..</option>
+                                <option <?= $this->ordenacao == 'data-asc' ? 'selected' : '' ?> value="data-asc">Ordernar Data
+                                    Ascendente
+                                </option>
+                                <option <?= $this->ordenacao == 'data-desc' ? 'selected' : '' ?> value="data-desc">Ordernar Data
+                                    Descrecente
+                                </option>
+                                <option <?= $this->ordenacao == 'valor_final-asc' ? 'selected' : '' ?> value="valor_final-asc">Ordernar Menor Valor
+                                </option>
+
+                                <option <?= $this->ordenacao == 'valor_final-desc' ? 'selected' : '' ?> value="valor_final-desc">Ordernar Maior Valor
+                                </option>
+
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="search" value="<?= $this->pesquisa ?>" id="pesquisa"
+                                   class="form-control input-sm" placeholder="" aria-controls="DataTables_Table_0"
+                                   title="Tecle ENTER Para Pesquisar">
+                        </div>
+
+                        <div class="painel-totais"></div>
+
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th><!-- Nomes dos vendedores--></th>
+                                <th class="tal" data-key="orcamento">Orçamento</th>
+                                <th class="tal" data-key="followup">Follow-Up</th>
+                                <th class="tal" data-key="fechamento">Fechamento</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach ($this->totais as $key => $total): ?>
+                                <tr>
+                                    <td class="tal col-sm-3"><?= $key ?><span class="pull-right"
+                                                                              style="margin-right: 50%"><?= $total['contato'] ?></span>
+                                    </td>
+
+                                    <td class="tal col-sm-3" data-key="orcamento">R$ <?= $this->formataMoedaShow($total['orcamento']) ?></td>
+                                    <td class="tal col-sm-3" data-key="followup">R$ <?=  $this->formataMoedaShow($total['followup']) ?></td>
+                                    <td class="tal col-sm-3" data-key="fechamento">R$ <?=  $this->formataMoedaShow($total['fechamento']) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+
+                        </table>
+
+                        <div class="row" style="padding-left: 0px;margin-left: 5px;">
+
+                            <div class="col-sm-3" style="margin-left: -10px">
+
+                                <div style="height: 30px;background-image: url('../../../../img/seta_contatos.png'); background-repeat: no-repeat; background-size: 98% 90%;margin-bottom: 15px"></div>
+                                <div class="row">
+                                    <div class="col-sm-12" style="margin-bottom: 10px">
+                                        <div style="width: 95%; background-color: #f6f6f6; border: #aeaeae 1px solid; padding: 10px;vertical-align: center">
+                                            <input style="margin-top: 10px" onclick="mostrarContatos()"
+                                                   id="mostrarContatos"
+                                                   type="checkbox"/> <i style="color: silver"
+                                                                        class="s14 icomoon-icon-arrow-down-3"></i>Mostrar
+                                            todas rotinas futuras
+                                        </div>
+                                    </div>
+                                    <?php foreach ($this->crm_contatos as $cliente) : ?>
+                                        <?php include '_inc_crm_contatos.phtml' ?>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3" style="margin-left: -5px">
+                                <div style="height: 30px;background-image: url('../../../../img/seta_orcamento.png'); background-repeat: no-repeat; background-size: 98% 90%;margin-bottom: 15px"></div>
+                                <?php foreach ($this->orcamentos as $cliente) : ?>
+                                    <?php if ($cliente['etapa'] == 'orcamento'): ?>
+                                        <div style="width: 95%; background-color: #e9e7d0; border: #babd48 1px solid; padding: 10px;vertical-align: center; margin-bottom: 10px">
+                                            <?php include '_inc_pedido.phtml' ?>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="col-sm-3" style="margin-left: -5px">
+                                <div style="height: 30px;background-image: url('../../../../img/seta_followup.png'); background-repeat: no-repeat; background-size: 98% 90%;margin-bottom: 15px"></div>
+                                <?php foreach ($this->orcamentos as $cliente) : ?>
+                                    <?php if ($cliente['etapa'] == 'followup'): ?>
+                                        <div style="width: 95%; background-color: #d1deca; border: #7cb979 1px solid; padding: 10px;vertical-align: center; margin-bottom: 10px">
+                                            <?php include '_inc_pedido.phtml' ?>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="col-sm-3" style="margin-left: -5px">
+                                <div style="height: 30px;background-image: url('../../../../img/seta_followup.png'); background-repeat: no-repeat; background-size: 98% 90%;margin-bottom: 15px"></div>
+                                <?php foreach ($this->orcamentos as $cliente) : ?>
+                                    <?php if ($cliente['etapa'] == 'fechamento'): ?>
+                                        <div style="width: 95%; background-color: #c7d0c0; border: #628252 1px solid; padding: 10px;vertical-align: center;  margin-bottom: 10px">
+                                            <?php include '_inc_pedido.phtml' ?>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+<!-- Start .row -->
+<div class="row">
+    <div class="col-lg-12">
+
+        <!-- Formulario invisivel para alterar etapa -->
+        <form style="display: none;" action="javascript:;" enctype="multipart/form-data" method="post"
+              class="form-etapa">
+            <input type="text" name="id_orcamento">
+            <input type="text" name="etapa">
+            <input type="text" name="status">
+            <input type="text" name="id_crm">
+            <button class="clickformsubmit"></button>
+        </form>
+
+        <!-- Formulario invisivel para alterar etapa -->
+        <form style="display: none;" action="javascript:;" enctype="multipart/form-data" method="post"
+              class="form-clientes">
+            <input type="text" name="id">
+            <input type="text" name="id_crm">
+            <input type="text" name="field">
+            <input type="text" name="value">
+            <button type="button" class="clickformsubmit"></button>
+        </form>
+
+        <!-- Formulario invisivel para finalizar crm -->
+        <form style="display: none;" action="javascript:;" enctype="multipart/form-data" method="post"
+              class="form-finalizar-crm">
+            <input type="text" name="id">
+            <button type="button" class="clickformsubmit"></button>
+        </form>
+
+        <!-- Formulario de pesquisa-->
+        <form style="display: none;" action="proposal2" enctype="multipart/form-data" method="post"
+              class="form-pesquisa">
+            <input type="text" value="<?= $this->id_vendedor ?>" name="id_vendedor">
+            <input type="text" value="<?= $this->categrias_string ?>" name="categorias">
+            <input type="text" value="<?= $this->ordenacao ?>" name="ordenacao">
+            <input type="text" value="<?= $this->pesquisa ?>" name="pesquisa">
+            <button type="submit" class="clickformsubmit"></button>
+        </form>
+
+    </div>
+</div><!-- End .row -->
+<?php require_once "layouts/options.phtml"; ?>
+
+
+<div class="modal fade" id="modal-pedido" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="width:50vw; height:90vh;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Emitir Pedido</h4>
+            </div>
+            <div class="modal-body">
+                <form action="javascript:;" enctype="multipart/form-data" method="post"
+                      class="form-horizontal group-border modal-cliente-novo">
+                    <input type="hidden" name="id_orcamento"/>
+                    <input type="hidden" name="orc_id_crm"/>
+                    <input type="hidden" name="id_cliente"/>
+                    <input type="hidden" class="frete_nome" name="frete_nome"/>
+                    <input type="hidden" class="frete_prazo" name="frete_prazo"/>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-default toggle">
+                                <!-- Start .panel -->
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">Dados do Cliente</h4>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label class="col-lg-2 col-md-3 control-label">Pessoa:</label>
+                                        <div class="col-lg-5 col-md-9">
+                                            <select name="pessoa" id="pessoa" class="form-control">
+                                                <option selected value="1">Pessoa Física</option>
+                                                <option value="2">Pessoa Jurídica</option>
+                                            </select>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group pessoa_juridica">
+                                        <label class="col-lg-2 control-label" for="razao_social">Razão Social:</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" name="razao_social" id="razao_social"
+                                                   type="text"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group pessoa_juridica">
+                                        <label class="col-lg-2 control-label" for="cnpj">CNPJ:</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" name="cnpj" id="cnpj" type="text"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group pessoa_juridica">
+                                        <label class="col-lg-2 control-label" for="inscricao_estadual">Inscrição
+                                            Estadual:</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" name="inscricao_estadual"
+                                                   id="inscricao_estadual" type="text"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label pessoa_juridica"
+                                               for="nome">Responsável:</label>
+                                        <label class="col-lg-2 control-label pessoa_fisica" for="nome">Nome:</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" name="nome" id="nome" type="text"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="cpf">CPF:</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" name="cpf" id="cpf" type="text"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="telefone">Telefone:</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" name="telefone" id="telefone" type="text"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="email">E-mail:</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" name="email" id="email" type="text"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="senha">Senha</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" name="senha" id="senha" type="password"
+                                                   value=""/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="cep">CEP:</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" name="cep" id="cep" type="text"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="endereco">Endereço:</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" name="endereco" id="endereco" type="text"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="bairro">Bairro:</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" name="bairro" id="bairro" type="text"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="numero">Número:</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" name="numero" id="numero" type="text"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="complemento">Complemento:</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" name="complemento" id="complemento"
+                                                   type="text"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group form-group-vertical">
+                                        <label class="col-lg-2 col-md-3 control-label" for="id_estado">Estado:</label>
+                                        <div class="col-lg-5 col-md-9">
+                                            <select class="form-control input-sm" id="id_estado" name="id_estado">
+                                                <option value="">Selecione..</option>
+                                                <?php foreach ($this->estados as $estado) : ?>
+                                                    <option data-uf="<?php echo $estado['uf']; ?>"
+                                                            value="<?php echo $estado['id']; ?>"><?php echo $estado['estado']; ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group form-group-vertical">
+                                        <label class="col-lg-2 col-md-3 control-label" for="id_cidade">Cidade:</label>
+                                        <div class="col-lg-5 col-md-9">
+                                            <select class="form-control input-sm" id="id_cidade" name="id_cidade">
+                                                <option value="">Selecione..</option>
+                                                <!-- Adicionado por javascript -->
+                                            </select>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group frete-resultados-group">
+                                        <label class="col-lg-2 col-md-3 control-label" for="frete">Frete:</label>
+                                        <div class="col-lg-5 col-md-9 form-control-static">
+                                            <!-- Alterado por javascript -->
+                                            <div class="frete-resultados">Aguardando CEP para cálculo do frete</div>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="metodo_pagamento">Forma de
+                                            pagamento:</label>
+                                        <div class="col-lg-5">
+                                            <select name="metodo_pagamento" id="metodo_pagamento_cli"
+                                                    class="form-control">
+                                                <option value="">Selecione a forma de pagamento</option>
+                                                <option value="<?php echo $this->gateway_pagamento; ?>">Cartão de Crédito</option>
+                                                <option value="deposito">Depósito Bancário</option>
+                                                <option value="boleto">Boleto Bancário</option>
+                                                <option value="pagseguro">Pagseguro UOL</option>
+                                                <option value="pokerstars">Transferência via Pokerstars</option>
+                                            </select>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <div class="col-xs-12" style="display: flex; justify-content: flex-end;">
+                                            <button class="btn btn-primary clickformsubmit">Emitir Pedido</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- End .panel -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-discounts" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="width:70vw; height:90vh;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Editar Descontos</h4>
+            </div>
+            <div class="modal-body">
+                <form action="javascript:;" enctype="multipart/form-data" method="post" class="form-horizontal group-border modal-discounts">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-agendar-crm" tabindex="-1" role="dialog" aria-hidden="true">
+    <div style="width:400px;" class="modal-dialog">
+        <div class="modal-content">
+
+            <div style="background-color: #dddddd;" class="modal-body">
+                <form action="javascript:;" enctype="multipart/form-data" method="post"
+                      class="form-horizontal group-border modal-agendar-crm">
+                    <div class="row" style="padding: 15px;">
+                        <div class="col-lg-12" style="padding-bottom: 20px;">
+                            <div class="pull-left"><img
+                                        src="/img/seta_alerta_futura.png"
+                                        alt="Cliente" style="width: 50px;"></div>
+                            <span style="margin-left: 10px; font-weight: bold; margin-top: 10px">Crie uma alerta futura para voltar a falar<br/>
+                              <a class="nome_alerta_crm" style="margin-left: 10px;" href="#"
+                                 target="_blank"> </a>
+                            </span>
+                        </div>
+                        <div class="col-lg-12" style="padding-bottom: 20px;">
+                            <textarea name="descricao" id="descricao" placeholder="Dicas:
+- Perguntar como foi o evento
+- Oferecer novos produtos" rows="3" style="width: 100%"></textarea>
+                        </div>
+                        <div class="col-lg-12">
+                            <input name="data" id="data" class="datepicker" type="text"
+                                   style="width: 150px; height: 33px"/>
+                            <input type="hidden" name="id_cliente"/>
+                            <input type="hidden" value="<?= $_SESSION['admin_id'] ?>" name="id_user"/>
+                            <input type="hidden" name="id"/>
+                            <input type="hidden" name="possui_orcamento" value="0"/>
+                            <input type="hidden" id="reload-on-close" value="false">
+                            <button class="btn btn-success clickformsubmit" style="width: 70px; margin-left: 10px">
+                                Criar
+                            </button>
+                            <button class="btn btn-danger finalizar-crm" style="width: 80px; margin-left: 10px">
+                                Não Criar
+                            </button>
+                        </div>
+                    </div><!-- End .panel -->
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-cliente-desistiu" tabindex="-1" role="dialog" aria-hidden="true">
+    <div style="width:400px;" class="modal-dialog">
+        <div class="modal-content">
+            <div style="background-color: #dddddd;" class="modal-body">
+                <form action="javascript:;" enctype="multipart/form-data" method="post"
+                      class="form-horizontal group-border cliente-desistiu">
+                    <div class="row" style="padding: 15px;">
+                        <div class="col-lg-12" style="padding-bottom: 20px;">
+                            <div class="pull-left"><img
+                                        src="/img/fechar_vermelho_grande.png"
+                                        alt="Cliente" style="width: 50px;"></div>
+                            <span style="margin-left: 10px; font-weight: bold;margin-top: 10px">Vamos Aprender. Por que o cliente <br/> </span>
+                            <span style="margin-left: 10px; font-weight: bold;margin-top: 10px">desistiu?  <a class="cliente_desistiu" style="margin-left: 5px;" href="#"
+                                                                                                              target="_blank"></a></span>
+
+                        </div>
+                        <input type="hidden" name="id_orcamento"/>
+                        <input type="hidden" name="etapa"/>
+                        <input type="hidden" name="status"/>
+                        <div class="col-lg-12" style="padding-bottom: 20px;">
+                            <?php foreach ($this->movitos_desistencia as $motivo) : ?>
+                            <p>
+                                <input   type="radio" name="motivo" value="<?= $motivo['id'] ?>">
+                               <?= $motivo['descricao'] ?>
+                            </p>
+                            <?php endforeach; ?>
+                        </div>
+                        <button class="btn btn-success clickformsubmit pull-right"
+                                style="width: 70px; margin-left: 10px">
+                            Salvar
+                        </button>
+                    </div><!-- End .panel -->
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php require_once "layouts/footer.phtml"; ?>
+
+</div><!-- End .row -->
+
+<?php require_once "layouts/plugins.phtml"; ?>
+
+<!-- Input mask plugin -->
+<script src="../../js/jquery.inputmask.bundle.min.js"></script>
+
+<!-- Table plugins -->
+<script src="plugins/tables/dataTables/jquery.dataTables.js"></script>
+<script src="plugins/tables/dataTables/dataTables.tableTools.js"></script>
+<script src="plugins/tables/dataTables/dataTables.bootstrap.js"></script>
+<script src="plugins/tables/dataTables/dataTables.responsive.js"></script>
+
+<!-- Plugin for the select with search -->
+<script src="plugins/forms/select2/select2.js"></script>
+
+<!-- Init plugins only for page -->
+<script type="text/javascript">
+    
+    function moeda(z){  
+        v = z.value;
+        v=v.replace(/\D/g,"")  //permite digitar apenas números
+        v=v.replace(/[0-9]{24}/,"inválido")   //limita pra máximo 999.999.999,99
+        v=v.replace(/(\d{1})(\d{8})$/,"$1.$2")  //coloca ponto antes dos últimos 8 digitos
+        v=v.replace(/(\d{1})(\d{5})$/,"$1.$2")  //coloca ponto antes dos últimos 5 digitos
+        v=v.replace(/(\d{1})(\d{1,2})$/,"$1,$2")    //coloca virgula antes dos últimos 2 digitos
+        z.value = v;
+    }
+
+    $(document).ready(function () {
+
+        $(".datepicker").mask("##/##/####");
+        $(".datepicker").datepicker({});
+
+
+        //--------------- Formulário Principal ------------------//
+
+        // Formulario de edição de usuario
+        $('form.form-clientes').clickform({validateUrl: 'client/updatefield'}, function (data) {
+            /*console.log('clickform done, data:', data)
+            if (data.type === 'success') {
+                // Atualiza a página para recalcular totais
+                window.location.reload();
+            }*/
+        });
+
+        // Formulario adicionar crm
+        // Formulario adicionar crm
+        $('form.form-crm-possui-cliente').clickform({validateUrl: 'proposal2/saveCrmPossuiCliente'}, function (data) {
+            if (data.type === 'success') {
+                // Atualiza a página para recalcular totais
+                window.location.reload();
+            }
+
+            if(data.type == 'modal') {
+                bootbox.confirm({
+                    message: 'Esse cliente já está sendo atendido por '+data.message+'. Deseja criar assim mesmo?',
+                    title: "Criar CRM",
+                    callback: function (result) {
+                        if (result) {
+                            $('form.form-crm-possui-cliente input[name="aceita_outro_vendedor"]').val(1);
+                            // Clica no submit do formulário
+                            $('form.form-crm-possui-cliente button.clickformsubmit').trigger('click');
+                        }
+                    }
+                });
+            }
+        });
+
+        // Formulario agendar crm
+        $('form.modal-agendar-crm').clickform({validateUrl: 'proposal2/agendarCrm'}, function (data) {
+            if (data.type === 'success') {
+                // Atualiza a página para recalcular totais
+                window.location.reload();
+            }
+        });
+
+        // finalizar crm
+        $('form.form-finalizar-crm').clickform({validateUrl: 'proposal2/finalizarCrm'}, function (data) {
+            if (data.type === 'success') {
+                // Atualiza a página para recalcular totais
+                window.location.reload();
+            }
+        });
+
+        // Formulario adicionar crm que não possui cliente
+        $('form.form-crm-nao-possui-cliente').clickform({validateUrl: 'proposal2/saveCrmNaoPossuiCliente'}, function (data) {
+            if (data.type === 'success') {
+                // Atualiza a página para recalcular totais
+                window.location.reload();
+            }
+        });
+
+        // Formulario de edição de etapa e status
+        $('form.form-etapa').clickform({validateUrl: '<?php echo $this->getModule(); ?>/save'}, function (data) {
+
+            if (data.type === 'success') {
+                window.location.reload();
+            }
+        });
+
+        // Formulario de edição de etapa e status
+        $('form.cliente-desistiu').clickform({validateUrl: '<?php echo $this->getModule(); ?>/save'}, function (data) {
+            if (data.type === 'success') {
+                $('#modal-cliente-desistiu').modal('hide');
+                modalAgendarCrm(data.id_crm, data.id_cliente, data.nome)
+
+            }
+        });
+
+        // FORMULÁRIO PESQUISAR
+        $('body').on('change', '#categorias input', function () {
+            var selected = $('#categorias input:checkbox:checked').map(function () {
+                return $(this).val();
+            }).get()
+
+            $('form.form-pesquisa input[name="categorias"]').val(selected);
+            $('form.form-pesquisa button.clickformsubmit').trigger('click');
+        });
+
+        $("#pesquisa").keyup(function (e) {
+
+            if (e.keyCode == 13) {
+                $('form.form-pesquisa input[name="pesquisa"]').val($(this).val());
+                $('form.form-pesquisa button.clickformsubmit').trigger('click');
+            }
+        });
+
+        $('body').on('change', 'select.vendedor', function () {
+
+            $('form.form-pesquisa input[name="id_vendedor"]').val($(this).val());
+            $('form.form-pesquisa button.clickformsubmit').trigger('click');
+        });
+
+        $('body').on('change', 'select.ordenacao', function () {
+
+            $('form.form-pesquisa input[name="ordenacao"]').val($(this).val());
+            $('form.form-pesquisa button.clickformsubmit').trigger('click');
+        });
+
+        // finalizar crm
+        $('body').on('click', '.finalizar-crm', function () {
+            // Clica no submit do formulário
+            $('form.form-finalizar-crm button.clickformsubmit').trigger('click');
+        });
+
+                // Atualiza etapa do orçamento
+        $('body').on('change', 'select.orc_etapa', function () {
+            $('form.form-etapa input[name="id_orcamento"]').val($(this).data('id'));
+            $('form.form-etapa input[name="status"]').val($(this).data('status'));
+            $('form.form-etapa input[name="etapa"]').val($(this).val());
+            // Clica no submit do formulário
+            $('form.form-etapa button.clickformsubmit').trigger('click');
+        });
+
+
+        // recarregar página
+        $('#modal-agendar-crm').on('hidden.bs.modal', function () {
+
+            if($('#reload-on-close').val() == 'true'){
+                window.location.reload();
+            }
+        });
+
+        // Abre o modal de confirmação para cancelar o orçamenot (perda)
+        $('body').on('click', 'a.orc_cancel', function () {
+            var parent = $(this).closest('.orc_status');
+            if (parent.data('status') != 'aberto') return;
+
+            var id = parent.data('id');
+            var etapa = parent.data('etapa');
+            var nome = parent.data('nome');
+            var cliente = parent.data('cliente');
+
+            if (etapa != 'desativado') {
+                console.log(nome);
+                console.log(cliente);
+                $('a.cliente_desistiu').attr("href", 'client/edit/id/' + cliente);
+                $('a.cliente_desistiu').text(nome);
+                $('form.cliente-desistiu input[name="id_orcamento"]').val(id);
+                $('form.cliente-desistiu input[name="etapa"]').val(etapa);
+                $('form.cliente-desistiu input[name="status"]').val('perda');
+                $('#reload-on-close').val(true)
+
+                $('#modal-cliente-desistiu').modal('show');
+
+
+
+
+            } else {
+
+                bootbox.confirm({
+                    message: ((etapa != 'desativado') ? 'O orçamento será contabilizado como <strong>PERDA</strong>. ' : '') + 'Tem certeza?',
+                    title: "Cancelar Orçamento",
+                    callback: function (result) {
+                        if (result) {
+                            $('form.form-etapa input[name="id_orcamento"]').val(id);
+                            $('form.form-etapa input[name="etapa"]').val(etapa);
+                            $('form.form-etapa input[name="status"]').val('perda');
+                            // Clica no submit do formulário
+                            $('form.form-etapa button.clickformsubmit').trigger('click');
+                        }
+                    }
+                });
+            }
+        });
+
+        // Abre o modal para gerar pedido a partir do orçamento (ganho)
+        $('body').on('click', 'a.orc_transfer', function () {
+            var parent = $(this).closest('.orc_status');
+            if (parent.data('status') != 'aberto') return;
+            else if (parent.data('etapa') == 'desativado') {
+                return bootbox.alert('Orçamentos com status <strong>desativado</strong> não podem ser marcados como <strong>GANHO</strong>!');
+            }
+            console.log(parent.data('cliente'))
+            $('input[type="hidden"][name="id_orcamento"]').val(parent.data('id'));
+            $('input[type="hidden"][name="orc_id_crm"]').val(parent.data('crm_id'));
+            $(".modal-cliente-novo :input").prop("disabled", true);
+
+            $.get('client/show/id/' + parent.data('cliente'), function (data) {
+                var cliente = JSON.parse(data);
+                $('#pessoa').val(cliente.pessoa).change();
+
+                $('#nome').val(cliente.nome);
+                $('#cpf').val(cliente.cpf).change();
+                $('#cnpj').val(cliente.cnpj);
+                $('#razao_social').val(cliente.razao_social);
+                $('#inscricao_estadual').val(cliente.inscricao_estadual);
+                $('#telefone').val(cliente.telefone);
+                $('#email').val(cliente.email);
+                $('#senha').val(cliente.senha);
+                $('#cep').val(cliente.cep);
+                $('#bairro').val(cliente.bairro);
+                $('#complemento').val(cliente.complemento);
+                $('#endereco').val(cliente.endereco);
+                $('#numero').val(cliente.numero);
+                $("#id_estado").attr('data-auto-select-cidade', cliente.id_cidade);
+
+                $('#id_estado').val(cliente.id_estado).change();
+
+                $('input[type="hidden"][name="id_cliente"]').val(cliente.id);
+
+                if(cliente.cep)
+                    calculaFrete(cliente.cep)
+
+                $(".modal-cliente-novo :input").prop("disabled", false);
+
+            });
+
+            $('#modal-pedido').modal('show');
+        });
+
+        //Abre o model para altear os valores do orçamento
+        $('body').on('click', 'a.orc_edit_discounts', function () {
+            var parent = $(this).closest('.orc_status');
+            if (parent.data('status') != 'aberto') return;
+            else if (parent.data('etapa') == 'desativado') {
+                return bootbox.alert('Orçamentos com status <strong>desativado</strong> não podem ser marcados como <strong>GANHO</strong>!');
+            }
+            var id = parent.data('id');
+            $('#modal-discounts form.modal-discounts').load('<?php echo $this->getModule();?>/editaDescontos/id/'+id, function(){
+                $('#modal-discounts').modal('show');
+            });
+        })
+
+        // Seletor de cliente com campo de pesquisa
+        $('#id_cliente').select2({
+            searchInputPlaceholder: 'Pesquisar nome',
+            allowClear: true,
+            ajax: {
+                url: '<?php echo $this->getModule();?>/searchClientsComplete',
+                dataType: 'json',
+                data: function (term, page, context) {
+                    return {q: term || '', last_id: context || 0}
+                },
+                results: function (data) {
+                    data.context = data.results.reduce((max, el) => {
+                        var id = parseInt(el.id);
+                        return (id > max) ? id : max;
+                    }, 0);
+
+                    return data;
+                }
+            }
+        });
+        $(document).on('change', '#id_cliente', function (ev) {
+            $('.modal-transferir input[type=hidden].frete_nome').val('');
+            $('.modal-transferir input[type=hidden].frete_prazo').val('');
+            // $('.modal-transferir .clickformsubmit').trigger('click');
+
+            // const idCliente = $('#id_cliente').val();
+
+            // if (!idCliente) return;
+
+            // $.ajax({
+            //     url: '<?php echo $this->getModule();?>/getClientOriginById',
+            //     type: 'GET',
+            //     dataType: 'json',
+            //     data: { id: idCliente },
+            //     success: function(response) {
+            //         if (response.success) {
+            //             const origem = response.data.id_origem;
+
+            //             $('#id_origem_existente').val(origem);
+                        
+            //         } else {
+            //             alert('Cliente não encontrado!');
+            //         }
+            //     },
+            //     error: function() {
+            //         alert('Erro ao buscar cliente.');
+            //     }
+            // });
+
+        });
+
+        // Seta os campos ocultos ao selecionar o tipo de frete
+        $(document).on('change', '.option-frete input', function () {
+            var parent = $(this).closest('form');
+            parent.children('input[type=hidden].frete_nome').val($(this).data('nome'));
+            parent.children('input[type=hidden].frete_prazo').val($(this).data('prazo'));
+        });
+        $('body .option-frete input:checked').trigger('change');
+
+        // Segundo formulário do modal (criar novo cliente)
+        $('.modal-cliente-novo').clickform({
+            validateUrl: '<?php echo $this->getModule();?>/transfer',
+            clearFields: false
+        }, function (data) {
+            if (data.type === 'success') {
+                $('#reload-on-close').val(true);
+                $('#modal-pedido').modal('hide');
+                modalAgendarCrm(data.id_crm, data.id_cliente, data.nome)
+            }
+        });
+
+        // novo crm
+        $('.cpf_cnpj').inputmask({'mask': ['999.999.999-99', '99.999.999/9999-99']});
+        $('.telefone').inputmask({'mask': '(99) 99999999[9]', 'greedy': false});
+
+        // Campos do formulário de criação de cliente
+        $('#telefone').inputmask({'mask': '(99) 99999999[9]', 'greedy': false});
+        $('#cep').inputmask({'mask': '99.999-999'});
+        $('#cpf').inputmask({'mask': '999.999.999-99'});
+        $('#cpf_cnpj').inputmask({'mask': ['999.999.999-99', '99.999.999/9999-99']});
+        $('#cnpj').inputmask({'mask': '99.999.999/9999-99'});
+        $('#numero').inputmask({'mask': '[9][9][9][9][9]', 'greedy': false});
+
+        // Altera a exibição dos campos de CNPJ
+        $('select#pessoa').change(function () {
+            if ($(this).val() == 1) {
+                $('.pessoa_fisica').show();
+                $('.pessoa_juridica').hide();
+            } else {
+                $('.pessoa_juridica').show();
+                $('.pessoa_fisica').hide();
+            }
+        });
+        $('select#pessoa').trigger('change');
+
+        // Buscar lista de cidades ao selecionar o estado
+        $("#id_estado").change(function () {
+            if ($(this).val() != "") {
+                var id = $(this).find("option:selected").val();
+                var cidade = $(this).data('auto-select-cidade');
+                $("#id_cidade").load("client/cidades/?id=" + id, function () {
+                    // Seleciona automaticamente uma, caso esteja marcada no estado
+                    $(`#id_cidade option[data-cidade="${cidade}"]`).prop('selected', true);
+                    $(`#id_cidade option[value="${cidade}"]`).prop('selected', true);
+                    $('#id_estado').removeData('auto-select-cidade');
+                });
+            }
+        });
+
+        // Preencher o endereço automaticamente a partir do CEP
+        function limpaCep(cep) {
+            cep = cep.replace(/[^0-9.]/g, '');
+            cep = cep.replace('.', '');
+            return cep;
+        }
+
+        function preencherEndereco(cep) {
+            cep = limpaCep($("#cep").val());
+            if (cep.length != 8) return;
+            // Remove escolhas anteriores de frete
+            $('.modal-cliente-novo input[type=hidden].frete_nome').val('');
+            $('.modal-cliente-novo input[type=hidden].frete_prazo').val('');
+            // Preenche o endereço a partir do CEP
+            $.get('https://viacep.com.br/ws/' + cep + '/json/', function (resultadoCEP) {
+                if (!("erro" in resultadoCEP)) {
+                    $('#endereco').val(resultadoCEP.logradouro);
+                    $('#bairro').val(resultadoCEP.bairro);
+                    $('#id_estado option').each(function () {
+                        if ($(this).attr("data-uf") == resultadoCEP.uf) {
+                            console.log(resultadoCEP);
+                            $(this).prop("selected", true);
+                            $("#id_estado").attr('data-auto-select-cidade', resultadoCEP.localidade);
+                            $("#id_estado").trigger("change");
+                        }
+                    });
+                } else {
+                    alert('Esse CEP não foi localizado em nossa base, por favor confira se o mesmo está correto.');
+                }
+            });
+            // Calcula e exibe as opções de frete para este CEP
+            calculaFrete(cep)
+        }
+
+        function calculaFrete(cep) {
+            $('form.modal-cliente-novo .frete-resultados').load('<?php echo $this->getModule();?>/frete', {
+                cep,
+                id_orcamento: $('form.modal-cliente-novo input[name="id_orcamento"]').val()
+            })
+        }
+
+        $('#cep').keyup(preencherEndereco);
+    });
+</script>
+</body>
+</html>

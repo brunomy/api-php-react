@@ -1,0 +1,59 @@
+<div class="col-sm-12" style="margin-bottom: 5px">
+    <div style="margin-left: 10px; margin-right: 10px">
+        <span style="font-weight: bold"><?= $pedido['id_pedido'] ?></span> -
+        <span class="blue" style="font-weight: bold;"> R$ <?= $pedido['valor_final'] ?></span>
+        <select class="orc_etapa pull-right" data-id="<?= $pedido['id_pedido'] ?>"
+                data-etapa="<?= $pedido['orc_etapa'] ?>" data-status="<?= $pedido['orc_status'] ?>">
+            <option value="orcamento" <?php if ($pedido['orc_etapa'] == 'orcamento') {
+                echo "selected";
+            } ?>>Orçamento
+            </option>
+            <option value="followup" <?php if ($pedido['orc_etapa'] == 'followup') {
+                echo "selected";
+            } ?>>Follow-Up
+            </option>
+            <option value="fechamento" <?php if ($pedido['orc_etapa'] == 'fechamento') {
+                echo "selected";
+            } ?>>Fechamento
+            </option>
+            <option value="desativado" <?php if ($pedido['orc_etapa'] == 'desativado') {
+                echo "selected";
+            } ?>>Desativado
+            </option>
+        </select>
+        <button onclick="javascript:window.open('<?= $this->site_url; ?>/carrinho/orcamento/<?= $pedido['id_pedido'] ?>');">Adicionar no Carrinho</button>
+    </div>
+</div>
+<div class="col-sm-12" style="margin-bottom: 5px">
+    <div style="margin-left: 10px; margin-right: 10px">
+
+        <span style="font-weight: bold;" class="silver"><?= $pedido['data'] ?> - <?= $pedido['quantidade_dias'] ?> dia(s) </span>
+        <div class="pull-right">
+            <a title="Visualizar orçamento" target="_blank" href="<?= $this->site_url; ?>/orcamento/<?= $pedido['code'] ?>"><i
+                    class="s14 icomoon-icon-link"></i></a>
+            <span class="orc_status"
+                  data-crm_id="<?=$pedido['orc_id_crm'] ?>"
+                  data-cliente="<?=$cliente['id_cliente'] ?>"
+                  data-id="<?= $pedido['id_pedido'] ?>"
+                  data-etapa="<?= $pedido['orc_etapa'] ?>"
+                  data-status="<?= $pedido['orc_status'] ?>"
+                  data-nome="<?= $cliente['nome'] ?>"
+            >
+            <a title="Editar descontos" href="#" class="orc_edit_discounts"><i class="s14 icomoon-icon-pencil-4"></i></a>
+            <a title="Gerar pedido" href="#" class="orc_transfer"><i class="s14 icomoon-icon-cart"></i></a>
+            <a title="Cancelar orçamento" href="#" class="orc_cancel"><i class="s14 icomoon-icon-cancel-circle"></i></a>
+        </span>
+        </div>
+
+    </div>
+</div>
+<div class="col-sm-12" style="margin-bottom: 5px">
+    <div style="margin-left: 10px; margin-right: 10px">
+        <span style="font-size:12px" class="silver"><?= $pedido['categorias'] ?> </span>
+    </div>
+
+</div>
+<div class="col-sm-12" style="margin-bottom: 8px">
+    <hr class="silver"/>
+
+</div>

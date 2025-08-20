@@ -1,0 +1,29 @@
+
+                                            <span class="node">
+                                                <div class="form-group">
+                                                    <label class="col-lg-2 control-label" for="nome_notificacao">Pessoa</label>
+                                                    <div class="col-lg-3">
+                                                        <input class="form-control" name="nome_notificacao[]" class="nome_notificacao" placeholder="Nome da Pessoa" type="text" value="" />
+                                                    </div><!-- End .form-group  -->
+                                                    <div class="col-lg-3">
+                                                        <input class="form-control" name="email_notificacao[]" class="email_notificacao" placeholder="E-mail da Pessoa" type="text" value="" />
+                                                    </div><!-- End .form-group  -->
+                                                    <div class="col-lg-2">
+                                                        <label class="pointer" for="alvo_notificacao<?php echo $this->n+2;?>"><input class="form-control" name="alvo_notificacao[<?php echo $this->n;?>][]" id="alvo_notificacao<?php echo $this->n+2;?>" type="checkbox" value="financeiro" />Financeiro</label>
+                                                        <label class="pointer" for="alvo_notificacao<?php echo $this->nmore+3;?>"><input class="form-control" name="alvo_notificacao[<?php echo $this->n;?>][]" id="alvo_notificacao<?php echo $this->nmore+3;?>" type="checkbox" value="fabrica" />Fábrica</label>
+                                                    </div><!-- End .form-group  -->
+                                                    <div class="col-lg-2">                                                            
+                                                            <button type="button" class="btn btn-primary btn-plus-notificacao">+</button>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" style="border-bottom: 1px solid #ccc">
+                                                    <label class="col-lg-2 control-label" for="">Produtos:</label>
+                                                    <div class="col-lg-10 col-md-9">
+                                                        <?php if ($this->produtos->num_rows) :?>
+                                                        <?php foreach ($this->produtos->rows as $produto) :?>
+                                                        <label class="pointer" for="produto_<?php echo $this->n+2;?><?php echo $produto['id'];?>"><input checked class="form-control" name="produtos[<?php echo $this->n;?>][]" id="produto_<?php echo $this->n+2;?><?php echo $produto['id'];?>" type="checkbox" value="<?php echo $produto['id'];?>" /><?php echo $produto['nome_produto'];?></label><br>
+                                                        <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            </span>

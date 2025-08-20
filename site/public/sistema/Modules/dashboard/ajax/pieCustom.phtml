@@ -1,0 +1,67 @@
+
+    <script type="text/javascript">
+        
+        $(document).ready(function(){
+            <?php if ($this->paginas_visitadas_custom->num_rows) :?>
+                $(function () {
+                    var data = [
+                         <?php if (isset($this->paginas_visitadas_custom->rows[0]['seo_title'])) : ?>
+                         { label: "<?php echo $this->intro($this->paginas_visitadas_custom->rows[0]['seo_title'], 40); ?>",  data: <?php echo $this->paginas_visitadas_custom->rows[0]['qtd'] ?>, color: "#80B3FF"},
+                         <?php endif; ?>
+                         <?php if (isset($this->paginas_visitadas_custom->rows[1]['seo_title'])) : ?>
+                         { label: "<?php echo $this->intro($this->paginas_visitadas_custom->rows[1]['seo_title'], 40); ?>",  data: <?php echo $this->paginas_visitadas_custom->rows[1]['qtd'] ?>, color: "#7DB4B5"},
+                         <?php endif; ?>
+                         <?php if (isset($this->paginas_visitadas_custom->rows[2]['seo_title'])) : ?>
+                         { label: "<?php echo $this->intro($this->paginas_visitadas_custom->rows[2]['seo_title'], 40); ?>",  data: <?php echo $this->paginas_visitadas_custom->rows[2]['qtd'] ?>, color: "#E0EFF1"},
+                         <?php endif; ?>
+                         <?php if (isset($this->paginas_visitadas_custom->rows[3]['seo_title'])) : ?>
+                         { label: "<?php echo $this->intro($this->paginas_visitadas_custom->rows[3]['seo_title'], 40); ?>",  data: <?php echo $this->paginas_visitadas_custom->rows[3]['qtd'] ?>, color: "#FFC2CE"},
+                         <?php endif; ?>
+                         <?php if (isset($this->paginas_visitadas_custom->rows[4]['seo_title'])) : ?>
+                         { label: "<?php echo $this->intro($this->paginas_visitadas_custom->rows[4]['seo_title'], 40); ?>",  data: <?php echo $this->paginas_visitadas_custom->rows[4]['qtd'] ?>, color: "#FD6E8A"},
+                         <?php endif; ?>
+                         <?php if (isset($this->paginas_visitadas_custom->rows[5]['seo_title'])) : ?>
+                         { label: "<?php echo $this->intro($this->paginas_visitadas_custom->rows[5]['seo_title'], 40); ?>",  data: <?php echo $this->paginas_visitadas_custom->rows[5]['qtd'] ?>, color: "#FF1168"}
+                         <?php endif ;?>
+                     ];
+
+                     $.plot($(".pieStatsCustom"), data, 
+                     {
+                         series: {
+                             pie: { 
+                                 show: true,
+                                 highlight: {
+                                     opacity: 0.1
+                                 },
+                                 stroke: {
+                                     color: '#fff',
+                                     width: 3
+                                 },
+                                 startAngle: 2,
+                                 label: {
+                                     radius:1
+                                 }
+                             },
+                             grow: { active: false}
+                         },
+                         legend: { 
+                             position: "ne", 
+                             labelBoxBorderColor: null
+                         },
+                         grid: {
+                             hoverable: true,
+                             clickable: true
+                         },
+                         tooltip: true, //activate tooltip
+                         tooltipOpts: {
+                             content: "%s : %y.0",
+                             shifts: {
+                                 x: -30,
+                                 y: -50
+                             }
+                         }
+                     });
+                 });
+             <?php endif; ?>
+        });
+</script>

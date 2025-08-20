@@ -1,0 +1,171 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+    
+    </head>  
+    
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                    <i class="s16 <?php echo $this->module_icon; ?>"></i>                                    
+                                </a>
+                            </li>
+                            <span class="divider">
+                                <i class="s16 icomoon-icon-arrow-right-3"></i>
+                            </span>
+                            <li class="active">Registro</li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+                  
+                    <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                        <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                        <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados do Código</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="codigo">Código:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="codigo" id="codigo" type="text" value="<?php echo $this->registro['codigo'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        
+                                        <div class="form-group form-group-vertical">
+                                            <label class="col-lg-2 col-md-3 control-label" for="porcentagem">Tipo:</label>
+                                            <div class="col-lg-10 col-md-9">
+                                                <select class="form-control input-sm" id="porcentagem" name="porcentagem">
+                                                    <option value="">Selecione..</option>
+                                                    <option <?php if ($this->registro['porcentagem'] == "0") echo "selected"; ?> value="0">Valor Fixo</option>
+                                                    <option <?php if ($this->registro['porcentagem'] == "1") echo "selected"; ?> value="1">Porcentagem</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="mensagem">Mensagem:</label>
+                                            <div class="col-lg-10">
+                                                <textarea id="seo_scripts" name="mensagem" class="form-control elastic" rows="3"><?php echo stripslashes($this->registro['mensagem']) ?></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="valor">Valor:</label>
+                                            <div class="col-lg-10">
+                                                <input onKeyUp="moeda(this);" onKeyPress="return checkIt(event)" class="form-control" name="valor" id="valor" type="text" value="<?php echo $this->formataMoedaShow($this->registro['valor']); ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        
+                        <div class="row">
+                            <?php if ($this->id==""): ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['gravar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning "><span class="s24 typ-s-warning"></span>Você não tem permissão para gravar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar novo</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php else: ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['editar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning"><span class="s24 icomoon-s-warning "></span>Você não tem permissão para editar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar alterações</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php endif ?>
+                        </div><!-- End .row -->  
+                    </form>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+        <script src="plugins/forms/autosize/jquery.autosize.js"></script>
+        <script type="text/javascript">
+
+            
+            function moeda(z){  
+                v = z.value;
+                v=v.replace(/\D/g,"");  //permite digitar apenas números
+                v=v.replace(/[0-9]{12}/,"inválido");   //limita pra máximo 999.999.999,99
+                v=v.replace(/(\d{1})(\d{8})$/,"$1.$2");  //coloca ponto antes dos últimos 8 digitos
+                v=v.replace(/(\d{1})(\d{5})$/,"$1.$2");  //coloca ponto antes dos últimos 5 digitos
+                v=v.replace(/(\d{1})(\d{1,2})$/,"$1,$2");	//coloca virgula antes dos últimos 2 digitos
+                z.value = v;
+            }
+            
+            $(document).ready(function(){
+                $('.elastic').autosize();
+                
+                
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,354 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>";
+    </script>
+    <style type="text/css">
+        @page { size: auto;  margin: 0mm; }
+    </style>
+    <style type="text/css" media="print">
+        #wrapper{
+            display: none;
+        }
+        #result{
+            display: block !important;
+            font-size: 1.1em;
+        }
+        #result .result-nome-print{
+            font-size: 1.8em !important;
+        }
+        th,td{
+            padding: 5px;
+        }
+    </style>  
+    </head>  
+    
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li class="active"><?php echo $this->module_title;?></li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <a href="<?php echo $this->getModule();?>/edit"><button type="button" class="btn btn-default mr5 mb10"><i class="glyphicon glyphicon-plus mr5"></i> Novo registro</button></a>
+                        </div>
+                    </div>
+                    <?php if ($this->permissions[$this->permissao_ref]['ler']): ?>
+                        <form enctype="multipart/form-data" method="post" class="form-horizontal seperator getPontos">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title"><i class="<?php echo $this->module_icon ?>"></i> Ponto Eletrônico
+                                            </h4>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label" for="id_user">Funcionário:</label>
+                                                <div class="col-lg-10">
+                                                    <select name="id_user" id="id_user" class="form-control">
+                                                        <?php if ($this->funcionarios->num_rows) : ?>
+                                                        <option value="">Selecione..</option>
+                                                        <?php foreach ($this->funcionarios->rows as $funcionario) : ?>
+                                                        <option <?php if($this->data["id_user"] == $funcionario['id']) echo 'selected'; ?> value="<?php echo $funcionario['id']; ?>"><?php echo $funcionario['nome']; ?></option>
+                                                        <?php endforeach ; ?>
+                                                        <?php else: ?>
+                                                        <option value="">Nenhum funcionário..</option>
+                                                        <?php endif; ?>                                                                                          
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label class="col-lg-2 control-label" for="">Datas:</label>
+                                                <div class="col-lg-10 text-left">
+                                                    <label for="de">De</label>
+                                                    <input type="text" name="de" style="width:15%;display:inline-block" id="de" class="data form-control" value="<?php echo $this->data['de']; ?>" />
+                                                    <label for="de">à</label>
+                                                    <input type="text" name="ate" id="ate" style="width:15%;display:inline-block" class="data form-control" style="display:inline-block" value="<?php echo $this->data['ate']; ?>" />
+                                                    <button type="button" class="btn btn-default btn-buscar icomoon-icon-search-3 tip" title="Buscar"></button>
+                                                    <button type="button" class="btn btn-default btn-limpar icomoon-icon-remove-2 tip" title="Limpar"></button>
+                                                </div>
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="row">
+                            <div class="col-lg-12" style="text-align: right;">
+                                <form id="form-export" action="<?php echo $this->getModule() ?>/export" method="POST">
+                                <a style="margin-bottom: 10px; display:none" href="#" class="btn btn-warning btn-imprimir" onclick="window.print()"><span class="s14 icomoon-icon-print color-white"></span> Imprimir</a>
+                                <input type="hidden" name="exportQuery">
+                                <input type="hidden" name="data">
+                                <input type="hidden" name="nome">
+                                <a style="margin-bottom: 10px; display:none" href="#" class="btn btn-info btn-export"><span class="s14 icomoon-icon-file-excel color-white"></span> Exportar</a>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="row result" style="display:none">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <span class="result-nome"></span>
+                                            <label class="select-all">Selecionar todos <input type="checkbox" id="apagar_todos"></label>
+                                        </h4>
+                                    </div>
+                                    <div class="panel-body result-tabela">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php require_once "layouts/options.phtml"; ?>
+                    <?php else: ?>
+                        <span class="label label-warning"><span class="icon24 icomoon-icon-warning "></span>Você não tem permissão de leitura para esta função.</span>
+                    <?php endif ?>
+                    <?php require_once "layouts/options.phtml"; ?>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+        <div class="row" id="result" style="display:none;">
+            <div class="col-lg-12" style="padding-top: 10px">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4>
+                            <span class="result-nome-print" ></span>
+                        </h4>
+                    </div>
+                    <div class="panel-body result-tabela-print">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+
+        <!-- Table plugins -->
+        <script src="plugins/tables/dataTables/jquery.dataTables.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.tableTools.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.bootstrap.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.responsive.js"></script>
+
+
+        <!-- Init plugins only for page -->
+        <script type="text/javascript">
+            $(document).ready(function(){
+
+                $(".data").mask("##/##/####");
+                $(".data").datepicker({
+                    dateFormat: 'dd/mm/yy',
+                    dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
+                    dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+                    dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+                    monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                    monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                    nextText: 'Próximo',
+                    prevText: 'Anterior'
+                });
+
+                var de = "<?php echo $this->data['de']; ?>";
+                var ate = "<?php echo $this->data['ate']; ?>";
+                var id_user = "<?php echo $this->data['id_user']; ?>";
+                var tabela = "";
+                var data = "";
+                var nome = "";
+                
+                $(".btn-buscar").on("click", function(){
+                    de = $("#de").val();
+                    ate = $("#ate").val();
+                    id_user = $("#id_user").val();
+                    if (id_user == '')
+                        alert('Selecione o funcionário!');
+                   
+                    $.post("<?php echo $this->getModule() ?>/getView", { 
+                        de : de,
+                        ate : ate,
+                        id_funcionario : id_user
+                    }, function( dt ) {
+                        $(".result").fadeOut('fast');
+                        $(".result-tabela").html(dt.tabela);
+                        $(".result-tabela-print").html(dt.tabela_print);
+                        $(".result-nome").html(dt.nome + dt.busca);
+                        $(".result-nome-print").html(dt.nome_print + dt.busca);
+                        $('.data-retorno').val(dt.retorno);
+                        
+                        tabela = dt.tabela_print;
+                        data = dt.busca;
+                        nome = dt.nome;
+
+                        $('input[name=exportQuery]').val(dt.tabela_export);
+                        $('input[name=data]').val(data);
+                        $('input[name=nome]').val(nome);
+
+                        
+                    }, "json").done(function(dt) {                    
+                        $(".result").fadeIn('fast');
+                        if (dt.tabela != "" && typeof dt.not_found === "undefined") {
+                            $(".btn-imprimir").show();
+                            $(".btn-export").show();
+                            uniform();
+                        }
+                    });
+                   
+                });
+                
+                if ($("#id_user").val() != "")
+                    $(".btn-buscar").trigger("click");
+
+                /*$(".btn-imprimir").on("click", function(e){
+                    e.preventDefault();
+
+                    var printContents = document.getElementById('result').innerHTML;
+                    var originalContents = document.body.innerHTML;
+                    var de = document.getElementById("de").value;
+                    var ate = document.getElementById("ate").value;
+                    var id_funcionario = document.getElementById("id_user").value;
+
+                    retorno = getRetorno();
+                    document.body.innerHTML = printContents;
+
+                    window.print();
+
+                    //document.body.innerHTML = originalContents;
+                    
+                    window.location.href = retorno;
+                    document.getElementById("qLoverlay").style.display = "block";
+                    document.getElementById("qLbar").style.display = "block";
+                });*/
+                
+                $(".btn-export").on("click", function(e){
+                    e.preventDefault();
+                    $("#form-export").submit();
+                    /*($.post("<?php echo $this->getModule(); ?>/export" , { exportQuery : document.getElementById('result').innerHTML, data : data, nome: nome }, function ( dt ) {
+                        window.location.href = "<?php echo $this->getModule(); ?>/export";
+                    });*/
+                });
+                
+                $("#id_user, .data").on("change", function(){
+                    $(".result").fadeOut('fast');
+                    $(".btn-imprimir").fadeOut('fast');
+                    $(".btn-export").fadeOut('fast');                
+                });
+                
+                
+                $(".btn-limpar").on("click", function(){
+                    $("#de").val("");
+                    $("#ate").val("");
+                    $('#id_user option[value=""]').attr('selected','selected');
+                    $(".result").fadeOut('fast');
+                    $(".btn-imprimir").fadeOut('fast');
+                    $(".btn-export").fadeOut('fast');
+                });
+
+                // APAGAR
+                //------------------------------------------------------------------
+                $('body').on('click', '.bt_system_delete_person', function (e) {
+
+                    retorno = getRetorno();
+
+                    if (confirm("Deseja realmente apagar esse registro?")) {
+                        $.post(system_path + $(this).attr("data-controller") + '/del/id/' + $(this).attr("data-id") + '/lista/' + $(this).attr("data-id-lista"), {'retorno': retorno, "segmentacao": $(this).attr("data-id-segmentacao"), "pontoeletronico": 1}, function (response) {
+                            if (response.indexOf("error") != -1) {
+                                alert("Não foi possivel apagar este registro.\n Verifique se ele não está vinculado a outro registro.");
+                            } else {
+                                window.location.href = response;
+                            }
+                        });
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
+
+                //--------------- Data tables ------------------//
+                if($('table').hasClass('tabletools')){
+                    $('.tabletools').dataTable( {
+                        "oLanguage": {
+                            "sSearch": "",
+                            "sLengthMenu": "<span>_MENU_</span>",
+                            "sProcessing":   "Processando...",                    
+                            "sZeroRecords":  "Não foram encontrados resultados",
+                            "sInfo":         "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                            "sInfoEmpty":    "Mostrando de 0 até 0 de 0 registros",
+                            "sInfoFiltered": "(filtrado de _MAX_ registros no total)",
+                            "sInfoPostFix":  "",
+                            "sUrl":         "",
+
+                            "oPaginate": {
+                                "sFirst":    "Primeiro",
+                                "sPrevious": "Anterior",
+                                "sNext":     "Seguinte",
+                                "sLast":     "Último"
+                            }
+                        },
+                        "sDom": "T<'row'<'col-md-6 col-xs-12 'l><'col-md-6 col-xs-12'f>r>t<'row'<'col-md-4 col-xs-12'i><'col-md-8 col-xs-12'p>>",
+                        "aaSorting":[[0,"desc"]],
+                        tableTools: {
+                            "sSwfPath": "http://cdn.datatables.net/tabletools/2.2.2/swf/copy_csv_xls_pdf.swf",
+                            "aButtons": [
+                          ]
+                        }
+
+
+                    });
+
+                }
+
+            });
+
+            function getRetorno(){
+                var retorno = "<?php echo $this->getModule() ?>";
+                var id_user_ = $('#id_user').val();
+                if(id_user_ != ""){
+                    retorno += "/index/user/"+ id_user_;
+                    var de_ = $("#de").val();
+                    var ate_ = $("#ate").val();
+                    if(de_ != "" && ate_ != "")
+                        retorno += "/search/"+de_.replace(/\//g,"-")+"_"+ate_.replace(/\//g,"-");
+                    else if(de_ != "")
+                        retorno += "/search/"+de_.replace(/\//g,"-");
+                }
+                return retorno;
+            }
+        </script>
+    </body>
+</html>

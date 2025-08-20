@@ -1,0 +1,322 @@
+<?php
+
+$id = "";
+$de = "";
+$ate = "";
+
+if (isset($_SESSION['admin_id']) && $_SESSION['admin_id'] != "") {
+
+    $id = $_SESSION['admin_id'];
+    if (isset($_POST['de']) && $_POST['de'] != '') {
+        $de = $this->formataDataDeMascara($_POST['de']);
+    }
+    if (isset($_POST['ate']) && $_POST['ate'] != '') {
+        $ate = $this->formataDataDeMascara($_POST['ate']);
+    }
+
+    $where = "";
+    $where_ = "";
+    $busca = "";
+
+    if ($de != "" && $ate != "") {
+        $where .= " AND DATE(A.data) >= '$de' AND DATE(A.data) <= '$ate' ";
+        $where_ .= " AND CASE WHEN identificador='folga' THEN DATE(A.data_inicio) >= '$de' AND DATE(A.data_inicio) <= '$ate' ELSE DATE(A.data) >= '$de' AND DATE(A.data) <= '$ate' END";
+        $busca = " - Resultado de {$_POST['de']} até {$_POST['ate']}.";
+    } else {
+        if ($de != "") {
+            $where .= " AND DATE(A.data) >= '$de'";
+            $where_ .= " AND CASE WHEN identificador='folga' THEN DATE(A.data_inicio) >= '$de' ELSE DATE(A.data) >= '$de' END";
+            $busca = " - Resultado a partir de {$_POST['de']}.";
+        }
+        if ($ate != "") {
+            $where .= " AND DATE(A.data) <= '$ate'";
+            $where_ .= " AND CASE WHEN identificador='folga' THEN DATE(A.data_inicio) <= '$ate' ELSE DATE(A.data) <= '$ate' END";
+            $busca = " - Resultado até {$_POST['ate']}.";
+        }
+    }
+
+    $tabela = "";
+    $tabela_print = "";
+    $saldo_dia = 0; 
+    $saldo_geral = 0;
+    /*
+    WHEN 'saida' THEN ( UNIX_TIMESTAMP(TIME(data_usa)) - UNIX_TIMESTAMP(hora_contrato) )/60 
+    ELSE ( UNIX_TIMESTAMP(hora_contrato) - UNIX_TIMESTAMP(TIME(data_usa)) )/60 */
+    $sql = 
+    "SELECT *,
+    (
+        ROUND(
+            (
+                CASE identificador 
+                WHEN 'falta' THEN minutos_dia*-1 
+                WHEN 'folga' THEN minutos_dia*-1 
+                WHEN 'venda' THEN minutos_dia*-1
+                WHEN 'saida_almoco' THEN  TIME_TO_SEC((TIMEDIFF(hora_ponto, hora_contrato)))/60
+                WHEN 'saida' THEN  TIME_TO_SEC((TIMEDIFF(hora_ponto, hora_contrato)))/60
+                ELSE TIME_TO_SEC((TIMEDIFF(hora_contrato, hora_ponto)) )/60
+                END
+            )
+        )
+    ) saldo_horas FROM
+    (
+        SELECT A.data data_usa, DATE_FORMAT(A.data, '%d/%m/%Y') data,DATE_FORMAT(A.data, '%H:%i:%s') hora_ponto, B.nome, B.hora_entrada, B.hora_almoco, B.hora_retorno, B.hora_saida, A.id, A.id_user, A.almoco, A.hora_contrato, A.minutos_dia, A.ip, NULL motivo, NULL justificada ,A.identificador, NULL valor,  NULL data_inicio,  NULL data_fim  
+            FROM tb_ponto_eletronico A INNER JOIN tb_admin_users B ON B.id = A.id_user WHERE B.id = $id $where
+            
+        UNION 
+        
+        SELECT CASE WHEN identificador='folga' THEN A.data_inicio ELSE A.data END data_usa, DATE_FORMAT(A.data, '%d/%m/%Y') data ,NULL hora_ponto, B.nome, B.hora_entrada, B.hora_almoco, B.hora_retorno, B.hora_saida, A.id, NULL id_user, NULL almoco, NULL hora_contrato, A.minutos minutos_dia, NULL ip, A.motivo, A.justificada,A.identificador, NULL valor, DATE_FORMAT(A.data_inicio, '%d/%m/%Y') data_inicio, DATE_FORMAT(A.data_fim, '%d/%m/%Y') data_fim 
+            FROM tb_ponto_eletronico_abates A INNER JOIN tb_admin_users B ON B.id = A.id_user WHERE B.id = $id $where_
+
+    ) x 
+    ORDER BY DATE(data_usa) DESC, TIME(data_usa) ASC
+    ";
+
+    $query = $this->DB_fetch_array($sql);
+
+    if ($query->num_rows) {
+
+        $tabela = '                     <style>.bt_system_delete_person:hover,.bt_system_delete:hover{cursor:pointer;}</style>
+                                        <table cellpadding="0" cellspacing="0" border="0" class="table table-bordered" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th width="15%" class="tal">Data</th>
+                                                    <th Width="10%" class="tal">IP</th>
+                                                    <th Width="23%" class="tal">Referência</th>
+                                                    <th width="20%" class="tal">Hora do Contrato</th>
+                                                    <th width="15%" class="tal">Bateu o Ponto</th>                                                   
+                                                    <th width="20%" class="tal">Saldo</th>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+        ';
+
+        $tabela_print = '
+                                        <table cellpadding="0" cellspacing="0" border="0" class="" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th width="20%" class="tal">Data</th>
+                                                    <th Width="10%" class="tal">IP</th>
+                                                    <th Width="25%" class="tal">Referência</th>
+                                                    <th width="20%" class="tal">Hora do Contrato</th>
+                                                    <th width="15%" class="tal">Bateu o Ponto</th>                                                   
+                                                    <th width="20%" class="tal">Saldo</th>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+        ';
+
+        
+
+        foreach ($query->rows as $index => $funcionario) {
+
+            if($funcionario['identificador'] == "venda"){
+                $saldo_geral -= $funcionario['minutos_dia'];
+                continue;
+            }
+
+            switch ($funcionario['identificador']) {
+                case 'entrada':
+                    $ref = "Entrada";
+                    break;
+                case 'saida_almoco':
+                    $ref = "Saída para Almoço";
+                    break;
+                case 'volta_almoco':
+                    $ref = "Volta do Almoço";
+                    break;
+                case 'saida':
+                    $ref = "Saída";
+                    break;
+                case 'falta':
+                    $ref = "Falta";
+                    break;
+                case 'folga':
+                    $ref = "Folga";
+                    break;    
+                default:
+                    $ref = "";
+                    break;
+            }
+
+            if($ref == "Falta" or  $ref == "Folga"){
+                $href = "#";
+                if($funcionario["justificada"])
+                    $ref .= " - Justificada";
+                if($funcionario['identificador'] == "folga")
+                    $funcionario['data'] = " {$funcionario['data_inicio']} - {$funcionario['data_fim']}";
+                if($funcionario["motivo"] != "")
+                    $ref .= " ({$funcionario['motivo']})";
+            }else{
+                $href = "#";
+            }
+
+            if($funcionario['identificador'] == "volta_almoco" AND (((isset($query->rows[$index-1]) AND $query->rows[$index-1]["data"] != $funcionario["data"])) OR (!isset($query->rows[$index-1])))){
+                
+                $hour = $this->DB_fetch_array("SELECT SEC_TO_TIME((((TIME_TO_SEC( A.hora_almoco ) - TIME_TO_SEC( A.hora_entrada ))))) hora, A.hora_entrada, A.hora_almoco FROM tb_admin_users  A WHERE A.id = {$funcionario['id_user']}");
+
+                $saldo_dia -= $this->horaParaMinutos($hour->rows[0]['hora']);
+
+                $tabela .= "
+                                        <tr class='tr-ponto-eletronico'>
+                                            <td class='tal'><a href='#'>{$funcionario['data']}</a></td>
+                                            <td class='tal'><a href='#'>--</a></td>
+                                            <td class='tal'><a href='#'>Falta[Período Matutino]</a></td>
+                                            <td class='tal'><a href='#'>{$funcionario['hora_entrada']} - {$funcionario['hora_almoco']}</a></td>
+                                            <td class='tal'><a href='#'>--</a></td>                  
+                                            <td class='tal'><a href='#'>$saldo_dia min.</a></td>
+                                        </tr>
+                ";
+
+                $tabela_print .= "
+                                       <tr class=''>
+                                            <td class='tal'>{$funcionario['data']}</td>
+                                            <td class='tal'>--</td>
+                                            <td class='tal'>Falta[Período Matutino]</td>
+                                            <td class='tal'>{$funcionario['hora_entrada']} - {$funcionario['hora_almoco']}</td>
+                                            <td class='tal'>--</td>                                                
+                                            <td class='tal'>$saldo_dia min.</td>
+                                        </tr>
+                    ";
+
+            }
+
+            $tabela .= "
+                                        <tr class='tr-ponto-eletronico'>
+                                            <td class='tal'><a href='$href'>{$funcionario['data']}</a></td>
+                                            <td class='tal'><a href='$href'>{$funcionario['ip']}</a></td>
+                                            <td class='tal'><a href='$href'>$ref</a></td>
+                                            <td class='tal'><a href='$href'>{$funcionario['hora_contrato']}</a></td>
+                                            <td class='tal'><a href='$href'>{$funcionario['hora_ponto']}</a></td>                  
+                                            <td class='tal'><a href='$href'>{$funcionario['saldo_horas']} min.</a></td>
+                                        </tr>
+            ";
+
+            $tabela_print .= "
+                                       <tr class=''>
+                                            <td class='tal'>{$funcionario['data']}</td>
+                                            <td class='tal'>{$funcionario['ip']}</td>
+                                            <td class='tal'>$ref</td>
+                                            <td class='tal'>{$funcionario['hora_ponto']}</td>
+                                            <td class='tal'>{$funcionario['hora_ponto']}</td>                                                
+                                            <td class='tal'>{$funcionario['saldo_horas']} min.</td>
+                                        </tr>
+                ";
+
+            $saldo_dia += $funcionario['saldo_horas'];
+
+            if($funcionario['identificador'] == "saida_almoco" AND $funcionario["data"] != date('d/m/Y', time()) AND (((isset($query->rows[$index+1]) AND $query->rows[$index+1]["data"] != $funcionario["data"])) OR (!isset($query->rows[$index+1])))){
+              
+                $hour = $this->DB_fetch_array("SELECT SEC_TO_TIME((((TIME_TO_SEC( A.hora_saida ) - TIME_TO_SEC( A.hora_retorno ))))) hora, A.hora_entrada, A.hora_almoco FROM tb_admin_users  A WHERE A.id = {$funcionario['id_user']}");
+
+                $periodo_minutos = $this->horaParaMinutos($hour->rows[0]['hora']);
+                $saldo_dia -= $periodo_minutos;
+
+                $tabela .= "
+                                        <tr class='tr-ponto-eletronico'>
+                                            <td class='tal'><a href='#'>{$funcionario['data']}</a></td>
+                                            <td class='tal'><a href='#'>--</a></td>
+                                            <td class='tal'><a href='#'>Falta[Período Vespertino]</a></td>
+                                            <td class='tal'><a href='#'>{$funcionario['hora_retorno']} - {$funcionario['hora_saida']}</a></td>
+                                            <td class='tal'><a href='#'>--</a></td>                  
+                                            <td class='tal'><a href='#'>-$periodo_minutos min.</a></td>
+                                        </tr>
+                ";
+
+                $tabela_print .= "
+                                       <tr class=''>
+                                            <td class='tal'>{$funcionario['data']}</td>
+                                            <td class='tal'>--</td>
+                                            <td class='tal'>Falta[Período Vespertino]</td>
+                                            <td class='tal'>{$funcionario['hora_almoco']} - {$funcionario['hora_saida']}</td>
+                                            <td class='tal'>--</td>                                                
+                                            <td class='tal'>-$periodo_minutos min.</td>
+                                        </tr>
+                    ";
+
+            }
+
+            $semana = array(
+                'Sun' => 'Domingo', 
+                'Mon' => 'Segunda-Feira',
+                'Tue' => 'Terca-Feira',
+                'Wed' => 'Quarta-Feira',
+                'Thu' => 'Quinta-Feira',
+                'Fri' => 'Sexta-Feira',
+                'Sat' => 'Sábado'
+            );
+
+            $dia_semana = "";
+            if($funcionario['identificador'] != "folga" AND $funcionario['identificador'] != "venda"){
+                $data = explode("/",$funcionario['data']);
+                $ano = $data[2];
+                $mes = $data[1];
+                $dia = $data[0];
+                $dia_semana = date("D",strtotime( $ano."-".$mes."-".$dia ));
+                $dia_semana = $semana[$dia_semana];
+            }
+            $cor = ($saldo_dia < 0) ? "vermelho-tempo" : "verde-tempo";
+            if ($funcionario['identificador'] == "saida" OR $funcionario['identificador'] == "falta" OR $funcionario['identificador'] == "folga" OR ( $funcionario["identificador"] == "saida_almoco" AND (!isset($query->rows[$index+1]) OR $query->rows[$index+1]["data"] != $funcionario["data"]))) {
+                $tabela .= "<tr class='tr-ponto-eletronico-separador'><td colspan='5'><div align='right'>Saldo de {$funcionario['data']}, $dia_semana:&nbsp;</div></td><td class='tal $cor' colspan='2'>" . $saldo_dia . " min.</td></tr>";
+                $tabela_print .= "<tr class=''><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td colspan=''><div align='right'>Saldo de {$funcionario['data']}, $dia_semana:&nbsp;</div></td><td class='tal'>" . $saldo_dia . " min.</td></tr>";
+
+                $saldo_geral += $saldo_dia;
+                $saldo_dia = 0;
+                
+            }else if(!isset($query->rows[$index+1]) OR $query->rows[$index+1]["data"] != $funcionario["data"]){
+                
+                $tabela .= "<tr class='tr-ponto-eletronico-separador'><td colspan='5'><div align='right'>Saldo <strong>Parcial</strong> de {$funcionario['data']}, $dia_semana:&nbsp;</div></td><td class='tal $cor' colspan='2'>" . $saldo_dia . " min.</td></tr>";
+                
+                $tabela_print .= "<tr class=''><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td colspan=''><div align='right'>Saldo <strong>Parcial</strong> de {$funcionario['data']}, $dia_semana:&nbsp;</div></td><td class='tal'>" . $saldo_dia . " min.</td></tr>";
+
+                $saldo_geral += $saldo_dia;
+                $saldo_dia = 0;
+            }
+            
+        }
+
+        $query_ = $this->DB_fetch_array("SELECT *,  DATE_FORMAT(A.data_registro, '%d/%m/%Y') data_registro FROM tb_ponto_eletronico_abates A WHERE A.id_user = $id AND A.identificador = 'venda' ORDER BY A.id");
+        if($query_->num_rows){
+            foreach($query_->rows as $lancamento){
+                $tabela .= '
+                                           
+                                                <tr class="tr-ponto-eletronico-separador">
+                                                    <td colspan="4"><div align="right">Lançamento de abate de horas efetuado em '.$lancamento["data_registro"].', no valor de <strong>R$'.$lancamento['valor'].'</strong>:&nbsp;</div></td><td colspan="4" class="tal vermelho-tempo">-' . $this->minToHours($lancamento["minutos"]) . '</td>
+                                                </tr>
+                ';
+
+                $tabela_print .= '
+                                           
+                                                <tr class="">
+                                                    <td colspan="3"><div align="right"><strong>Lançamento de abate de horas efetuado em '.$lancamento["data_registro"].', no valor de <strong>R$'.$lancamento['valor'].'</strong>:&nbsp;</strong></div></td><td class="tal" colspan="2"><strong>-' . $this->minToHours($lancamento["minutos"]) . '</strong></td>
+                                                </tr>
+                ';
+            }
+        }
+
+        $cor = ($saldo_geral < 0) ? "vermelho-tempo" : "verde-tempo";
+        $tabela .= '
+                                           
+                                                <tr class="tr-ponto-eletronico-separador">
+                                                    <td colspan="5"><div align="right">Saldo Geral:&nbsp;</div></td><td colspan="2" class="tal '.$cor.'">' .  $this->minToHours($saldo_geral) . '</td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+        ';
+
+        $tabela_print .= '
+                                           
+                                                <tr class=""><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+                                                    <td colspan=""><div align="right">Saldo Geral:&nbsp;</div></td><td class="tal">' .  $this->minToHours($saldo_geral) . '</td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+        ';
+
+
+        echo json_encode(Array("retorno" => "ponto-eletronico?id_funcionario=$id&de={$_POST['de']}&ate={$_POST['ate']}", "nome" => $query->rows[0]['nome'] ,"nome_print" => $query->rows[0]['nome'], "tabela" => $tabela, "tabela_print" => $tabela_print, "sql" => $sql, "busca" => $busca));
+
+
+    } else {
+        echo json_encode(Array("nome" => 'Aviso!', "tabela" => 'Nenhum resultado encontrado para a sua pesquisa!', "tabela_print" => 'Nenhum resultado encontrado para a sua pesquisa!', "sql" => $sql, "busca" => '', "not_found" => 1));
+    }
+}

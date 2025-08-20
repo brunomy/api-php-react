@@ -1,0 +1,71 @@
+<div id="opedido">
+    <table class="theader">
+        <tbody>
+            <tr>
+                <td>PEDIDO N.: <span class="value"><?php echo $this->dados_do_pedido['id']; ?></span></td>
+                <td>STATUS DO PEDIDO: <span class="value"><?php echo $this->dados_do_pedido['status']; ?></span></td>
+            </tr>
+            <tr>
+                <td>COMPRADOR(A): <span class="value"><?php echo $this->dados_do_pedido['comprador']; ?></span></td>
+                <td>CIDADE / EST: <span class="value"><?php echo $this->dados_do_pedido['cidade']; ?> / <?php echo $this->dados_do_pedido['uf']; ?></span></td>
+            </tr>
+            <tr>
+                <td colspan="2">VENDEDOR: <span class="value"><?php echo $this->dados_do_pedido['vendedor']==""? "Nenhum" : $this->dados_do_pedido['vendedor'] ?></span></td>
+            </tr>
+        </tbody>
+    </table>
+    <table>
+        <tbody>
+            <tr>
+                <td colspan="3" class="titulo">Observações de Transporte</td>
+            </tr>
+            <?php if ($this->observacoes): ?>
+                <tr>
+                    <td width="20%"><strong>Criado Por:</strong></td>
+                    <td width="20%"><strong>Em:</strong></td>
+                    <td width="80%"><strong>Anotação</strong></td>
+                </tr>
+                <?php foreach ($this->observacoes as $key => $obs): ?>
+                    <tr>
+                        <td><?php echo $obs['criado_por']; ?></td>
+                        <td><?php echo $obs['data']; ?></td>
+                        <td><?php echo $obs['texto']; ?></td>
+                    </tr>
+                <?php endforeach ?>
+            <?php else: ?>
+                <tr>
+                    <td>&nbsp &nbsp Pedido sem observações.</td>
+                </tr>
+            <?php endif ?>
+        </tbody>
+    </table>
+    <?php foreach ($this->produtos as $key => $produto): ?>
+        <table>
+            <tbody>
+                <tr>
+                    <td colspan="2" class="titulo">PRODUTO: <span class="nome">#<?php echo ($key+1). " ".$produto['nome_produto']; ?> </span></td>
+                </tr>
+                <tr>
+                    <td width="150" style="text-align: right;"><strong>DETALHES:</strong> </td>
+                    <td>
+                        <strong>Nome:</strong> <?php echo $produto['nome_produto'] ?> <br>
+                        <strong>Quantidade:</strong> <?php echo $produto['quantidade'] ?> <br>
+                        <?php if (isset($this->atributos)): ?>
+                        <ul class="detalhes">
+                            <?php foreach ($this->atributos as $atributo): ?>
+                                <?php if ($atributo['id_carrinho_produto']==$produto['id_carrinho_produto']): ?>
+                                    <li><strong><?php echo $atributo['nome_conjunto'] ?>:</strong> <?php echo $atributo['nome_atributo']; if(!empty($atributo['texto'])) echo ' ['.$atributo['texto'].']'; ?> </li>
+                                <?php endif ?>
+                            <?php endforeach ?>
+                        </ul>
+                        <?php endif ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;"><strong>OBSERVAÇÃO:</strong></td>
+                    <td><?php if($produto['observacao']!="") echo nl2br($produto['observacao']); else echo 'Sem observações' ?></td>
+                </tr>
+            </tbody>
+        </table>
+    <?php endforeach ?>
+</div>

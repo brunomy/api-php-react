@@ -1,0 +1,376 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+    
+    </head>  
+    
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                    <i class="s16 <?php echo $this->module_icon; ?>"></i>                                    
+                                </a>
+                            </li>
+                            <span class="divider">
+                                <i class="s16 icomoon-icon-arrow-right-3"></i>
+                            </span>
+                            <li class="active">Registro</li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+                  
+                    <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                        <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                        <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados do Usuário</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="nome">Nome</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="nome" id="nome" type="text" value="<?php echo $this->registro['nome'] ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                    
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="email">E-mail</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="email" id="email" type="text" value="<?php echo $this->registro['email'] ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                    
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="telefone">Telefone</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="telefone" id="telefone" type="text" value="<?php echo $this->registro['telefone'] ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                    
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="fileupload">Avatar:</label>
+                                            <div class="col-lg-10">
+                                                <label class="fileupload" for="fileupload">
+                                                    <?php if ($this->registro['avatar'] == ""): ?>
+                                                        <img src="http://placehold.it/40x40" alt="" class="image marginR10"/>
+                                                    <?php else: ?>
+                                                        <img src="<?php echo $this->getImageFileSized($this->registro['avatar'],40,40); ?>" alt="" class="image marginR10"/>
+                                                    <?php endif ?>                                                    
+                                                </label>
+                                                <input type="file" name="fileupload" id="fileupload" class="files btn btn-default"/>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="id_agendor">ID Agendor</label>
+                                            <div class="col-lg-2">
+                                                <input class="form-control" name="id_agendor" id="id_agendor" type="text" value="<?php echo $this->registro['id_agendor'] ?>" />
+                                            </div>
+                                            <label class="col-lg-2 col-md-3 control-label" for="contaazul_seller_id">Vendedor Conta Azul</label>
+                                            <div class="col-lg-2">
+                                                <select class="form-control input-sm" id="contaazul_seller_id" name="contaazul_seller_id">
+                                                    <option value="">Nenhum</option>
+                                                    <?php if ($this->contaazul_sellers) : ?>
+                                                        <?php foreach ($this->contaazul_sellers as $seller) : ?>
+                                                            <option <?php if ($seller->id == $this->registro['contaazul_seller_id']) echo "selected"; ?> value="<?php echo $seller->id; ?>"><?php echo $seller->name; ?></option>
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="bate_ponto">Bate ponto:</label>
+                                            <div class="col-lg-10">
+                                                <label for="ponto_sim" class="pointer">Sim</label>
+                                                <input <?php if ($this->registro['bate_ponto']) echo 'checked'; ?> class="form-control" name="bate_ponto" id="ponto_sim" type="radio" value="1" />
+                                                <label for="ponto_nao" class="pointer">Não</label>
+                                                <input <?php if (!$this->registro['bate_ponto']) echo 'checked'; ?> class="form-control" name="bate_ponto" id="ponto_nao" type="radio" value="0" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row ponto_eletronico" <?php if (!$this->registro['bate_ponto']) echo 'style="display:none"'; ?>>
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados do Ponto Eletrônico</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="user_key">Chave de Usuário:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="user_key" id="user_key" type="text" value="<?php echo $this->registro['user_key'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="cargo">Tem almoço:</label>
+                                            <div class="col-lg-10">
+                                                <label for="almoco_sim" class="pointer">Sim</label>
+                                                <input <?php if ($this->registro['almoco']) echo 'checked'; ?> class="form-control" name="almoco" id="almoco_sim" type="radio" value="1" />
+                                                <label for="almoco_nao" class="pointer">Não</label>
+                                                <input <?php if (!$this->registro['almoco']) echo 'checked'; ?> class="form-control" name="almoco" id="almoco_nao" type="radio" value="0" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="hora_entrada">Hora de Entrada:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control hora" name="hora_entrada" id="hora_entrada" type="text" value="<?php echo $this->registro['hora_entrada'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="horario_almoco" <?php if (!$this->registro['almoco']) echo 'style="display:none"'; ?>>
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="hora_almoco">Hora de Almoço:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control hora" name="hora_almoco" id="hora_almoco" type="text" value="<?php echo $this->registro['hora_almoco'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                       
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="hora_retorno">Hora de Retorno:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control hora" name="hora_retorno" id="hora_retorno" type="text" value="<?php echo $this->registro['hora_retorno'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="hora_saida">Hora de Saída:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control hora" name="hora_saida" id="hora_saida" type="text" value="<?php echo $this->registro['hora_saida'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados de Login</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        
+                                        
+                                        <?php if ($this->permissions[$this->permissao_ref]['gravar'] || $this->permissions[$this->permissao_ref]['editar']): ?>
+                                        <div class="form-group form-group-vertical">
+                                            <label class="col-lg-2 col-md-3 control-label" for="id_grupo">Grupo</label>
+                                            <div class="col-lg-10 col-md-9">
+                                                <select class="form-control input-sm" id="id_grupo" name="id_grupo">
+                                                    <option value="">Selecione..</option>
+                                                    <?php if ($this->grupos->num_rows) : ?>
+                                                        <?php foreach ($this->grupos->rows as $grupo) : ?>
+                                                            <option <?php if ($grupo['id'] == $this->registro['id_grupo']) echo "selected"; ?> value="<?php echo $grupo['id']; ?>"><?php echo $grupo['nome']; ?></option>
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <?php else: ?>
+                                        <input type="hidden" name="id_grupo" value="<?php echo $this->registro['id_grupo'];?>">
+                                        <?php endif; ?>
+                                    
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="usuario">Usuário</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="usuario" id="usuario" type="text" value="<?php echo $this->registro['usuario'] ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                    
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="senha">Senha</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="senha" id="senha" type="password" value="" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php if ($this->permissions['admin-grupos']['ler']): ?>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default ">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <label class="pointer">Permissões Individuais do Gerenciador
+                                                <input <?php if ($this->registro['pi']==1) echo 'checked'; ?> class="" name="pi" id="pi" type="checkbox" value="1"> <span class="small help-block">selecione para salvar as permissões individuais o usuário</span>
+                                            </label>
+                                        </h4>
+                                    </div>
+                                    <div class="panel-body pi" style="display:none">
+                                        <div class="form-group">
+                                            <div class="col-lg-12">
+                                                <div class="alert alert-warning fade in">
+                                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                                    <i class="glyphicon glyphicon-warning-sign alert-icon "></i>
+                                                    <strong>Aviso!</strong> Estas permissões irão sobrepor as permissões do grupo ao qual este usuário pertence, desmarque a opção acima caso não queira continuar.
+                                                </div>
+                                                <table class=" table table-striped table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Função</th>
+                                                            <th class="center">                                                                
+                                                                <input type="checkbox" id="ler_todas">
+                                                                <label class="checkbox-inline" for="ler_todas"><b>Ler</b></label>
+                                                            </th>
+                                                            <th class="center">
+                                                                <input type="checkbox" id="gravar_todas">
+                                                                <label class="checkbox-inline" for="gravar_todas"><b>Gravar</b></label>
+                                                            </th>
+                                                            <th class="center">
+                                                                <input type="checkbox" id="editar_todas">
+                                                                <label class="checkbox-inline" for="editar_todas"><b>Editar</b></label>
+                                                            </th>
+                                                            <th class="center">
+                                                                <input type="checkbox" id="excluir_todas">
+                                                                <label class="checkbox-inline" for="excluir_todas"><b>Excluir</b></label>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <?php if ($this->funcoes->num_rows): ?>
+                                                            <?php foreach ($this->funcoes->rows as $funcao): ?>
+                                                                <tr>
+                                                                    <td class="tal"><label class="pointer"><input type="checkbox" class="esta_funcao"><span class="esta_funcao_txt"><?php echo $funcao['nome'] ?></span></label></td>
+                                                                    <td class="center">
+                                                                        <label class="checkbox-inline">
+                                                                            <input type="checkbox" name="ler[]" class="leitura" value="<?php echo $funcao['id'] ?>" <?php if($this->id!=""){ if($funcao['ler']) echo ' checked="checked"'; } ?>>
+                                                                        </label>
+                                                                    </td>
+                                                                    <td class="center">
+                                                                        <label class="checkbox-inline">
+                                                                            <input type="checkbox" name="gravar[]" class="gravacao" value="<?php echo $funcao['id'] ?>" <?php if($this->id!=""){ if($funcao['gravar']) echo ' checked="checked"'; } ?>>
+                                                                        </label>
+                                                                    </td>
+                                                                    <td class="center">
+                                                                        <label class="checkbox-inline">
+                                                                            <input type="checkbox" name="editar[]" class="edicao" value="<?php echo $funcao['id'] ?>" <?php if($this->id!=""){ if($funcao['editar']) echo ' checked="checked"'; } ?>>
+                                                                        </label>
+                                                                    </td>
+                                                                    <td class="center">
+                                                                        <label class="checkbox-inline">
+                                                                            <input type="checkbox" name="excluir[]" class="exclusao" value="<?php echo $funcao['id'] ?>" <?php if($this->id!=""){ if($funcao['excluir']) echo ' checked="checked"'; } ?>>
+                                                                        </label>
+                                                                    </td>
+                                                                </tr>
+                                                            <?php endforeach ?>
+                                                        <?php endif ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        <div class="row">
+                            <?php if ($this->id==""): ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['gravar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning "><span class="icon24 typ-icon-warning"></span>Você não tem permissão para gravar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar novo</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php else: ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['editar'] && $_SESSION['admin_id'] != $this->id): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning"><span class="icon24 icomoon-icon-warning "></span>Você não tem permissão para editar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar alterações</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php endif ?>
+                        </div><!-- End .row -->  
+                    </form>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+        <!-- Init plugins only for page -->
+        <script type="text/javascript">
+            $(document).ready(function(){
+                if ("<?php echo $this->registro['pi'];?>" != "") {
+                    $(".pi").css("display","block");
+                }
+
+                $('.hora').mask('00:00');
+
+                $("input[name=almoco]").on("change", function(){
+                    $(".horario_almoco").toggle();
+                });
+
+                $("input[name=bate_ponto]").on("change", function(){
+                    $(".ponto_eletronico").toggle();
+                });
+            });
+        </script>
+    </body>
+</html>

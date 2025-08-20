@@ -1,0 +1,313 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+    
+    </head>  
+    
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                    <i class="s16 <?php echo $this->module_icon; ?>"></i>                                    
+                                </a>
+                            </li>
+                            <span class="divider">
+                                <i class="s16 icomoon-icon-arrow-right-3"></i>
+                            </span>
+                            <li class="active">Registro</li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+                  
+                    <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                        <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                        <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados da Empresa</h4>
+                                    </div>
+                                    
+                                    <div class="panel-body">
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="nome_fantasia">Nome Fantasia:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="nome_fantasia" id="nome_fantasia" type="text" value="<?php echo $this->registro['nome_fantasia'] ?>" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="razao_social">Razão Social:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="razao_social" id="razao_social" type="text" value="<?php echo $this->registro['razao_social'] ?>" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="cnpj">CNPJ:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control cnpj" name="cnpj" id="cnpj" type="text" value="<?php echo $this->registro['cnpj'] ?>" />
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="servico_pagamento_padrao">Gateway de Pamento Padrão:</label>
+                                            <div class="col-lg-10">
+
+                                                <label class="pointer" for="servico_pagamento_padrao1">Rede Transparente</label><input <?php if ($this->registro['servico_pagamento_padrao'] == 'rede_transparente') { echo 'checked'; } ?> class="form-control" name="servico_pagamento_padrao" id="servico_pagamento_padrao1" type="radio" value="rede_transparente" /> 
+                                                <label class="pointer" for="servico_pagamento_padrao2">Cielo Transparente</label><input <?php if ($this->registro['servico_pagamento_padrao'] == 'cielo_transparente') { echo 'checked'; } ?> class="form-control" name="servico_pagamento_padrao" id="servico_pagamento_padrao2" type="radio" value="cielo_transparente" />
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Gateway de Pagamentos - Rede Transparente</h4>
+                                    </div>
+                                    
+                                    <div class="panel-body">
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="payment_rede_environment">Ambiente:</label>
+                                            <div class="col-lg-10">
+                                                <label class="pointer" for="payment_rede_environment1">Teste</label><input <?php if ($this->registro['payment_rede_environment'] == 'sandbox') { echo 'checked'; } ?> class="form-control" name="payment_rede_environment" id="payment_rede_environment1" type="radio" value="sandbox" /> 
+                                                <label class="pointer" for="payment_rede_environment2">Produção</label><input <?php if ($this->registro['payment_rede_environment'] == 'production') { echo 'checked'; } ?> class="form-control" name="payment_rede_environment" id="payment_rede_environment2" type="radio" value="production" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="payment_rede_store_id">ID da Loja:</label>
+                                            <div class="col-lg-2">
+                                                <input class="form-control" name="payment_rede_store_id" id="payment_rede_store_id" type="text" value="<?php echo $this->registro['payment_rede_store_id'] ?>" />
+                                            </div>
+                                            <label class="col-lg-2 control-label" for="payment_rede_token">Token:</label>
+                                            <div class="col-lg-2">
+                                                <input class="form-control" name="payment_rede_token" id="payment_rede_token" type="text" value="<?php echo $this->registro['payment_rede_token'] ?>" />
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Gateway de Pagamentos - Cielo Transparente</h4>
+                                    </div>
+                                    
+                                    <div class="panel-body">
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="payment_cielo_environment">Ambiente:</label>
+                                            <div class="col-lg-10">
+                                                <label class="pointer" for="payment_cielo_environment1">Teste</label><input <?php if ($this->registro['payment_cielo_environment'] == 'sandbox') { echo 'checked'; } ?> class="form-control" name="payment_cielo_environment" id="payment_cielo_environment1" type="radio" value="sandbox" /> 
+                                                <label class="pointer" for="payment_cielo_environment2">Produção</label><input <?php if ($this->registro['payment_cielo_environment'] == 'production') { echo 'checked'; } ?> class="form-control" name="payment_cielo_environment" id="payment_cielo_environment2" type="radio" value="production" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="payment_cielo_merchant_id">Merchant ID:</label>
+                                            <div class="col-lg-2">
+                                                <input class="form-control" name="payment_cielo_merchant_id" id="payment_cielo_merchant_id" type="text" value="<?php echo $this->registro['payment_cielo_merchant_id'] ?>" />
+                                            </div>
+                                            <label class="col-lg-2 control-label" for="payment_cielo_merchant_key">Merchant KEY:</label>
+                                            <div class="col-lg-2">
+                                                <input class="form-control" name="payment_cielo_merchant_key" id="payment_cielo_merchant_key" type="text" value="<?php echo $this->registro['payment_cielo_merchant_key'] ?>" />
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Bling - Notas Fiscais</h4>
+                                    </div>
+                                    
+                                    <div class="panel-body">
+                                                     
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="invoice_bling_client_id">Client ID:</label>
+                                            <div class="col-lg-3">
+                                                <input class="form-control" name="invoice_bling_client_id" id="invoice_bling_client_id" type="text" value="<?php echo $this->registro['invoice_bling_client_id'] ?>" />
+                                            </div>
+                                            <label class="col-lg-1 control-label" for="invoice_bling_client_secret">Client Secret:</label>
+                                            <div class="col-lg-4">
+                                                <input class="form-control" name="invoice_bling_client_secret" id="invoice_bling_client_secret" type="text" value="<?php echo $this->registro['invoice_bling_client_secret'] ?>" />
+                                            </div>
+                                            <div class="col-lg-2"><button type="button" class="btn btn-info bling_auth">Autorizar Bling</button></div>
+                                        </div>
+
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="invoice_bling_ipi_flag">Calular IPI:</label>
+                                            <div class="col-lg-10">
+                                                <label class="pointer" for="invoice_bling_ipi_flag1">Sim</label><input <?php if ($this->registro['invoice_bling_ipi_flag'] == 1) { echo 'checked'; } ?> class="form-control" name="invoice_bling_ipi_flag" id="invoice_bling_ipi_flag1" type="radio" value="1" /> 
+                                                <label class="pointer" for="invoice_bling_ipi_flag2">Não</label><input <?php if ($this->registro['invoice_bling_ipi_flag'] != 1) { echo 'checked'; } ?> class="form-control" name="invoice_bling_ipi_flag" id="invoice_bling_ipi_flag2" type="radio" value="0" />
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <?php if ($this->id==""): ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['gravar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning "><span class="icon24 typ-icon-warning"></span>Você não tem permissão para gravar esta função.</span>
+                                        </div>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar novo</button>
+                                        </div>
+                                    </div>
+                                <?php endif ?>
+                            <?php else: ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['editar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning"><span class="icon24 icomoon-icon-warning "></span>Você não tem permissão para editar esta função.</span>
+                                        </div>
+                                    </div>   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar alterações</button>
+                                        </div>
+                                    </div>
+                                <?php endif ?>
+                            <?php endif ?>
+                        </div><!-- End .row -->  
+                    </form>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+
+<!-- Input mask plugin -->
+<script src="../../js/jquery.inputmask.bundle.min.js"></script>
+
+        <!-- Init plugins only for page -->
+        <script type="text/javascript">
+            
+            $(document).ready(function(){
+
+                $('.cnpj').inputmask({'mask': ['99.999.999/9999-99']});
+
+
+                $('.bling_auth').click(function(){
+
+                    var client_id = $('input[name=invoice_bling_client_id]').val();
+                    var client_secret = $('input[name=invoice_bling_client_secret]').val();
+
+                    if(client_id.length < 6){
+                        alert("Preenche o campo Client ID corretamente!")
+                        return false;
+                    }
+
+                    if(client_secret.length < 6){
+                        alert("Preenche o campo Client Secret corretamente!")
+                        return false;
+                    }
+
+                    $.post("<?php echo $this->getModule(); ?>/blingAuth",
+                        { 
+                            id: <?php echo $this->id; ?>,
+                            c_id: client_id,
+                            c_secret: client_secret,
+
+                        }, function( dt ) {
+                        
+                    }, "json").done(function(dt){
+                        if (dt.status) {
+                            $.gritter.add({
+                                title: 'Redirecionando !!!',
+                                text: 'Você está sendo redirecionando para autorizar a aplicação',
+                                time: '',
+                                close_icon: 'entypo-icon-cancel s12',
+                                icon: 'icomoon-icon-checkmark-3 ',
+                                class_name: 'success-notice'
+                            });
+
+                            setTimeout(function(){
+                                window.location = dt.redirect_auth_url;
+                            },2500);
+                        } else {
+                            $.gritter.add({
+                                title: 'Erro !!!',
+                                text: 'Verifique os dados e tente novamente',
+                                time: '',
+                                close_icon: 'entypo-icon-cancel s12',
+                                icon: 'cut-icon-alert  ',
+                                class_name: 'error-notice'
+                            });
+                        }
+                    });
+
+                });
+                
+            });
+        </script>
+    </body>
+</html>

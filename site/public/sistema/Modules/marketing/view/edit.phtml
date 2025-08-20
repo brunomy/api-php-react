@@ -1,0 +1,200 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+    
+    </head>  
+    
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-s-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-s-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                    <i class="s16 <?php echo $this->module_icon; ?>"></i>                                    
+                                </a>
+                            </li>
+                            <span class="divider">
+                                <i class="s16 icomoon-s-arrow-right-3"></i>
+                            </span>
+                            <li class="active">Registro</li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+                  
+                    <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                        <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                        <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados Financeiro</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        
+                                        <div class="form-group form-group-vertical">
+                                            <label class="col-lg-2 control-label" for="categoria">Categoria:</label>
+                                            <div class="col-lg-2">
+                                                <select class="form-control input-sm" id="categoria" name="categoria">
+                                                    <option value="">Selecione..</option>
+                                                    <option value="Facebook" <?php if ('Facebook' == $this->registro['categoria']) echo "selected"; ?>>Facebook</option>
+                                                    <option value="Google"<?php if ('Google' == $this->registro['categoria']) echo "selected"; ?>>Google</option>
+                                                    <option value="Eventos"<?php if ('Eventos' == $this->registro['categoria']) echo "selected"; ?>>Eventos</option>
+                                                    <option value="Brinde"<?php if ('Brinde' == $this->registro['categoria']) echo "selected"; ?>>Brinde</option>
+                                                    <option value="Patrocínio"<?php if ('Patrocínio' == $this->registro['categoria']) echo "selected"; ?>>Patrocínio</option>
+                                                    <option value="E-mail"<?php if ('E-mail' == $this->registro['categoria']) echo "selected"; ?>>E-mail</option>
+                                                    <option value="Sorteio"<?php if ('Sorteio' == $this->registro['categoria']) echo "selected"; ?>>Sorteio</option>
+                                                    <option value="Portais"<?php if ('Portais' == $this->registro['categoria']) echo "selected"; ?>>Portais</option>
+                                                    <option value="Outros"<?php if ('Outros' == $this->registro['categoria']) echo "selected"; ?>>Outros</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="descricao">Descrição:</label>
+                                            <div class="col-lg-7">
+                                                <input class="form-control" name="descricao" id="descricao" type="text" value="<?php echo $this->registro['descricao'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="data">Data:</label>
+                                            <div class="col-lg-2">
+                                                <input class="form-control" name="data" id="data" type="text" value="<?php echo $this->registro['data'] ?>" />
+                                            </div>
+                                            <label class="col-lg-1 control-label" for="valor">Valor:</label>
+                                            <div class="col-lg-2">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">R$</span>
+                                                    <input class="form-control" onKeyUp="moeda(this);" name="valor" id="valor" type="text" value="<?php echo $this->formataMoedaShow($this->registro['valor']) ?>" />
+                                                </div>
+                                            </div>
+                                            <label class="col-lg-1 control-label" for="parcelas">Parcelas:</label>
+                                            <div class="col-lg-1">
+                                                <select class="form-control input-sm" id="parcelas" name="parcelas">
+                                                    <option value="1">à vista</option>
+                                                    <option value="2">2x</option>
+                                                    <option value="3">3x</option>
+                                                    <option value="4">4x</option>
+                                                    <option value="5">5x</option>
+                                                    <option value="6">6x</option>
+                                                    <option value="7">7x</option>
+                                                    <option value="8">8x</option>
+                                                    <option value="9">9x</option>
+                                                    <option value="10">10x</option>
+                                                    <option value="11">11x</option>
+                                                    <option value="12">12x</option>
+                                                </select>
+                                            </div>
+                                        </div><!-- End .form-group  -->
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <?php if ($this->id==""): ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['gravar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning "><span class="s24 typ-s-warning"></span>Você não tem permissão para gravar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar novo</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php else: ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['editar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning"><span class="s24 icomoon-s-warning "></span>Você não tem permissão para editar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar alterações</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php endif ?>
+                        </div><!-- End .row -->  
+                    </form>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+<script src="../../js/jquery.inputmask.bundle.min.js"></script>
+        <!-- Init plugins only for page -->
+        <script type="text/javascript">
+            $(document).ready(function(){
+
+                $('#data').mask('00/00/0000');
+                $("#data").datepicker({
+                    dateFormat: 'dd/mm/yy',
+                    dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
+                    dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+                    dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+                    monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                    monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                    nextText: 'Próximo',
+                    prevText: 'Anterior'
+                });
+
+            });
+            function moeda(z){  
+                v = z.value;
+                v=v.replace(/\D/g,"")  //permite digitar apenas números
+                v=v.replace(/[0-9]{24}/,"inválido")   //limita pra máximo 999.999.999,99
+                v=v.replace(/(\d{1})(\d{8})$/,"$1.$2")  //coloca ponto antes dos últimos 8 digitos
+                v=v.replace(/(\d{1})(\d{5})$/,"$1.$2")  //coloca ponto antes dos últimos 5 digitos
+                v=v.replace(/(\d{1})(\d{1,2})$/,"$1,$2")    //coloca virgula antes dos últimos 2 digitos
+                z.value = v;
+            }
+        </script>
+    </body>
+</html>

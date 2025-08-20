@@ -1,0 +1,197 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+
+    </head>
+
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                    <i class="s16 <?php echo $this->module_icon; ?>"></i>
+                                </a>
+                            </li>
+                            <span class="divider">
+                                <i class="s16 icomoon-icon-arrow-right-3"></i>
+                            </span>
+                            <li class="active">Registro</li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+
+                    <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                        <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                        <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados Informação em Destaque</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="texto">Título:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="texto" id="texto" type="text" value="<?php echo $this->registro['texto'] ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="cor">Cor do Título:</label>
+                                            <div class="col-lg-10">
+                                                <div id="component-colorpicker_cor_texto" class="input-group">
+                                                    <span class="input-group-addon"><i></i></span>
+                                                    <input type="text" name="cor_texto" id="cor_texto" value="<?php echo $this->registro['cor_texto'] ?>" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="texto">Descrição:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="descricao" id="descricao" type="text" value="<?php echo $this->registro['descricao'] ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="cor">Cor da Descrição:</label>
+                                            <div class="col-lg-10">
+                                                <div id="component-colorpicker_cor_descricao" class="input-group">
+                                                    <span class="input-group-addon"><i></i></span>
+                                                    <input type="text" name="cor_descricao" id="cor_descricao" value="<?php echo $this->registro['cor_descricao'] ?>" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="bg_color">Cor do fundo:</label>
+                                            <div class="col-lg-10">
+                                                <div id="component-colorpicker_bg_color" class="input-group">
+                                                    <span class="input-group-addon"><i></i></span>
+                                                    <input type="text" name="bg_color" id="bg_color" value="<?php echo $this->registro['bg_color'] ?>" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="titulo">Texto do botão:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="texto_botao" id="texto_botao" type="text" value="<?php echo $this->registro['texto_botao'] ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="cor_texto_botao">Cor do Texto do Botão:</label>
+                                            <div class="col-lg-10">
+                                                <div id="component-colorpicker_cor_texto_botao" class="input-group">
+                                                    <span class="input-group-addon"><i></i></span>
+                                                    <input type="text" name="cor_texto_botao" id="cor_texto_botao" value="<?php echo $this->registro['cor_texto_botao'] ?>" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="cor_botao">Cor do Botão:</label>
+                                            <div class="col-lg-10">
+                                                <div id="component-colorpicker_cor_botao" class="input-group">
+                                                    <span class="input-group-addon"><i></i></span>
+                                                    <input type="text" name="cor_botao" id="cor_botao" value="<?php echo $this->registro['cor_botao'] ?>" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="texto">Link:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="link" id="link" type="text" value="<?php echo $this->registro['link'] ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label noStyle" for="target2">Ativo:</label>
+                                            <div class="col-lg-10">
+                                                <select name="ativo" id="ativo" class="form-control">
+                                                    <option value="1"<?php if($this->registro['ativo']=="1") echo " selected='selected'" ?>>Sim</option>
+                                                    <option value="0"<?php if($this->registro['ativo']=="0") echo " selected='selected'" ?>>Não</option>
+                                                </select>
+                                            </div>
+                                        </div><!-- End .form-group  -->
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <?php if (!$this->permissions[$this->permissao_ref]['editar']): ?>
+                                <div class="form-group">
+                                    <div class="col-lg-offset-2 col-lg-10">
+                                        <span class="label label-warning"><span class="icon24 icomoon-icon-warning "></span>Você não tem permissão para editar esta função.</span>
+                                    </div>
+                                </div><!-- End .form-group  -->
+                            <?php else: ?>
+                                <div class="form-group">
+                                    <div class="col-lg-offset-2 col-lg-10">
+                                        <button type="button" class="btn btn-info clickformsubmit">Salvar alterações</button>
+                                    </div>
+                                </div><!-- End .form-group  -->
+                            <?php endif ?>
+                        </div><!-- End .row -->
+                    </form>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+
+
+<?php  require_once "layouts/footer.phtml"; ?>
+
+        </div>
+
+<?php  require_once "layouts/plugins.phtml"; ?>
+        <!-- Init plugins only for page -->
+        <script src="plugins/forms/bootstrap-colorpicker/bootstrap-colorpicker.js"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function(){
+
+                $('#component-colorpicker_cor_texto').colorpicker();
+                $('#component-colorpicker_bg_color').colorpicker();
+                $('#component-colorpicker_cor_texto_botao').colorpicker();
+                $('#component-colorpicker_cor_botao').colorpicker();
+                $('#component-colorpicker_cor_descricao').colorpicker();
+                saveKey(true);
+                $('.elastic').autosize();
+            });
+        </script>
+    </body>
+</html>

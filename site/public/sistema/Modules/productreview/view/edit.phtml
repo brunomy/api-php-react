@@ -1,0 +1,219 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+    
+    </head>  
+    
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                    <i class="s16 <?php echo $this->module_icon; ?>"></i>                                    
+                                </a>
+                            </li>
+                            <span class="divider">
+                                <i class="s16 icomoon-icon-arrow-right-3"></i>
+                            </span>
+                            <li class="active">Registro</li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+                  
+                    <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                        <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                        <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+                        <input type="hidden" name="data" value="<?php echo $this->registro['data']; ?>">
+                        <?php if ($this->id == ""): ?>
+                            <input type="hidden" name="stats" value="1">
+                        <?php endif ?>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados da Avaliações</h4>
+                                    </div>
+                                    <div class="panel-body">                                        
+
+                                        <div class="form-group form-group-vertical">
+                                            <label class="col-lg-2 col-md-3 control-label" for="id_produto">Produto:</label>
+                                            <div class="col-lg-10 col-md-9">
+                                                <select class="form-control input-sm" id="id_produto" name="id_produto">
+                                                    <option value="">Selecione..</option>
+                                                    <?php if ($this->produtos->num_rows) : ?>
+                                                        <?php foreach ($this->produtos->rows as $produto) : ?>
+                                                            <option <?php if ($produto['id'] == $this->registro['id_produto']) echo "selected"; ?> value="<?php echo $produto['id']; ?>"><?php echo $produto['nome']; ?></option>
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="id_pedido">Pedido:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="id_pedido" id="id_pedido" type="text" value="<?php echo $this->registro['id_pedido'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="nome">Nome:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="nome" id="nome" type="text" value="<?php echo $this->registro['nome'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="chamada">Chamada:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="chamada" id="chamada" type="text" value="<?php echo $this->registro['chamada'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="avaliacao">Avaliacao:</label>
+                                            <div class="col-lg-10">
+                                                <textarea id="seo_scripts" name="avaliacao" class="form-control elastic" rows="3"><?php echo stripslashes($this->registro['avaliacao']) ?></textarea>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group form-group-vertical">
+                                            <label class="col-lg-2 col-md-3 control-label" for="nota">Nota:</label>
+                                            <div class="col-lg-10 col-md-9">
+                                                <select class="form-control input-sm" id="nota" name="nota">
+                                                    <option value="">Selecione..</option>
+                                                    <option <?php if ($this->registro['nota'] == "1.0") echo "selected"; ?> value="1.0">1,0</option>
+                                                    <option <?php if ($this->registro['nota'] == "2.0") echo "selected"; ?> value="2.0">2,0</option>
+                                                    <option <?php if ($this->registro['nota'] == "3.0") echo "selected"; ?> value="3.0">3,0</option>
+                                                    <option <?php if ($this->registro['nota'] == "4.0") echo "selected"; ?> value="4.0">4,0</option>
+                                                    <option <?php if ($this->registro['nota'] == "5.0") echo "selected"; ?> value="5.0">5,0</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group form-group-vertical">
+                                            <label class="col-lg-2 col-md-3 control-label" for="id_estado">Estado:</label>
+                                            <div class="col-lg-10 col-md-9">
+                                                <select class="form-control input-sm" id="id_estado" name="id_estado">
+                                                    <option value="">Selecione..</option>
+                                                    <?php if ($this->estados->num_rows) : ?>
+                                                        <?php foreach ($this->estados->rows as $estado) : ?>
+                                                            <option <?php if ($estado['id'] == $this->registro['id_estado']) echo "selected"; ?> value="<?php echo $estado['id']; ?>"><?php echo $estado['estado']; ?></option>
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        
+                                        <div class="form-group form-group-vertical">
+                                            <label class="col-lg-2 col-md-3 control-label" for="id_cidade">Cidade:</label>
+                                            <div class="col-lg-10 col-md-9">
+                                                <select class="form-control input-sm" id="id_cidade" name="id_cidade">
+                                                    <option value="">Selecione..</option>
+                                                    
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        
+                        <div class="row">
+                            <?php if ($this->id==""): ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['gravar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning "><span class="s24 typ-s-warning"></span>Você não tem permissão para gravar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar novo</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php else: ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['editar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning"><span class="s24 icomoon-s-warning "></span>Você não tem permissão para editar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar alterações</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php endif ?>
+                        </div><!-- End .row -->  
+                    </form>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+        <script src="plugins/forms/autosize/jquery.autosize.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                
+                $(document).on("change", "#id_estado", function (){
+                    var id = $(this).val();
+                    $("#id_cidade").load("<?php echo $this->getModule();?>/cidades/?id=" + id + "&cidade=<?php echo $this->registro['id_cidade'];?>" , function () {
+
+                    });
+                });
+                
+                $("#id_estado").trigger("change");
+                
+            });
+        </script>
+    </body>
+</html>

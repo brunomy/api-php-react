@@ -1,0 +1,272 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>";
+    </script>
+    
+<style>
+    #opedido {
+        max-width: 1000px;
+        margin: 20px auto;
+        padding: 0 20px;
+        font-family: opensans, Arial, Helvetica, sans-serif;
+        font-size: 14px;
+    }
+
+    #opedido table {
+        width: 100%;
+        margin: 20px 0;
+        border-top: 2px solid #044;
+    }
+
+    #opedido table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        vertical-align: top;
+    }
+
+    #opedido table td.titulo {
+        padding: 20px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    #opedido table td.titulo .nome {
+        color: #b7231a;
+        text-transform: uppercase; 
+    }
+
+    #opedido table td ul.detalhes {
+        margin: 20px 0;
+        padding: 0;
+        list-style: none; 
+    }
+
+    #opedido table td ul.detalhes li {
+        width: 50%;
+        float: left;
+        padding: 2px 10px;
+        font-size: 12px;
+    }
+
+    #opedido table.theader td {
+        font-weight: bold;
+    }
+    #opedido table.theader .value {
+        font-weight: normal;
+        font-size: 18px;
+        color: #044;
+    }
+
+</style>
+
+    </head>  
+    
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li class="active"><?php echo $this->module_title;?></li>
+                        </ul>
+                    </div>
+                    <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                        <div class="row">
+                            <div class="form-group">
+                                <label class="col-lg-5 control-label" for="nome">Pesquisar nº pedido:</label>
+                                <div class="col-lg-1">
+                                    <input class="form-control" name="pedido" id="pedido" type="text" value="" />
+                                </div>
+                                <button type="button" class="btn btn-info buscar_pedido">TRAZER PEDIDO</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="opedido">
+                        <?php /* ?>
+                        <table class="theader">
+                            <tbody>
+                                <tr>
+                                    <td>PEDIDO N.: 10020</td>
+                                </tr>
+                                <tr>
+                                    <td>COMPRADOR(A): <span class="value">João Felipe</span></td>
+                                </tr>
+                                <tr>
+                                    <td>CIDADE / EST: <span class="value">Porto Velho / RO</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" class="titulo">PRODUTO: <span class="nome">#1 MESA DE POKER PROFISSIONAL PARA CLUBES DE POKER E RESIDÊNCIAS</span></td>
+                                </tr>
+                                <tr>
+                                    <td>DETALHES: </td>
+                                    <td>
+                                        <strong>Nome:</strong> Mesa de Poker Profissional para Clubes de Poker e Residências <br>
+                                        <strong>Quantidade:</strong> 1 <br>
+                                        <ul class="detalhes">
+                                            <li><strong>TAMANHO DA MESA:</strong> 9 (2,40 x 1,10M)</li>
+                                            <li><strong>EMBARALHADOR AUTOMÁTICO:</strong> Sem embaralhador</li>
+                                            <li><strong>TIPO DA COLUNA DA MESA:</strong> Retangular </li>
+                                            <li><strong>TEXTURA DA COLUNA DA MESA:</strong> Branco Fosco</li>
+                                            <li><strong>PISTA PARA FICHAS:</strong> Sem embaralhador</li>
+                                            <li><strong>EMBARALHADOR AUTOMÁTICO:</strong> Sem pista</li>
+                                            <li><strong>PORTA COPOS:</strong> Sem Porta Copos</li>
+                                            <li><strong>COURÍSSIMO DA BORDA:</strong> Preto</li>
+                                            <li><strong>COR DO TECIDO DA MESA:</strong> Preto</li>
+                                            <li><strong>PERSONALIZE COM SUA MARCA:</strong> Sem Logo ou Escrita </li>
+                                            <li><strong>DESENHO DE FUNDO:</strong> Sem Personalização </li>
+                                            <li><strong>TAMPÃO DE JANTAR / TÊNIS DE MESA:</strong> Sem tampão </li>
+                                            <li><strong>TIPO DE BORDA:</strong> Borda Baixa </li>
+                                            <li><strong>COR DO LED:</strong> Sem LED</li>
+                                            <li><strong>GAVETA E RACK PARA FICHAS:</strong> Para Cash Game + Rack METAL 500 Fichas (39mm)</li>
+                                            <li><strong>CONFIGURAÇÃO DO TAMPÃO:</strong> Configuração do Tampão</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Observação:</td>
+                                    <td>Sem observação</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" class="titulo">PRODUTO: <span class="nome">#2 MESA DE POKER PROFISSIONAL PARA CLUBES DE POKER E RESIDÊNCIAS</span></td>
+                                </tr>
+                                <tr>
+                                    <td>DETALHES: </td>
+                                    <td>
+                                        <strong>Nome:</strong> Mesa de Poker Profissional para Clubes de Poker e Residências <br>
+                                        <strong>Quantidade:</strong> 1 <br>
+                                        <ul class="detalhes">
+                                            <li><strong>TAMANHO DA MESA:</strong> 10 (2,60 x 1,25m)</li>
+                                            <li><strong>EMBARALHADOR AUTOMÁTICO:</strong> Sem embaralhador</li>
+                                            <li><strong>TIPO DA COLUNA DA MESA:</strong> Com entrada de Dealer </li>
+                                            <li><strong>TEXTURA DA COLUNA DA MESA:</strong> Especial</li>
+                                            <li><strong>PISTA PARA FICHAS:</strong> Preto Fosco</li>
+                                            <li><strong>EMBARALHADOR AUTOMÁTICO:</strong> Sem pista</li>
+                                            <li><strong>COURÍSSIMO DA BORDA:</strong> Preto</li>
+                                            <li><strong>COR DO TECIDO DA MESA:</strong> Preto</li>
+                                            <li><strong>PERSONALIZE COM SUA MARCA:</strong> Sem Logo ou Escrita </li>
+                                            <li><strong>DESENHO DE FUNDO:</strong> Sem Personalização </li>
+                                            <li><strong>TAMPÃO DE JANTAR / TÊNIS DE MESA:</strong> Sem tampão </li>
+                                            <li><strong>TIPO DE BORDA:</strong> Borda Baixa </li>
+                                            <li><strong>PORTA COPOS:</strong> Com Porta Copos Preto na Pista</li>
+                                            <li><strong>COR DO LED:</strong> Sem LED</li>
+                                            <li><strong>GAVETA E RACK PARA FICHAS:</strong> Para Cash Game + Rack METAL 500 Fichas (39mm)</li>
+                                            <li><strong>CONFIGURAÇÃO DO TAMPÃO:</strong> Configuração do Tampão</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Observação:</td>
+                                    <td>Sem observação</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" class="titulo">PRODUTO: <span class="nome">#3 Mesas de Poker Luxo para Clubes de Poker e Residências</span></td>
+                                </tr>
+                                <tr>
+                                    <td>DETALHES: </td>
+                                    <td>
+                                        <strong>Nome:</strong> Mesas de Poker Luxo para Clubes de Poker e Residências <br>
+                                        <strong>Quantidade:</strong> 1 <br>
+                                        <ul class="detalhes">
+                                            <li><strong>TAMANHO DA MESA:</strong> 6 (1,80 x 0,90m) </li>
+                                            <li><strong>GAVETA E RACK PARA FICHAS:</strong> Sem Gaveta</li>
+                                            <li><strong>ENTRADA PARA O DEALER:</strong> Sem entrada de Dealer</li>
+                                            <li><strong>EMBARALHADOR AUTOMÁTICO:</strong> Sem embaralhador</li>
+                                            <li><strong>TIPO DA COLUNA DA MESA:</strong> Coluna V </li>
+                                            <li><strong>TEXTURA DA COLUNA DA MESA:</strong> Preto e Cinza</li>
+                                            <li><strong>PISTA PARA FICHAS:</strong> Sem Pista</li>
+                                            <li><strong>PORTA COPOS:</strong> Sem Porta Copos</li>
+                                            <li><strong>DESENHO DE FUNDO:</strong> Sem Personalização </li>
+                                            <li><strong>PERSONALIZE COM SUA MARCA:</strong> Sem Logo ou Escrita </li>
+                                            <li><strong>TAMPÃO DE JANTAR / TÊNIS DE MESA:</strong> Sem tampão </li>
+                                            <li><strong>TIPO DE BORDA:</strong> Borda Baixa </li>
+                                            <li><strong>COR DO LED:</strong> Sem LED</li>
+                                            <li><strong>CONFIGURAÇÃO DO TAMPÃO:</strong> Configuração do Tampão</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Observação:</td>
+                                    <td>Sem observação</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <?php */ ?>
+                    </div>
+                    </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+
+        <!-- Table plugins -->
+        <script src="plugins/tables/dataTables/jquery.dataTables.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.tableTools.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.bootstrap.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.responsive.js"></script>
+
+
+        <!-- Init plugins only for page -->
+        <script type="text/javascript">
+            $(document).ready(function(){
+
+                $(".buscar_pedido").click(getPedido);
+
+                function getPedido(){
+                    var pedido = $("#pedido").val();
+                    if(pedido!=""){
+                        $.get("productionorderview/getpedido/id/"+pedido, function(data){
+                            //console.log(data);
+                            $("#opedido").html(data);
+                        });
+                    }
+                }
+
+            });
+        </script>
+    </body>
+</html>

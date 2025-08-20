@@ -1,0 +1,166 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+    
+    </head>  
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li class="active"><?php echo $this->module_title;?></li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-default toggle panelClose">
+                                <!-- Start .panel -->
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <i class="<?php echo $this->module_icon ?>"></i> Tabela de Atualizações
+                                    </h4>
+                                </div>
+                                <div class="panel-body">
+                                    <table cellpadding="0" cellspacing="0" border="0" class="tabletools table table-striped table-bordered" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th class="tal">Criado em</th>
+                                                <th class="tal">Tag</th>
+                                                <th class="tal">Descrição</th>
+                                                <th class="tal">Commit</th>
+                                                <th class="tal">Autor</th>
+                                                <th class="tal">Aplicada por</th>
+                                                <th class="tal">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if ($this->list->num_rows > 0):  ?>
+                                                <?php foreach ($this->list->rows as $update): ?>
+                                                    <tr>
+                                                        <td class="tal">
+                                                            <a href="<?php echo $update['tag_url'] ?>" target="_blank">
+                                                                <?php echo $update['tag_created_at']  ?>
+                                                            </a>
+                                                        </td>
+                                                        <td class="tal">
+                                                            <a href="<?php echo $update['tag_url'] ?>" target="_blank">
+                                                                <?php echo $update['tag_name'] ?>
+                                                            </a>
+                                                        </td>
+                                                        <td class="tal">
+                                                            <a href="<?php echo $update['tag_url'] ?>" target="_blank">
+                                                                <?php echo $update['tag_message'] ?>
+                                                            </a>
+                                                        </td>
+                                                        <td class="tal">
+                                                            <a href="<?php echo $update['tag_url'] ?>" target="_blank">
+                                                                <?php echo $update['commit_hash'] ?>
+                                                            </a>
+                                                        </td>
+                                                        <td class="tal">
+                                                            <a href="<?php echo $update['author_url'] ?>" target="_blank">
+                                                                <img src="<?php echo $update['author_avatar'] ?>" title="<?php echo $update['author'] ?>" alt="<?php echo $update['author'] ?>" width="33" height="33" />
+                                                                <?php echo $update['author'] ?>
+                                                            </a>
+                                                        </td>
+                                                        <td class="tal">
+                                                            <?php echo $update['name'] ?>
+                                                        </td>
+                                                        <td class="tal">
+                                                            <?php if ($update['status'] == 'waiting' || $update['status'] == 'executing'): ?>
+                                                                <?php echo $update['status'] ?>
+                                                            <?php elseif (!is_null($update['applied_at']) && !empty($update['applied_at'])): ?>
+                                                                <a href="#" class="proccess_message" data-message="<?php echo $update['proccess_message'] ?>">
+                                                                    <?php echo $update['applied_at'] ?>
+                                                                </a>
+                                                            <?php else: ?>
+                                                                <button type="button" class="btn btn-large btn-block btn-success update-system" data-loading-text="Aguarde..." data-id="<?php echo $update['id'] ?>">
+                                                                    Aplicar
+                                                                </button>                                                                
+                                                            <?php endif; ?>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('button.update-system').on('click', function (event) {
+                    if (window.confirm('Você tem certeza?!')) {
+                        let btn = $(this).button('loading');
+
+                        let data = {
+                            id: $(this).data('id')
+                        };
+
+                        var el = this;
+
+                        $.post('/sistema/updates/execute', data, function (res) {
+                            if (res.status == 'success') {
+                                $(el).parent().html(res.data);
+                            }
+                            window.alert(res.message);
+                        }, 'json');
+                    }
+                });
+
+                $('a.proccess_message').on('click', function (event) {
+                    event.preventDefault();
+
+                    let message = $(this).data('message');
+                    alert(message);
+                });
+
+            });
+        </script>
+    </body>
+</html>

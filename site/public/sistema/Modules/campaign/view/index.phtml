@@ -1,0 +1,327 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+    <style type="text/css">
+        
+        .filtros {
+            height: 200px;
+        }
+
+        .filtros .bloco1, .filtros .bloco2 {
+            width: 30%;
+            float: left;
+            padding: 20px;
+        }
+        .filtros .bloco2 { width: 70%; }
+
+        .filtros label {
+            display: inline-block;
+        }
+
+        .filtro-texto textarea {
+            width: 100%;
+            min-height: 100px;
+        }
+
+        .filtro-range {
+            width: 320px;
+            float: left;
+        }
+
+        .filtro-range .input {
+            display: inline-block;
+            width: 130px;
+        }
+
+        .filtro-range .input input {
+            padding: 0 10px;
+        }
+
+        .filtro-inline {
+            width: 320px;
+            float: left;
+            padding: 20px 0;
+        } 
+
+        .filtro-inline label:first-child {
+            display: block;
+        }
+
+        .submit_filtros {
+            margin: 20px 0;
+        }
+
+        .checkbox-custom {
+            display: inline-block;
+            width: 18px;
+        }
+
+        .select2-search-choice-close {
+            background: url('plugins/forms/select2/select2.png') right top no-repeat
+        }
+
+    </style>
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>";
+    </script>
+
+    <link href="plugins/forms/togglebutton/toggle-buttons.css" type="text/css" rel="stylesheet" />
+
+    </head>  
+    
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li class="active"><?php echo $this->module_title;?></li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-default toggle panelClose">
+                                <!-- Start .panel -->
+                                <div class="panel-heading">
+                                    <h4 class="panel-title"><i class="<?php echo $this->module_icon ?>"></i> Tabela 
+                                    </h4>
+                                </div>
+                                <div class="panel-body">
+
+                                    <div class="filtros">
+                                        <div class="bloco1">
+                                            <div class="filtro-texto">
+                                                <label>Texto</label> <br>
+<textarea id="zap_text">
+Olá {primeiroNome}, eu sou a {vendedor} responsável pelo pós venda da Real Poker. Vocês fez um pedido conosco em {data}.
+
+Estou entrando em contato para te oferecer uma condição especial
+</textarea>
+<br><br>
+                                                <label>Variáves: </label> {primeiroNome} | {vendedor} | {pedido} | {data} | {cidade}
+                                            </div>
+                                            <div class="submit_filtros">
+                                                <button type="button" class="btn btn-info submit_search">BUSCAR</button>
+                                            </div>
+                                        </div>
+                                        <div class="bloco2">
+                                            <div style="margin-top: -20px; text-align: right;">
+                                                <button type="button" class="btn btn-xs btn-danger submit_restart">DESMARCAR PEDIDOS</button>
+                                            </div>
+                                            <div class="filtro-range">
+                                                <label>Período:</label> <br>
+                                                <div class="input"><input class="form-control datepicker" id="filtro_periodo_de" type="text" placeholder="De: " value=""></div> a
+                                                <div class="input"><input class="form-control datepicker" id="filtro_periodo_ate" type="text" placeholder="Até: " value=""></div>
+                                            </div>
+                                            <div class="filtro-range">
+                                                <label>Valor:</label> <br>
+                                                <div class="input">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">R$</span>
+                                                        <input class="form-control" id="filtro_valor_de" type="text" value="" onkeyup="moeda(this);">
+                                                    </div>
+                                                </div> a
+                                                <div class="input">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">R$</span>
+                                                        <input class="form-control" id="filtro_valor_ate" type="text" value="" onkeyup="moeda(this);">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                            <div class="filtro-inline">
+                                                <label>Categorias: </label>
+                                                <input id="filtro_categorias" class="form-control" type="text" value="Mesas de Poker" />
+                                            </div>
+                                            <div class="filtro-inline">
+                                                <label>Status: </label>
+                                                <input id="filtro_status" class="form-control" type="text" value="Entregue" />
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                    <div id="table">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- End .row -->
+                    <?php require_once "layouts/options.phtml"; ?>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+
+        <!-- Table plugins -->
+        <script src="plugins/tables/dataTables/jquery.dataTables.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.tableTools.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.bootstrap.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.responsive.js"></script>
+
+        <script type="text/javascript" src="plugins/misc/fullcalendar/fullcalendar.min.js"></script><!-- Calendar plugin -->
+        <script type="text/javascript" src="plugins/forms/select/select2.min.js"></script>
+        <script type="text/javascript" src="plugins/forms/togglebutton/jquery.toggle.buttons.js"></script>
+
+
+        <!-- Init plugins only for page -->
+        <script type="text/javascript">
+            $(document).ready(function(){
+
+                //--------------- Data tables ------------------//
+                if($('table').hasClass('tabletools')){
+                    $('.tabletools').dataTable( {
+                        "oLanguage": {
+                            "sSearch": "",
+                            "sLengthMenu": "<span>_MENU_</span>",
+                            "sProcessing":   "Processando...",                    
+                            "sZeroRecords":  "Não foram encontrados resultados",
+                            "sInfo":         "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                            "sInfoEmpty":    "Mostrando de 0 até 0 de 0 registros",
+                            "sInfoFiltered": "(filtrado de _MAX_ registros no total)",
+                            "sInfoPostFix":  "",
+                            "sUrl":         "",
+
+                            "oPaginate": {
+                                "sFirst":    "Primeiro",
+                                "sPrevious": "Anterior",
+                                "sNext":     "Seguinte",
+                                "sLast":     "Último"
+                            }
+                        },
+                        "sDom": "T<'row'<'col-md-6 col-xs-12 'l><'col-md-6 col-xs-12'f>r>t<'row'<'col-md-4 col-xs-12'i><'col-md-8 col-xs-12'p>>",
+                        "aaSorting":[[0,"asc"]], "iDisplayLength": 100,
+                        tableTools: {
+                            "sSwfPath": "http://cdn.datatables.net/tabletools/2.2.2/swf/copy_csv_xls_pdf.swf",
+                            "aButtons": [
+                          ]
+                        }
+                    });
+                }
+
+                $("#filtro_categorias").select2({
+                    tags:[<?php echo implode(', ', $this->categorias); ?>]
+                });
+
+                $("#filtro_status").select2({
+                    tags:[<?php echo implode(', ', $this->statuses); ?>]
+                });
+            
+                $(".datepicker").datepicker({});
+                var data_de = new Date('<?php echo date('Y-m-d', strtotime("-1 months")) ?>');
+                var data_ate = new Date('<?php echo date('Y-m-d') ?>');
+                $("#filtro_periodo_de").datepicker('setDate', data_de);
+                $("#filtro_periodo_ate").datepicker('setDate', data_ate);
+
+                $(".submit_search").click(function(){
+
+                    var periodo_de = $("#filtro_periodo_de").val();
+                    var periodo_ate = $("#filtro_periodo_ate").val();
+                    var valor_de = $("#filtro_valor_de").val();
+                    var valor_ate = $("#filtro_valor_ate").val();
+
+                    var parametros = {
+                        status: $("#filtro_status").val(),
+                        categorias: $("#filtro_categorias").val()
+                    }
+
+                    if(periodo_de!="" && periodo_ate!=""){
+                        var de = periodo_de.split("/");
+                        var ate = periodo_ate.split("/");
+
+                        de = de[2] + '-' + de[1] + '-' + de[0];
+                        ate = ate[2] + '-' + ate[1] + '-' + ate[0];
+
+                        if (ate < de) {
+                            alert('A data final não pode ser menor que a data inicial!');
+                            return false;
+                        }
+
+                        parametros.pedidos_de = de;
+                        parametros.pedidos_ate = ate;
+                    }else{
+                        alert('Preencha o "Período" da busca corretamente.');
+                        return false;
+                    }
+
+                    if(valor_de!=""){ parametros.valor_de=valor_de; }
+                    if(valor_ate!=""){ parametros.valor_ate=valor_ate; }
+
+
+                    $.ajax({
+                        url: "<?php echo $this->getModule(); ?>/search",
+                        type: 'POST',
+                        data: parametros,
+                        dataType: 'html',
+                        success: function (dt) {
+                            
+                            $('#table').html(dt);
+                        }, complete: function (dt) {
+                            //$("#table").load("<?php echo $this->getModule(); ?>/table");
+                        }
+                    });
+                });
+
+                $(".submit_restart").click(function(){
+                    if(confirm("Você tem certeza que deseja desmarcar todos os pedidos ?")==true){
+                        if(confirm("Ao desmarcar todos você estará desmarcando inclusive os marcados anteriormente por outros usuários, você tem certeza disso ?")==true){
+                            $.ajax({
+                                url: "<?php echo $this->getModule(); ?>/uncheckAll",
+                                type: 'POST',
+                                data: { uncheck: true },
+                                complete: function (dt) {
+                                    $(".submit_search").trigger("click");
+                                }
+                            });
+                        }
+                    }
+                });
+
+            });
+
+
+            function moeda(z){
+                v = z.value;
+                v=v.replace(/\D/g,"")  //permite digitar apenas números
+                v=v.replace(/[0-9]{24}/,"inválido")   //limita pra máximo 999.999.999,99
+                v=v.replace(/(\d{1})(\d{8})$/,"$1.$2")  //coloca ponto antes dos últimos 8 digitos
+                v=v.replace(/(\d{1})(\d{5})$/,"$1.$2")  //coloca ponto antes dos últimos 5 digitos
+                v=v.replace(/(\d{1})(\d{1,2})$/,"$1,$2")    //coloca virgula antes dos últimos 2 digitos
+                z.value = v;
+            }
+        </script>
+    </body>
+</html>

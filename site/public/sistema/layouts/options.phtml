@@ -1,0 +1,99 @@
+
+                <div class="fixed_option_space"></div>
+                <div class="fixed_options_footer">
+                    <div class="flex-main">
+                        <div class="flex-div del-all">
+                            <?php
+                                if ($this->permissions[$this->permissao_ref]['gravar'] && $this->getModule() == "ememail"):
+                                    $listas = $this->mkt->getEmailMarketing("listas", "options");
+
+                                    $array_listas_options = 'tags:[]';
+
+                                    if ($listas->data) {
+                                        $array_listas_options = "tags:[";
+                                        $complemento = "";
+                                        foreach ($listas->data as $lista) {
+                                            $array_listas_options .= "$complemento'$lista->nome'";
+                                            $complemento = ",";
+                                        }
+                                        $array_listas_options .= "]";
+                                    }
+                            ?>
+                                <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal seperator edit-lista" style="display:inline; padding-right: 20px;">
+                                    <input type="hidden" name="a" value="del-all" />
+                                    <input type="hidden" class="del-registros" name="del-registros" value="" />
+                                    <input type="hidden" class="data-controller" name="data-controller"/>
+                                    <input type="hidden" class="registros-geral" name="registros-geral" value="0" />
+                                    <input type="hidden" class="data-id-segmentacao" name="data-id-segmentacao" value="" />
+                                    
+                                    <div class="options-listas" style="display:inline-block">
+                                        <input type="text" autocomplete="off" class="listas-options-nomes form-control" placeholder="Listas:" name="listas-options-nomes" id="listas-options-nomes" value="">
+                                        <ul class="listas-options">                            
+                                            <?php foreach($listas->data as $lista): ?>
+                                                <li><label class="lista-options"><input id='lista_<?php echo $lista->id; ?>' type="checkbox" name="lista[]" value="<?php echo $lista->id; ?>"><?php echo $lista->nome; ?></label></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
+                                    
+                                    
+                                    <?php if ($this->segmentacoes) : ?>
+                                    <div class="options-segmentacoes" style="display:inline-block">
+                                        <input type="text" autocomplete="off" class="segmentacoes-options-nomes form-control" placeholder="Segmentações:" name="segmentacoes-options-nomes" id="segmentacoes-options-nomes" value="">
+                                        <ul class="segmentacoes-options">                            
+                                            <?php foreach($this->segmentacoes as $segmentacao): ?>
+                                                <li><label class="segmentacao-options"><input id='segmentacao_<?php echo $segmentacao->id; ?>' type="checkbox" name="segmentacao[]" value="<?php echo $segmentacao->id; ?>"><?php echo $segmentacao->nome; ?></label></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
+                                    <?php endif; ?>
+                                    <button style="vertical-align:top" type="button" class="btn btn-primary bt_ws_lista_email">Relacionar</button>
+
+                                </form>
+                            <?php endif; ?>
+                            
+                            
+                            <?php
+                                if ($this->permissions[$this->permissao_ref]['gravar'] && $this->getModule() == "email"):
+                                    $listas = $this->DB_fetch_array("SELECT * FROM tb_listas_listas ORDER BY nome");                                    
+
+                            ?>
+                                <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal seperator edit-lista" style="display:inline; padding-right: 20px;">
+                                    <input type="hidden" name="a" value="del-all" />
+                                    <input type="hidden" class="del-registros" name="del-registros" value="" />
+                                    <input type="hidden" class="data-controller" name="data-controller"/>
+                                    <input type="hidden" class="registros-geral" name="registros-geral" value="0" />
+                                    <input type="hidden" class="data-id-segmentacao" name="data-id-segmentacao" value="" />
+                                    
+                                        <select name="lista" id="lista" class="nostyle" style="height: 34px;">
+                                            <option value="">Lista..</option>
+                                            <?php foreach($listas->rows as $lista): ?>
+                                                <option value="<?php echo $lista['id']; ?>"><?php echo $lista['nome']; ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    <button style="vertical-align:top" type="button" class="btn btn-primary bt_lista_email">Relacionar</button>
+
+                                </form>
+                            <?php endif; ?>
+                            
+                            <?php if ($this->permissions[$this->permissao_ref]['excluir']): ?>
+                                <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal seperator" style="display:inline;">
+                                    <input type="hidden" name="a" value="del-all" />
+                                    <input type="hidden" class="del-registros" name="del-registros" value="" />
+                                    <input type="hidden" class="data-controller" name="data-controller" value="" />
+                                    <input type="hidden" class="data-id-lista" name="data-id-lista" value="" />
+                                    <input type="hidden" class="data-id-segmentacao" name="data-id-segmentacao" value="" />
+                                    <input type="hidden" class="registros-geral" name="registros-geral" value="0" />
+                                    
+                                    <button style="vertical-align:top" type="button" class="btn btn-danger bt_system_delete_all">Apagar Selecionados</button>
+                                </form>
+                            <?php endif; ?>
+                        </div>
+                        <div class="flex-div sortable_save">
+                            <?php if (!$this->permissions[$this->permissao_ref]['editar']): ?>
+                                    <span class="label label-warning"><i class="s24 icomoon-icon-warning"></i>Você não tem permissão para reordenar esta tabela.</span>
+                            <?php else: ?>
+                                    <button style="vertical-align:top" type="button" class="btn btn-info sortablesubmit">Salvar Ordenação</button>
+                            <?php endif ?>
+                        </div><!-- End .row -->
+                    </div>
+                </div>

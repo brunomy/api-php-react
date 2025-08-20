@@ -1,0 +1,336 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+    <link href="css/supr-theme/jquery.ui.supr.css" rel="stylesheet" type="text/css"/> 
+    
+    <link href="plugins/files/elfinder/elfinder.css" type="text/css" rel="stylesheet" />
+    <link href="plugins/files/plupload/jquery.ui.plupload/css/jquery.ui.plupload.css" type="text/css" rel="stylesheet" />
+    
+    <link href="plugins/gallery/jpages/jPages.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/gallery/pretty-photo/prettyPhoto.css" type="text/css" rel="stylesheet" />   
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+    
+    </head>  
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                    <i class="s16 <?php echo $this->module_icon; ?>"></i>                                    
+                                </a>
+                            </li>
+                            <span class="divider">
+                                <i class="s16 icomoon-icon-arrow-right-3"></i>
+                            </span>
+                            <li class="active">Registro</li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+                  
+                    <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                        <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                        <input type="hidden" name="id_seo" value="<?php echo $this->registro['id_seo']; ?>" />
+                        <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+                        <input type="hidden" name="id_produto" value="<?php echo $this->registro['id_produto']; ?>">
+                        <input type="hidden" name="custo" id="custo" value="<?php echo $this->registro['custo'] + $this->registro['frete_embutido']; ?>">
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados do Produto</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="nome">Nome:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="nome" id="nome" type="text" value="<?php echo $this->registro['nome'] ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="fileupload">Imagem:</label>
+                                            <div class="col-lg-10">
+                                                <label class="fileupload" for="fileupload">
+                                                    <?php if ($this->registro['imagem'] == ""): ?>
+                                                        <img src="http://placehold.it/700x385" alt="" class="image marginR10"/>
+                                                    <?php else: ?>
+                                                        <img src="<?php echo $this->getImageFileSized($this->registro['imagem'],700,385); ?>" alt="" class="image marginR10"/>
+                                                    <?php endif ?>
+                                                </label>
+                                                <input type="file" name="fileupload" id="fileupload" class="files btn btn-default"/>
+                                                <span class="help-block blue">imagem será apresentada na proporção de 700x385 pixels.</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="fileupload2">Imagem Google Shop.:</label>
+                                            <div class="col-lg-10">
+                                                <label class="fileupload" for="fileupload2">
+                                                    <?php if ($this->registro['googleshop_img'] == ""): ?>
+                                                        <img src="http://placehold.it/385x385" alt="" class="image marginR10"/>
+                                                    <?php else: ?>
+                                                        <img src="<?php echo $this->getImageFileSized($this->registro['googleshop_img'],385,385); ?>" alt="" class="image marginR10"/>
+                                                    <?php endif ?>
+                                                </label>
+                                                <input type="file" name="fileupload2" id="fileupload2" class="files btn btn-default"/>
+                                                <span class="help-block blue">Esta imagem não será recortada nem tratada pelo sistema.</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="resumo">Resumo:</label>
+                                            <div class="col-lg-10">
+                                                <textarea id="resumo" name="resumo" class="form-control elastic" rows="3"><?php echo stripslashes($this->registro['resumo']) ?></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="texto">Texto:</label>
+                                            <div class="col-lg-10">
+                                                <textarea id="texto" name="texto" class="form-control tinymce" rows="10"><?php echo $this->registro['texto'] ?></textarea>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Conjuntos e Atributos</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <?php if ($this->conjuntos->num_rows) :?>
+                                        <?php foreach ($this->conjuntos->rows as $conjunto) : ?>
+                                        <?php $atributos = $this->getAtributosByIdConjunto($conjunto['id'],$this->id); ?>
+                                        <div class="form-group form-group-vertical" id="conjunto_<?php echo $conjunto['id'];?>">
+                                            <label class="col-lg-2 col-md-3 control-label" for="<?php echo $conjunto['id']; ?>"><?php echo $conjunto['nome'];?>:</label>
+                                            <div class="col-lg-10 col-md-9">
+                                                <select class="form-control input-sm atributo" id="<?php echo $conjunto['id']; ?>" name="<?php echo $conjunto['id']; ?>">
+                                                    <option value="">Selecione..</option>
+                                                    <?php if($atributos): ?>
+                                                    <?php foreach ($atributos as $atributo): ?>
+                                                    <?php
+                                                        $selected = "";
+                                                        if ($atributo['id_atributo'] != "") {
+                                                            $selected = "selected";
+                                                        }
+                                                    ?>
+                                                        <option data-custo="<?php echo $atributo['custo']; ?>" <?php echo $selected; ?> value="<?php echo $atributo['id']; ?>"><?php echo $atributo['nome']; ?> <?php if ($atributo['custo'] > 0) echo "[R$ ".$this->formataMoedaShow($atributo['custo'])."]"; ?></option>
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Preço de Custo</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="custo_personalizado">Preço Personalizado:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" id="custo_personalizado" type="text" value="<?php echo $this->registro['custo']; ?>" readonly />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <?php require_once "layouts/seo_form.phtml"; ?>
+                            
+                        <div class="row">
+                            <?php if ($this->id==""): ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['gravar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning "><span class="icon24 typ-icon-warning"></span>Você não tem permissão para gravar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar novo</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php else: ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['editar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning"><span class="icon24 icomoon-icon-warning "></span>Você não tem permissão para editar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar alterações</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php endif ?>
+                        </div><!-- End .row -->  
+                    </form>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+        <!-- Init plugins only for page -->
+        <script src="plugins/tables/dataTables/jquery.dataTables.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.tableTools.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.bootstrap.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.responsive.js"></script>
+        <script src="plugins/forms/tiny_mce/tinymce.min.js"></script>
+        <script src="plugins/ui/tabdrop/bootstrap-tabdrop.js"></script>
+        <script src="js/pages/tabs.js"></script>
+        <script type="text/javascript" src="plugins/files/elfinder/elfinder.min.js"></script>
+        <script type="text/javascript" src="plugins/files/plupload/plupload.js"></script>
+        <script type="text/javascript" src="plugins/files/plupload/plupload.html4.js"></script>
+        <script type="text/javascript" src="plugins/files/plupload/plupload.flash.js"></script>
+        <script type="text/javascript" src="plugins/files/plupload/jquery.plupload.queue/jquery.plupload.queue.js"></script>
+        <script src="plugins/forms/autosize/jquery.autosize.js"></script>
+        <script src="js/jquery.form.js"></script>
+        
+        <script type="text/javascript" src="plugins/gallery/pretty-photo/jquery.prettyPhoto.js"></script>
+        
+        <script type="text/javascript">
+            
+            function moeda(z){  
+                v = z.value;
+                v=v.replace(/\D/g,"")  //permite digitar apenas números
+                v=v.replace(/[0-9]{12}/,"inválido")   //limita pra máximo 999.999.999,99
+                v=v.replace(/(\d{1})(\d{8})$/,"$1.$2")  //coloca ponto antes dos últimos 8 digitos
+                v=v.replace(/(\d{1})(\d{5})$/,"$1.$2")  //coloca ponto antes dos últimos 5 digitos
+                v=v.replace(/(\d{1})(\d{1,2})$/,"$1,$2")	//coloca virgula antes dos últimos 2 digitos
+                z.value = v;
+            }
+            
+            $(document).ready(function(){
+                
+                $("a[rel^='prettyPhoto']").prettyPhoto({
+                    default_width: 800,
+                    default_height: 600,
+                    theme: 'facebook',
+                    social_tools: false,
+                    show_title: false
+                });
+                
+                tinymceInit({'galeria':true});
+                $('.elastic').autosize();
+                
+                $(".btn-atributo").on("change", function() {
+                    var base = $(this).parents(".panel-body");
+                    base.find(".btn-atributo.falso").prop('checked', true);
+                    $(this).prop('checked', true);
+                    uniform();
+                });
+                
+                //estilo da mensagem de validação
+                var $styles = {};
+                $styles.messageTipBoxInner = {
+                    "width": "100%",
+                    "margin-top": "-3px",
+                    "display": "inline-block",
+                    "vertical-align": "middle",
+                    "padding": "5px 8px",
+                    "background-color": "#b9110d",
+                    "-webkit-border-radius": 5,
+                    "-moz-border-radius": 5,
+                    "border-radius": 5,
+                    "-webkit-border-top-right-radius": 0,
+                    "-moz-border-radius-topright": 0,
+                    "border-top-right-radius": 0,
+                    "-webkit-border-top-left-radius": 0,
+                    "-moz-border-radius-topleft": 0,
+                    "border-top-left-radius": 0,
+                    "font-family": "Arial, Helvetica, sans-serif",
+                    "font-size": 14,
+                    "color": "#fff",
+                    "cursor": "pointer"
+                };
+                
+                var ancora = window.location.href.split("#");
+                
+                if (ancora[1] != "") {
+                    $("#" + ancora[1]).find("select").after("<span class='click-form anch'></span>");
+                    $("#" + ancora[1]).find("select").css("border-color", "#b9110d");
+                    $("span.anch").css($styles.messageTipBoxInner);
+                    $("span.anch").html("Selecione outro atributo !!!");
+                    $(".click-form").css("margin-top","-23px");
+                }
+                
+                $(".atributo").on("change", function(){
+                    $("#custo_personalizado").val($("#custo").val());
+                    $(".atributo").each(function () {
+                        var valor = $(this).find("option:selected").attr("data-custo");
+                        var custo_personalizado = $("#custo_personalizado").val();
+                        if (typeof valor != "undefined" && valor != "") {
+                            var valor_personalizado = parseFloat(custo_personalizado) + parseFloat(valor);                            
+                            $("#custo_personalizado").val(valor_personalizado);
+                        }                        
+                    });
+                    $("#custo_personalizado").val("R$ " + formatReal($("#custo_personalizado").val()));
+                });
+                
+                $(".atributo").trigger("change");
+                
+            });
+        </script>
+    </body>
+</html>

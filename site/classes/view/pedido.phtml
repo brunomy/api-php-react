@@ -1,0 +1,274 @@
+<?php
+
+use classes\Product;
+
+$valor_total = 0;
+$cupom = 0;
+$valor_total = $this->pedido['subtotal'] + $this->pedido['valor_frete'] - $this->pedido['descontos'];
+
+if ($this->pedido['valor_cupom']) {
+    if ($this->pedido['tipo_cupom'] != 1)
+        $cupom = $this->pedido['valor_cupom'];
+    else
+        $cupom = (($valor_total * $this->pedido['valor_cupom']) / 100);
+}
+
+$valor_total = $valor_total - $cupom;
+
+if ($this->pedido['avista'] == 1)
+    $valor_total = $valor_total - (($valor_total * 5) / 100);
+
+$product = new Product();
+
+?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <base href="<?php echo $this->root_path; ?>" />
+        <title>Pedido de: <?php echo $this->pedido['comprador']; ?>, N.: <?php echo $this->pedido['id']; ?> - <?php echo $this->_empresa['nome']; ?></title>
+        <meta charset="utf-8" />
+        <link href="css/pedido.css" rel="stylesheet" />
+    </head>
+    <body>
+        <div id="conteudo">
+            <div class="bordaTudo usersLsitarFinanItens">
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td height="48" width="22%"><div align="left"><strong class="fontNegritoTudo">PEDIDO N.: <?php echo $this->pedido['id']; ?> </strong></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td height="48" width="22%"><div align="left"><strong class="fontNegritoTudo">COMPRADOR (A):</strong></div></td>
+                            <td class="fontNegritoTudo" width="78%"><strong class="fontNegritoTudoBlue"><?php echo $this->pedido['nome']; ?></strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <?php if($this->local==1) :?>
+                <?php if ($this->pedido['pessoa']==1) : ?>
+                    <table cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td height="48" width="22%"><div align="left"><strong class="fontNegritoTudo">CPF:</strong></div></td>
+                                <td class="fontNegritoTudo" width="78%"><strong class="fontNegritoTudoBlue"><?php echo $this->pedido['cpf']; ?></strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                <?php else : ?>
+                    <table cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td height="48" width="22%"><div align="left"><strong class="fontNegritoTudo">RAZÃO SOCIAL:</strong></div></td>
+                                <td class="fontNegritoTudo" width="78%"><strong class="fontNegritoTudoBlue"><?php echo $this->pedido['razao_social']; ?></strong></td>
+                            </tr>
+                            <tr>
+                                <td height="48" width="22%"><div align="left"><strong class="fontNegritoTudo">CNPJ:</strong></div></td>
+                                <td class="fontNegritoTudo" width="78%"><strong class="fontNegritoTudoBlue"><?php echo $this->pedido['cnpj']; ?></strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                <?php endif; ?>
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td height="48" width="22%"><div align="left"><strong class="fontNegritoTudo">TELEFONE:</strong></div></td>
+                            <td class="fontNegritoTudo" width="78%"><strong class="fontNegritoTudoBlue"><?php echo $this->pedido['email']; ?></strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td height="48" width="22%"><div align="left"><strong class="fontNegritoTudo">E-MAIL:</strong></div></td>
+                            <td class="fontNegritoTudo" width="78%"><strong class="fontNegritoTudoBlue"><?php echo $this->pedido['telefone']; ?></strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td class="fontNegritoTudoBlue" height="48"><strong class="fontNegritoTudo">END.:</strong> <strong class="fontNegritoTudoBlue"><?php echo $this->endereco['endereco']; ?>,  <?php echo $this->endereco['numero']; ?>, Complemento  <?php echo $this->endereco['complemento']; ?>, Bairro  <?php echo $this->endereco['bairro']; ?></strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <?php endif; ?>
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td height="48" width="50%"><div class="fontNegritoTudoBlue" align="left"><strong class="fontNegritoTudo">CIDADE / EST:</strong>  <strong class="fontNegritoTudoBlue"><?php echo $this->endereco['cidade']; ?> /  <?php echo $this->endereco['uf']; ?></strong></div></td>
+                            <?php if($this->local==1) :?>
+                            <td height="48" width="50%"><div class="fontNegritoTudoBlue" align="left"><strong class="fontNegritoTudo">CEP:</strong>  <strong class="fontNegritoTudoBlue"><?php echo $this->endereco['cep']; ?></strong></div></td>
+                            <?php endif;?>
+                        </tr>
+                    </tbody>
+                </table>
+                <?php $valor_fabrica = 0; $vfabrica_total = 0; ?>
+                <?php if ($this->produtos->num_rows) : ?>
+                    <?php foreach ($this->produtos->rows as $produto) : ?>
+                        
+                        <?php $deducoes = $product->getDeducoesByProduto($this->pedido['id'], $produto['id']);?>
+                        <?php $atributos = $product->getAtributosInfoByProduto($produto['id']); ?>
+                        <table cellpadding="0" cellspacing="0" width="100%">
+                            <tbody>
+                                <tr>
+                                    <td class="separador">&nbsp;</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table cellpadding="0" cellspacing="0" width="100%">
+                            <tbody>
+                                <tr>
+                                    <td height="28"><strong class="fontNegritoTudo">ESPECIFICAÇÃO DO PRODUTO: <strong class="fontNegritoTudoRed"><?php echo $this->tudoMaiusculo($produto['nome_produto']); ?></strong></strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <table cellpadding="0" cellspacing="0" width="100%">
+                            <tbody>
+                                <?php if ($this->local==1) :?>
+                                <tr>
+                                    <td height="48" width="22%"><div align="left"><strong class="fontNegritoTudo">Valor do Produto</strong></div></td>
+                                    <td class="fontNegritoTudo" width="78%"><strong class="fontNegritoTudoBlue">R$ <?php echo $this->formataMoedaShow($produto['valor_produto']); ?></strong></td>
+                                </tr>     
+                                <tr>
+                                    <td height="48" width="22%"><div align="left"><strong class="fontNegritoTudo">Frete Embutido</strong></div></td>
+                                    <td class="fontNegritoTudo" width="78%"><strong class="fontNegritoTudoBlue">R$ <?php echo $this->formataMoedaShow($produto['frete_embutido']); ?></strong></td>
+                                </tr>     
+                                <?php endif;?>
+                                <tr>
+                                    <td height="48" width="22%"><div align="left"><strong class="fontNegritoTudo">Quantidade</strong></div></td>
+                                    <td class="fontNegritoTudo" width="78%"><strong class="fontNegritoTudoBlue"><?php echo $produto['quantidade']; ?></strong></td>
+                                </tr>
+                                <?php if ($produto['anexo']) :?>
+                                <tr>
+                                    <td height="48" width="22%"><div align="left"><strong class="fontNegritoTudo">Anexo</strong></div></td>
+                                    <td class="fontNegritoTudo" width="78%"><strong class="fontNegritoTudoBlue"><a href="<?php echo $this->root_path . 'uploads/' . $produto['anexo']; ?>" download>Download</a></strong></td>
+                                </tr>
+                                <?php endif;?>
+                                <?php if ($produto['observacao'] != "") :?>
+                                    <tr>
+                                        <td height="48" width="22%"><div align="left"><strong class="fontNegritoTudo">Observação</strong></div></td>
+                                        <td class="fontNegritoTudo" width="78%"><strong class="fontNegritoTudoBlue"><?php echo nl2br($produto['observacao']); ?></strong></td>
+                                    </tr>
+                                <?php endif; ?>
+                                <?php if($this->local==1) :?>
+                                    <table cellpadding="0" cellspacing="0" width="100%">
+                                        <tr>
+                                            <td colspan=2>
+                                                <strong class="fontNegritoTudoBlue">Adição/Dedução Para Cálculo de Fábrica</strong>
+                                            </td>
+                                        </tr>                             
+                                        <?php $vfabrica = 0; ?>
+                                        <?php if ($deducoes->num_rows) :?>
+                                            <?php foreach($deducoes->rows as $deducao):?>
+                                            <tr>
+                                                <td height="48" width="22%"><div align="left"><strong class="fontNegritoTudo"><?php echo $deducao['descricao'];?></strong></div></td>
+                                                <td class="fontNegritoTudo" width="78%"><strong class="fontNegritoTudoBlue">R$ <?php echo $this->formataMoedaShow($deducao['valor']);?></strong></td>
+                                            </tr>
+                                            <?php $vfabrica = $vfabrica + $deducao['valor'];?>
+                                            <?php endforeach;?>
+                                        <?php endif;?>
+                                        <?php $valor_fabrica = ($produto['valor_produto']-$produto['frete_embutido'] + $vfabrica)?>
+                                        <?php $valor_fabrica = $valor_fabrica * ($produto['porcentagem_fabrica'] /100 )?>
+                                        <?php $valor_fabrica = ($valor_fabrica - $produto['desconto_fabrica']) * $produto['quantidade'];?>
+                                        <?php $vfabrica_total = $vfabrica_total + $valor_fabrica;?>
+                                        <tr>
+                                            <td height="48" width="22%"><div align="left"><strong class="fontNegritoTudo">Desconto Cliente</strong></div></td>
+                                            <td class="fontNegritoTudo" width="78%"><strong class="fontNegritoTudoBlue">R$ <?php echo $this->formataMoedaShow($produto['desconto_fabrica']);?></strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td height="48" width="22%"><div align="left"><strong class="fontNegritoTudo">Total de Fábrica</strong></div></td>
+                                            <td class="fontNegritoTudo" width="78%"><strong class="fontNegritoTudoBlue">R$ <?php echo $this->formataMoedaShow($valor_fabrica);?></strong></td>
+                                        </tr>
+                                    </table>
+                                <?php endif;?>
+                            </tbody>
+                        </table>
+                        <?php if ($atributos->num_rows) : ?>
+                            <table cellpadding="0" cellspacing="0" width="100%">
+                                <tbody>
+                                    <tr>
+                                        <td width="100%" valign="top" style="padding:0;margin:0; border-left:none; border-top:none">
+                                            <?php foreach ($atributos->rows as $atributo) : ?>
+                                                <div class="atributos">
+                                                    <div style="padding:10px">
+                                                        <div align="left"><?php if($this->local!=1) :?><strong class="fontNegritoTudoBlue">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)</strong><?php endif; ?> <strong class="fontNegritoTudoBlue"><?php echo mb_convert_case($atributo['nome_conjunto'], MB_CASE_TITLE, 'UTF-8') . ':'; ?></strong></div>
+                                                        <div align="left"><strong class="fontNegritoTudo"><?php echo mb_convert_case($atributo['nome_atributo'], MB_CASE_UPPER, 'UTF-8'); ?> <?php if ($atributo['texto'] != "") echo "[{$atributo['texto']}]"; ?> <?php if ($atributo['cor'] != "") echo "<i style='display:inline-block;width:100px;padding:0 10px;color:#fff;background-color:{$atributo['cor']}'><i style='color: {$atributo['cor']};-webkit-filter: invert(100%);filter: invert(100%);'>{$atributo['cor']}</i></i>"; ?> <?php if ($atributo['arquivo'] != "" AND $produto['anexo'] == '') echo "<a style='font-size: 12px' target='_blank' href='".$this->root_path."uploads/".$atributo['arquivo']."'>[{$atributo['valor']}]</a>"; ?></strong></div>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                <?php if ($this->local==1) :?>
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td class="separador">&nbsp;</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td height="28"><strong class="fontNegritoTudo">PAGAMENTO</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td class="fontNegritoTudo" align="left" width="150px"><strong>Valor de Fábrica</strong></td>
+                            <td class="fontNegritoTudoRed" align="left" width="*"><strong>R$ <?php echo $this->formataMoedaShow($vfabrica_total);?></strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <?php endif;?>
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td class="separador">&nbsp;</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td height="28"><strong class="fontNegritoTudo">DADOS DA ENTREGA</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tbody>
+                        <tr>
+                            <td class="fontNegritoTudo" align="left" width="50px"><strong>Transportadora</strong></td>
+                            <td class="fontNegritoTudo" colspan="3" align="left" width="*"><?php echo $this->pedido['entrega_transportadora']; ?></td>
+                        </tr>
+                        <tr>
+                            <td class="fontNegritoTudo" align="left" width="200px"><strong>Cotação</strong></td>
+                            <td class="fontNegritoTudo" align="left" width="*"><?php echo $this->pedido['entrega_cotacao']; ?></td>
+                            <td class="fontNegritoTudo" align="left" width="100px"><strong>Valor</strong></td>
+                            <td class="fontNegritoTudo" align="left" width="*"><?php echo $this->pedido['entrega_valor']; ?></td>
+                        </tr>
+                        <tr>
+                            <td class="fontNegritoTudo" align="left" width="200px"><strong>Coleta</strong></td>
+                            <td class="fontNegritoTudo" align="left" width="*"><?php echo $this->pedido['entrega_coleta']; ?></td>
+                            <td class="fontNegritoTudo" align="left" width="100px"><strong>Dia da Coleta</strong></td>
+                            <td class="fontNegritoTudo" align="left" width="*"><?php echo $this->pedido['entrega_dia_coleta']; ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </body>
+</html>

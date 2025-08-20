@@ -1,0 +1,377 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+    
+    </head>  
+    
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                    <i class="s16 <?php echo $this->module_icon; ?>"></i>                                    
+                                </a>
+                            </li>
+                            <span class="divider">
+                                <i class="s16 icomoon-icon-arrow-right-3"></i>
+                            </span>
+                            <li class="active">Registro</li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+                    <?php if ($this->registro['contaazul_refresh_token'] == ""): ?>
+                        <a href="<?php echo $_ENV['APP_URL']; ?>/auth_contaazul" target="_blank"><button type="button" class="btn btn-info"><i class="cut-icon-popout mr5"></i> CONECTAR CONTA AZUL</button></a>
+                        <br><br>
+                    <?php endif ?>
+                    <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                        <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                        <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados da Empresa</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="nome">Nome:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="nome" id="nome" type="text" value="<?php echo $this->registro['nome'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        
+                                        <div class="form-group"> 
+                                            <label class="col-lg-2 control-label" for="fileupload">Logomarca:</label>
+                                            <div class="col-lg-10">
+                                                <label class="fileupload" for="fileupload">
+                                                    <?php if ($this->registro['logomarca'] == ""): ?>
+                                                        <img src="http://placehold.it/370x141" alt="" class="image marginR10"/>
+                                                    <?php else: ?>
+                                                        <img src="<?php echo $this->getImageFileSized($this->registro['logomarca'],370,141); ?>" alt="" class="image marginR10"/>
+                                                    <?php endif ?>
+                                                    
+                                                </label>
+                                                <input type="file" name="fileupload" id="fileupload" class="files btn btn-default"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group"> 
+                                            <label class="col-lg-2 control-label" for="favicon">FavIcon:</label>
+                                            <div class="col-lg-10">
+                                                <label class="fileupload" for="favicon">
+                                                    <?php if ($this->registro['favicon'] == ""): ?>
+                                                        <img src="http://placehold.it/16x16" alt="" class="image marginR10"/>
+                                                    <?php else: ?>
+                                                        <img src="<?php echo $this->getImageFileSized($this->registro['favicon'],16,16); ?>" alt="" class="image marginR10"/>
+                                                    <?php endif ?>                                                    
+                                                </label>
+                                                <input type="file" name="favicon" id="favicon" class="files btn btn-default"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="endereco">Endereço:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="endereco" id="endereco" type="text" value="<?php echo $this->registro['endereco'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="bairro">Bairro:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="bairro" id="bairro" type="text" value="<?php echo $this->registro['bairro'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="cep">CEP:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="cep" id="cep" type="text" value="<?php echo $this->registro['cep'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="cidade">Cidade:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="cidade" id="cidade" type="text" value="<?php echo $this->registro['cidade'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="estado">Estado:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="estado" id="estado" type="text" value="<?php echo $this->registro['estado'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="email">Email:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="email" id="email" type="text" value="<?php echo $this->registro['email'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="fone">Telefone:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="fone" id="fone" type="text" value="<?php echo $this->registro['fone'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Redes Sociais</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="link_facebook">Link para Facebook:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="link_facebook" id="link_facebook" type="text" value="<?php echo $this->registro['link_facebook'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="link_youtube">Link para YouTube:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="link_youtube" id="link_youtube" type="text" value="<?php echo $this->registro['link_youtube'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="link_instagram">Link para Instagram:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="link_instagram" id="link_instagram" type="text" value="<?php echo $this->registro['link_instagram'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->                                        
+                                    </div>
+                                </div><!-- End .panel -->
+                            </div><!-- End .span12 -->
+                        </div><!-- End .row -->
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">E-mail Marketing</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="email_mkt">E-mail:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="email_mkt" id="email_host" maxlength="60" type="text" value="<?php echo $this->registro['email_mkt'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="token_mkt">Token:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="token_mkt" id="token"type="text" value="<?php echo $this->registro['token_mkt'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->                                                                              
+                                    </div>
+                                </div><!-- End .panel -->
+                            </div><!-- End .span12 -->
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Vendas</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="comissao_vendas">Comissão de Vendas (%):</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="comissao_vendas" id="comissao_vendas" type="text" value="<?php echo $this->registro['comissao_vendas'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->                                                                             
+                                    </div>
+                                </div><!-- End .panel -->
+                            </div><!-- End .span12 -->
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">E-mail</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="autenticado">Autenticação:</label>
+                                            <div class="col-lg-10">
+                                                <label class="pointer" for="autenticado1">Sim</label><input <?php if ($this->registro['autenticado'] == 1) { echo 'checked'; } ?> class="form-control" name="autenticado" id="autenticado1" type="radio" value="1" /> 
+                                                <label class="pointer" for="autenticado2">Não</label><input <?php if ($this->registro['autenticado'] == 0) { echo 'checked'; } ?> class="form-control" name="autenticado" id="autenticado2" type="radio" value="0" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="email_host">Host:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="email_host" id="email_host" type="text" value="<?php echo $this->registro['email_host'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="email_port">Port:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="email_port" id="email_port" type="text" value="<?php echo $this->registro['email_port'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="email_user">User:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="email_user" id="email_user" type="text" value="<?php echo $this->registro['email_user'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="email_password">Password:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="email_password" id="email_password" type="password" value="<?php echo $this->registro['email_password'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="email_padrao">E-mail de envio padrão:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="email_padrao" id="email_padrao" type="text" value="<?php echo $this->registro['email_padrao'] ?>" />
+                                            </div>
+                                        </div><!-- End .form-group  -->                                        
+                                    </div>
+                                </div><!-- End .panel -->
+                            </div><!-- End .span12 -->
+                        </div>
+                        
+                        <div class="row">
+                            <?php if ($this->id==""): ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['gravar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning "><span class="icon24 typ-icon-warning"></span>Você não tem permissão para gravar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar novo</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php else: ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['editar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning"><span class="icon24 icomoon-icon-warning "></span>Você não tem permissão para editar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar alterações</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php endif ?>
+                        </div><!-- End .row -->  
+                    </form>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+        <!-- Init plugins only for page -->
+        <script src="plugins/forms/autosize/jquery.autosize.js"></script>
+        <script type="text/javascript">
+
+            function mascara_num(obj){
+                valida_num(obj)
+                if (obj.value.match("-")){
+                  mod = "-";
+                }else{
+                  mod = "";
+                }
+                valor = obj.value.replace("-","");
+                valor = valor.replace(",","");
+                if (valor.length >= 3){
+                  valor = poe_ponto_num(valor.substring(0,valor.length-2))+"."+valor.substring(valor.length-2, valor.length);
+                }
+                obj.value = mod+valor;
+            }
+            
+            function poe_ponto_num(valor){
+                valor = valor.replace(/\./g,"");
+                if (valor.length > 3){
+                  valores = "";
+                  while (valor.length > 3){
+                    valores = "."+valor.substring(valor.length-3,valor.length)+""+valores;
+                    valor = valor.substring(0,valor.length-3);
+                  }
+                  return valor+""+valores;
+                }else{
+                  return valor;
+                }
+            }
+            
+            function valida_num(obj){
+                numeros = new RegExp("[0-9]");
+                while (!obj.value.charAt(obj.value.length-1).match(numeros)){
+                  if(obj.value.length == 1 && obj.value == "-"){
+                    return true;
+                  }
+                  if(obj.value.length >= 1){
+                    obj.value = obj.value.substring(0,obj.value.length-1)
+                  }else{
+                    return false;
+                  }
+                }
+            }
+
+            $(document).ready(function(){
+                $('.elastic').autosize();
+
+                $(document).on("keyup blur", "#comissao_vendas", function(){
+                    mascara_num(this);
+                });
+
+            });
+        </script>
+    </body>
+</html>

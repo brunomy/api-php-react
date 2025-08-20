@@ -1,0 +1,13 @@
+RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule .(/)?$ sistema/index.php
+
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^realpoker\.com\.br 
+RewriteRule ^(.*)$ https://www.%{HTTP_HOST}/sistema/$1 [R=301,L]
+
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule (.*) https://%{SERVER_NAME}/sistema/$1 [R,L] 

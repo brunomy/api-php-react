@@ -1,0 +1,1818 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+    <link href="css/supr-theme/jquery.ui.supr.css" rel="stylesheet" type="text/css"/>
+
+    <link href="plugins/files/elfinder/elfinder.css" type="text/css" rel="stylesheet" />
+    <link href="plugins/files/plupload/jquery.ui.plupload/css/jquery.ui.plupload.css" type="text/css" rel="stylesheet" />
+
+    <link href="plugins/gallery/jpages/jPages.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/gallery/pretty-photo/prettyPhoto.css" type="text/css" rel="stylesheet" />
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+
+    </head>
+
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+<?php  require_once "layouts/sidebar.phtml"; ?>
+
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                    <i class="s16 <?php echo $this->module_icon; ?>"></i>
+                                </a>
+                            </li>
+                            <span class="divider">
+                                <i class="s16 icomoon-icon-arrow-right-3"></i>
+                            </span>
+                            <li class="active">Registro</li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+
+                    <div class="row">
+                        <div class="col-lg-12 ">
+                            <div class="tabs mb20">
+                                <ul id="myTab" class="nav nav-tabs">
+                                    <li>
+                                        <a href="#conteudo" data-toggle="tab">Conteúdo</a>
+                                    </li>
+                                    <?php if ($this->id!=""): ?>
+                                    <li class="">
+                                        <a href="#itens" data-toggle="tab">Itens de Personalização</a>
+                                    </li>
+                                    <li class="">
+                                        <a href="#fotos" data-toggle="tab">Fotos</a>
+                                    </li>
+                                        <li class="">
+                                            <a href="#videos" data-toggle="tab">Videos</a>
+                                        </li>
+                                    <?php endif; ?>
+                                </ul>
+                                <div id="myTabContent2" class="tab-content">
+                                    <div class="tab-pane fade active in" id="conteudo">
+                                        <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                                            <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                                            <input type="hidden" name="id_seo" value="<?php echo $this->registro['id_seo']; ?>" />
+                                            <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="panel panel-default toggle">
+                                                        <!-- Start .panel -->
+                                                        <div class="panel-heading">
+                                                            <h4 class="panel-title">Dados do Produto
+                                                            </h4>
+                                                        </div>
+                                                        <div class="panel-body">
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="nome">Nome:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input class="form-control" name="nome" id="nome" type="text" value="<?php echo $this->registro['nome'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="ncm">NCM:</label>
+                                                                <div class="col-lg-2">
+                                                                    <input class="form-control" name="ncm" id="ncm" type="text" value="<?php echo $this->registro['ncm'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                                <label class="col-lg-1 control-label" for="sku">SKU:</label>
+                                                                <div class="col-lg-2">
+                                                                    <input class="form-control" name="sku" id="sku" type="text" value="<?php echo $this->registro['sku'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="fileupload">Imagem:</label>
+                                                                <div class="col-lg-10">
+                                                                    <label class="fileupload" for="fileupload">
+                                                                        <?php if ($this->registro['imagem'] == ""): ?>
+                                                                            <img src="http://placehold.it/700x385" alt="" class="image marginR10"/>
+                                                                        <?php else: ?>
+                                                                            <img src="<?php echo $this->getImageFileSized($this->registro['imagem'],700,385); ?>" alt="" class="image marginR10"/>
+                                                                        <?php endif ?>
+                                                                    </label>
+                                                                    <input type="file" name="fileupload" id="fileupload" class="files btn btn-default"/>
+                                                                    <span class="help-block blue">imagem será apresentada na proporção de 700x385 pixels.</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="icone">Ícone:</label>
+                                                                <div class="col-lg-10">
+                                                                    <label class="fileupload" for="icone">
+                                                                        <?php if ($this->registro['icone'] == ""): ?>
+                                                                            <img src="http://placehold.it/160x160" alt="" class="image marginR10"/>
+                                                                        <?php else: ?>
+                                                                            <img src="<?php echo $this->getImageFileSized($this->registro['icone'],160,160); ?>" alt="" class="image marginR10"/>
+                                                                        <?php endif ?>
+                                                                    </label>
+                                                                    <input type="file" name="icone" id="icone" class="files btn btn-default"/>
+                                                                    <span class="help-block blue">imagem será apresentada na proporção de 160x160 pixels.</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="resumo">Resumo:</label>
+                                                                <div class="col-lg-10">
+                                                                    <textarea id="resumo" name="resumo" class="form-control elastic" rows="3"><?php echo stripslashes($this->registro['resumo']) ?></textarea>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="texto">Texto:</label>
+                                                                <div class="col-lg-10">
+                                                                    <textarea id="texto" name="texto" class="form-control tinymce" rows="10"><?php echo $this->registro['texto'] ?></textarea>
+                                                                </div>
+                                                            </div>
+
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="texto_adicional">Texto Adicional:</label>
+                                                                <div class="col-lg-10">
+                                                                    <textarea id="texto_adicional" name="texto_adicional" class="form-control tinymce" rows="10"><?php echo $this->registro['texto_adicional'] ?></textarea>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="prazo_producao">Prazo de Produção:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input class="form-control" name="prazo_producao" id="prazo_producao" type="text" value="<?php echo $this->registro['prazo_producao'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="prazo_producao_adic">Prazo Adicional:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input class="form-control" name="prazo_producao_adic" id="prazo_producao" type="text" value="<?php echo $this->registro['prazo_producao_adic'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="qtd_minima">Quantidade Mínima:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input class="form-control" name="qtd_minima" id="qtd_minima" type="text" value="<?php echo $this->registro['qtd_minima'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="unidade_calculada">Unidade Calculada?</label>
+                                                                <div class="col-lg-10">
+                                                                    <input class="form-control" name="unidade_calculada" type="radio" value="1" <?php if($this->registro['unidade_calculada']==1) echo "checked='checked'" ?> /> Sim &nbsp &nbsp
+                                                                    <input class="form-control" name="unidade_calculada" type="radio" value="0" <?php if($this->registro['unidade_calculada']==0) echo "checked='checked'" ?>/> Não
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="custo">Preço de Custo:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input onKeyUp="moeda(this);" onKeyPress="return checkIt(event)" class="form-control" name="custo" id="custo" type="text" value="<?php echo $this->formataMoedaShow($this->registro['custo']); ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="frete_embutido">Frete Embutido:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input onKeyUp="moeda(this);" onKeyPress="return checkIt(event)" class="form-control" name="frete_embutido" id="frete_embutido" type="text" value="<?php echo $this->formataMoedaShow($this->registro['frete_embutido']) ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="porcentagem_fabrica">Porcentagem da Fábrica:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input onKeyUp="moeda(this);" onKeyPress="return checkIt(event)" class="form-control" name="porcentagem_fabrica" id="porcentagem_fabrica" type="text" value="<?php echo $this->registro['porcentagem_fabrica'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="porcentagem_ipi">Porcentagem IPI:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input onKeyUp="moeda(this);" onKeyPress="return checkIt(event)" class="form-control" name="porcentagem_ipi" id="porcentagem_ipi" type="text" value="<?php echo $this->formataMoedaShow($this->registro['porcentagem_ipi']); ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="comissao_venda">Comissão de Venda:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input onKeyUp="moeda(this);" onKeyPress="return checkIt(event)" class="form-control" name="comissao_venda" id="porcentagem_fabrica" type="text" value="<?php echo $this->registro['comissao_venda'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="comissao_venda">Categorias:</label>
+                                                                <div class="col-lg-10">
+                                                                    <select name="categorias[]" class="form-control">
+                                                                        <?php if ($this->categorias->num_rows): ?>
+                                                                            <?php foreach ($this->categorias->rows as $categoria): ?>
+                                                                                <option <?php if ($categoria['id_categoria'] != "") echo 'selected="selected"' ?> value="<?php echo $categoria['id'] ?>"><?php echo $this->getCategoriaNome($categoria['id_pai']);?> <?php echo $categoria['nome'] ?></option>
+                                                                            <?php endforeach ?>
+                                                                        <?php endif ?>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="panel panel-default toggle">
+                                                        <!-- Start .panel -->
+                                                        <div class="panel-heading">
+                                                            <h4 class="panel-title">Zonas de Entrega</h4>
+                                                        </div>
+                                                        <div class="panel-body">
+
+                                                            <div class="form-group form-group-vertical">
+                                                                <label class="col-lg-2 col-md-3 control-label" for="id_frete_terrestre">Frete Terrestre:</label>
+                                                                <div class="col-lg-10 col-md-9">
+                                                                    <select class="form-control input-sm" id="id_frete_terrestre" name="id_frete_terrestre">
+                                                                        <option value="">Selecione..</option>
+                                                                        <?php if ($this->frete_terrestre->num_rows) : ?>
+                                                                            <?php foreach ($this->frete_terrestre->rows as $frete) : ?>
+                                                                                <option <?php if ($frete['id'] == $this->registro['id_frete_terrestre']) echo "selected"; ?> value="<?php echo $frete['id']; ?>"><?php echo $frete['nome']; ?></option>
+                                                                            <?php endforeach; ?>
+                                                                        <?php endif; ?>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group form-group-vertical">
+                                                                <label class="col-lg-2 col-md-3 control-label" for="id_frete_aereo">Frete Aéreo:</label>
+                                                                <div class="col-lg-10 col-md-9">
+                                                                    <select class="form-control input-sm" id="id_frete_aereo" name="id_frete_aereo">
+                                                                        <option value="">Selecione..</option>
+                                                                        <?php if ($this->frete_aereo->num_rows) : ?>
+                                                                            <?php foreach ($this->frete_aereo->rows as $frete) : ?>
+                                                                                <option <?php if ($frete['id'] == $this->registro['id_frete_aereo']) echo "selected"; ?> value="<?php echo $frete['id']; ?>"><?php echo $frete['nome']; ?></option>
+                                                                            <?php endforeach; ?>
+                                                                        <?php endif; ?>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="panel panel-default toggle">
+                                                        <!-- Start .panel -->
+                                                        <div class="panel-heading">
+                                                            <h4 class="panel-title">Dimensões</h4>
+                                                        </div>
+                                                        <div class="panel-body">
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="dimensao_largura">Dimensão Largura:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input onKeyUp="moeda(this);" onKeyPress="return checkIt(event)" class="form-control" name="dimensao_largura" id="dimensao_largura" type="text" value="<?php echo $this->registro['dimensao_largura'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="dimensao_altura">Dimensão Altura:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input onKeyUp="moeda(this);" onKeyPress="return checkIt(event)" class="form-control" name="dimensao_altura" id="dimensao_altura" type="text" value="<?php echo $this->registro['dimensao_altura'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="dimensao_profundidade">Dimensão Profundidade:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input onKeyUp="moeda(this);" onKeyPress="return checkIt(event)" class="form-control" name="dimensao_profundidade" id="dimensao_profundidade" type="text" value="<?php echo $this->registro['dimensao_profundidade'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="peso">Peso:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input onKeyUp="moeda(this);" onKeyPress="return checkIt(event)" class="form-control" name="peso" id="peso" type="text" value="<?php echo $this->registro['peso'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="panel panel-default toggle">
+                                                        <!-- Start .panel -->
+                                                        <div class="panel-heading">
+                                                            <h4 class="panel-title">Box do Frete</h4>
+                                                        </div>
+                                                        <div class="panel-body">
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="titulo_box_frete">Título Box Frete:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input class="form-control" name="titulo_box_frete" id="titulo_box_frete" type="text" value="<?php echo $this->registro['titulo_box_frete'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="texto_box_frete">Texto Box Frete:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input class="form-control" name="texto_box_frete" id="texto_box_frete" type="text" value="<?php echo $this->registro['texto_box_frete'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="panel panel-default toggle">
+                                                        <!-- Start .panel -->
+                                                        <div class="panel-heading">
+                                                            <h4 class="panel-title">Itens de Personalização</h4>
+                                                        </div>
+                                                        <div class="panel-body">
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="titulo_itens_personalizacao">Título:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input class="form-control" name="titulo_itens_personalizacao" id="titulo_itens_personalizacao" type="text" value="<?php echo $this->registro['titulo_itens_personalizacao'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="panel panel-default toggle">
+                                                        <!-- Start .panel -->
+                                                        <div class="panel-heading">
+                                                            <h4 class="panel-title">Listagem dos Personalizados deste Produto</h4>
+                                                        </div>
+                                                        <div class="panel-body">
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="titulo_lista_personalizados">Titulo para personalizados:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input class="form-control" name="titulo_lista_personalizados" id="titulo_lista_personalizados" type="text" value="<?php echo $this->registro['titulo_lista_personalizados'] ?>" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="descricao_lista_personalizados">Texto de apoio:</label>
+                                                                <div class="col-lg-10">
+                                                                    <div class="col-lg-10">
+                                                                        <textarea id="descricao_lista_personalizados" name="descricao_lista_personalizados" class="form-control tinymce" rows="10"><?php echo $this->registro['descricao_lista_personalizados'] ?></textarea>
+                                                                    </div>
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?php require_once "layouts/seo_form.phtml"; ?>
+
+                                            <div class="row">
+                                                <?php if ($this->id==""): ?>
+                                                    <?php if (!$this->permissions[$this->permissao_ref]['gravar']): ?>
+                                                        <div class="form-group">
+                                                            <div class="col-lg-offset-2 col-lg-10">
+                                                                <span class="label label-warning "><span class="icon24 typ-icon-warning"></span>Você não tem permissão para gravar esta função.</span>
+                                                            </div>
+                                                        </div><!-- End .form-group  -->
+                                                    <?php else: ?>
+                                                        <div class="form-group">
+                                                            <div class="col-lg-offset-2 col-lg-10">
+                                                                <button type="button" class="btn btn-info clickformsubmit">Salvar novo</button>
+                                                            </div>
+                                                        </div><!-- End .form-group  -->
+                                                    <?php endif ?>
+                                                <?php else: ?>
+                                                    <?php if (!$this->permissions[$this->permissao_ref]['editar']): ?>
+                                                        <div class="form-group">
+                                                            <div class="col-lg-offset-2 col-lg-10">
+                                                                <span class="label label-warning"><span class="icon24 icomoon-icon-warning "></span>Você não tem permissão para editar esta função.</span>
+                                                            </div>
+                                                        </div><!-- End .form-group  -->
+                                                    <?php else: ?>
+                                                        <div class="form-group">
+                                                            <div class="col-lg-offset-2 col-lg-10">
+                                                                <button type="button" class="btn btn-info clickformsubmit">Salvar alterações</button>
+                                                            </div>
+                                                        </div><!-- End .form-group  -->
+                                                    <?php endif ?>
+                                                <?php endif ?>
+                                            </div><!-- End .row -->
+                                        </form>
+                                    </div>
+                                    <?php if ($this->id!=""): ?>
+
+                                    <div class="tab-pane fade" id="itens">
+                                        <form enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                                            <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                                            <input type="hidden" name="id_produto" id="id_produto" value="<?php echo $this->id; ?>" />
+                                            <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="panel panel-default toggle">
+                                                        <!-- Start .panel -->
+                                                        <div class="panel-heading">
+                                                            <h4 class="panel-title">Conjunto de Atributos
+                                                            </h4>
+                                                        </div>
+                                                        <div class="panel-body">
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="nome_conjunto_atributos">Nome:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input class="form-control" required name="nome_conjunto_atributos" id="nome_conjunto_atributos" type="text" value="" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="descricao">Descrição:</label>
+                                                                <div class="col-lg-10">
+                                                                    <textarea id="descricao" name="descricao" class="form-control elastic" rows="3"></textarea>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="descricao_aviso_desabilitado">Descrição de Aviso Desabilitado:</label>
+                                                                <div class="col-lg-10">
+                                                                    <textarea id="descricao_aviso_desabilitado" name="descricao_aviso_desabilitado" class="form-control elastic" rows="3"></textarea>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <div class="col-lg-offset-2 col-lg-10">
+                                                                    <button type="button" class="btn btn-info btn-add-conjunto" id="success-notice">Adicionar</button>
+                                                                </div>
+                                                            </div><!-- End .form-group  -->
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <span id="conjuntos">
+
+                                            </span>
+
+
+                                        </form>
+
+                                    </div>
+
+                                    <div class="tab-pane fade" id="fotos">
+                                        <div id="edita_imagem" style="display:none;">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="panel panel-default">
+                                                    <!-- Start .panel -->
+                                                    <div class="panel-heading">
+                                                        <h4 class="panel-title"><i class="entypo-icon-images"></i>Galeria de Imagens</h4>
+                                                    </div>
+                                                    <div class="panel-body noPad">
+                                                        <ul id="itemContainer" class="galleryView center sortable">
+                                                        </ul>
+                                                    </div>
+                                                </div><!-- End .span12 -->
+                                            </div><!-- End .panel -->
+                                        </div><!-- End .row -->
+                                        <div class="row">
+                                            <div class="col-lg-12 center sortable_save" style="display:none">
+                                            	<button type="button" class="btn btn-info sortablesubmitgallery">Salvar nova ordenação</button><br><br>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="panel panel-default toggle">
+                                                    <!-- Start .panel -->
+                                                    <div class="panel-heading">
+                                                        <h4 class="panel-title"><i class="icomoon-icon-upload"></i>Gerenciador de envio</h4>
+                                                    </div>
+                                                   <div class="panel-body noPad">
+                                                        <div id="html4_uploader" style="width: 100%; height: 100%;">O seu navegador não tem suporte HTML 4.</div>
+                                                    </div>
+                                                </div><!-- End .panel -->
+                                            </div><!-- End .span12 -->
+                                        </div><!-- End .row -->
+                                    </div>
+
+                                    <div class="tab-pane fade" id="videos">
+                                        <form enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="panel panel-default toggle">
+                                                        <!-- Start .panel -->
+                                                        <div class="panel-heading">
+                                                            <h4 class="panel-title">Videos do Youtube
+                                                            </h4>
+                                                        </div>
+                                                        <div class="panel-body">
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="video_desktop">Desktop:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input class="form-control" required name="video_desktop" value="<?=$this->registro['video_desktop']?>" id="video_desktop" type="text" value="" />
+                                                                </div><!-- End .form-group  -->
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label class="col-lg-2 control-label" for="video_mobile">Mobile:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input class="form-control" required name="video_mobile" value="<?=$this->registro['video_mobile']?>"  id="video_mobile" type="text" value="" />
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <div class="col-lg-offset-2 col-lg-10">
+                                                                    <button type="button" class="btn btn-info btn-salvar-video"  id="success-notice">Salvar</button>
+                                                                </div>
+                                                            </div><!-- End .form-group  -->
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <span id="conjuntos">
+
+                                        </span>
+
+
+                                        </form>
+
+                                    </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+
+
+            <div class="modal fade" id="myLargeModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span aria-hidden="true">&times;</span><span class="sr-only">Fechar</span>
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">Ordenar</h4>
+                        </div>
+                        <div class="modal-body" id="myModalContent">
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                            <button type="button" class="btn btn-primary" id="sortablesubmitConjunto">Salvar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span class="btn btn-default mr5 mb10 getModal" data-toggle="modal" data-target="#myLargeModal"></span>
+
+
+<?php  require_once "layouts/footer.phtml"; ?>
+
+        </div>
+
+<?php  require_once "layouts/plugins.phtml"; ?>
+        <!-- Init plugins only for page -->
+        <script src="plugins/tables/dataTables/jquery.dataTables.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.tableTools.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.bootstrap.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.responsive.js"></script>
+        <script src="plugins/forms/tiny_mce/tinymce.min.js"></script>
+        <script src="plugins/ui/tabdrop/bootstrap-tabdrop.js"></script>
+        <script src="js/pages/tabs.js"></script>
+        <script type="text/javascript" src="plugins/files/elfinder/elfinder.min.js"></script>
+        <script type="text/javascript" src="plugins/files/plupload/plupload.js"></script>
+        <script type="text/javascript" src="plugins/files/plupload/plupload.html4.js"></script>
+        <script type="text/javascript" src="plugins/files/plupload/plupload.flash.js"></script>
+        <script type="text/javascript" src="plugins/files/plupload/jquery.plupload.queue/jquery.plupload.queue.js"></script>
+        <script src="plugins/forms/autosize/jquery.autosize.js"></script>
+        <script src="js/jquery.form.js"></script>
+
+        <script type="text/javascript" src="plugins/gallery/pretty-photo/jquery.prettyPhoto.js"></script>
+
+        <script type="text/javascript" src="plugins/forms/dualselect/jquery.dualListBox-1.3.min.js"></script>
+
+        <script type="text/javascript">
+
+            function moeda(z){
+                v = z.value;
+                v=v.replace(/\D/g,"")  //permite digitar apenas números
+                v=v.replace(/[0-9]{24}/,"inválido")   //limita pra máximo 999.999.999,99
+                v=v.replace(/(\d{1})(\d{8})$/,"$1.$2")  //coloca ponto antes dos últimos 8 digitos
+                v=v.replace(/(\d{1})(\d{5})$/,"$1.$2")  //coloca ponto antes dos últimos 5 digitos
+                v=v.replace(/(\d{1})(\d{1,2})$/,"$1,$2")	//coloca virgula antes dos últimos 2 digitos
+                z.value = v;
+            }
+
+
+            function mascara_num(obj){
+                valida_num(obj)
+                if (obj.value.match("-")){
+                  mod = "-";
+                }else{
+                  mod = "";
+                }
+                valor = obj.value.replace("-","");
+                valor = valor.replace(",","");
+                if (valor.length >= 3){
+                  valor = poe_ponto_num(valor.substring(0,valor.length-2))+","+valor.substring(valor.length-2, valor.length);
+                }
+                obj.value = mod+valor;
+              }
+              function poe_ponto_num(valor){
+                valor = valor.replace(/\./g,"");
+                if (valor.length > 3){
+                  valores = "";
+                  while (valor.length > 3){
+                    valores = "."+valor.substring(valor.length-3,valor.length)+""+valores;
+                    valor = valor.substring(0,valor.length-3);
+                  }
+                  return valor+""+valores;
+                }else{
+                  return valor;
+                }
+              }
+              function valida_num(obj){
+                numeros = new RegExp("[0-9]");
+                while (!obj.value.charAt(obj.value.length-1).match(numeros)){
+                  if(obj.value.length == 1 && obj.value == "-"){
+                    return true;
+                  }
+                  if(obj.value.length >= 1){
+                    obj.value = obj.value.substring(0,obj.value.length-1)
+                  }else{
+                    return false;
+                  }
+                }
+              }
+
+            $(document).ready(function(){
+
+
+                var valor_final = '';
+                $(document).on("keyup blur", ".preco_atributo", function(){
+                    mascara_num(this);
+                });
+
+
+                $.configureBoxes();
+
+                $("a[rel^='prettyPhoto']").prettyPhoto({
+                    default_width: 800,
+                    default_height: 600,
+                    theme: 'facebook',
+                    social_tools: false,
+                    show_title: false
+                });
+
+                $("#qtd_minima, #prazo_producao, #prazo_producao_adic").mask("###########");
+
+                tinymceInit({'galeria':true});
+
+                $('.elastic').autosize();
+
+                var load_galery_url = "<?php echo $this->getModule(); ?>/fotos/id/<?php echo $this->id; ?>"
+                $(".galleryView").load(load_galery_url).data("load_galery_url",load_galery_url);
+
+                //------------- Plupload php upload  -------------//
+                $("#html4_uploader").pluploadQueue({
+                    // General settings
+                    runtimes : 'flash,silverlight,html4',
+                    url : '<?php echo $this->getModule(); ?>/upload/id/<?php echo $this->id ?>/session/<?php echo $_SESSION["login_session"];?>',
+                    max_file_size : '10mb',
+                    max_file_count: 15, // user can add no more then 15 files at a time
+                    chunk_size : '0',
+                    unique_names : false,
+                    multiple_queues : true,
+
+                    // Resize images on clientside if we can
+                    //resize : {width : 320, height : 240, quality : 80},
+
+                    // Rename files by clicking on their titles
+                    rename: false,
+
+                    // Sort files
+                    sortable: true,
+
+                    // Flash settings
+                    flash_swf_url : 'plugins/files/plupload/plupload.flash.swf',
+
+                    // Specify what files to browse for
+                    filters : [
+                        {title : "Image files", extensions : "jpg,gif,png"},
+                        {title : "Zip files", extensions : "zip,avi"}
+                    ],
+
+                    init : {
+                        FileUploaded: function(up, file, info) {
+                            console.log(up);
+                            console.log(file);
+                            console.log(info);
+                            // Called when all files are either uploaded or failed
+                            $(".galleryView").load(load_galery_url);
+                        },
+                        UploadComplete: function(up, files) {
+                            console.log(up);
+                            console.log(files);
+                            // Called when all files are either uploaded or failed
+                            $(".galleryView").load(load_galery_url);
+                        }
+                    }
+
+                });
+
+                //estilo da mensagem de validação
+                var $styles = {};
+                $styles.messageTipBoxInner = {
+                    "width": "100%",
+                    "margin-top": "-3px",
+                    "display": "inline-block",
+                    "vertical-align": "middle",
+                    "padding": "5px 8px",
+                    "background-color": "#b9110d",
+                    "-webkit-border-radius": 5,
+                    "-moz-border-radius": 5,
+                    "border-radius": 5,
+                    "-webkit-border-top-right-radius": 0,
+                    "-moz-border-radius-topright": 0,
+                    "border-top-right-radius": 0,
+                    "-webkit-border-top-left-radius": 0,
+                    "-moz-border-radius-topleft": 0,
+                    "border-top-left-radius": 0,
+                    "font-family": "Arial, Helvetica, sans-serif",
+                    "font-size": 14,
+                    "color": "#fff",
+                    "cursor": "pointer"
+                };
+
+                var id_produto = $("#id_produto").val();
+
+                function limpaCamposConjutos() {
+                    $("#nome_conjunto_atributos").val("");
+                    $("#descricao").val("");
+                    $("#descricao_aviso_desabilitado").val("");
+                    //$("#tipo_conjunto_atributos option").prop("selected", false);
+                    uniform();
+                }
+
+
+                //busca conjuntos
+                function getConjuntos(idConjuntoByAtributo,idConjuntoByConjunto, imagem) {
+                    $.post("<?php echo $this->getModule(); ?>/getConjuntos", { id_produto: id_produto }, function( data ) {
+                        $("#conjuntos").html(data.content);
+
+                        if (typeof idConjuntoByConjunto != "undefined" && idConjuntoByConjunto != null) {
+                            $("#conjunto_" + idConjuntoByConjunto + " .panel-body:first").show();
+
+                            var base_conjunto = $("#conjunto_" + idConjuntoByConjunto);
+
+                            if (base_conjunto.find(".toggle-conjunto.icomoon-icon-minus").length ){
+                                base_conjunto.find(".toggle-conjunto").removeClass("icomoon-icon-minus");
+                                base_conjunto.find(".toggle-conjunto").addClass("icomoon-icon-plus");
+                            } else {
+                                base_conjunto.find(".toggle-conjunto").removeClass("icomoon-icon-plus");
+                                base_conjunto.find(".toggle-conjunto").addClass("icomoon-icon-minus");
+                            }
+
+                            $("#conjunto_" + idConjuntoByConjunto + " .row-atributo:last .panel-body").show();
+
+                            var base_atributo = $("#conjunto_" + idConjuntoByConjunto + " .row-atributo:last");
+
+                            if (base_atributo.find(".toggle-atributo.icomoon-icon-minus").length ){
+                                base_atributo.find(".toggle-atributo").removeClass("icomoon-icon-minus");
+                                base_atributo.find(".toggle-atributo").addClass("icomoon-icon-plus");
+                            } else {
+                                base_atributo.find(".toggle-atributo").removeClass("icomoon-icon-plus");
+                                base_atributo.find(".toggle-atributo").addClass("icomoon-icon-minus");
+                            }
+
+                            $("html, body, .main").animate({scrollTop: $("#conjunto_" + idConjuntoByConjunto + " .row-atributo:last").offset().top - 70}, 100);
+                        }
+
+                        if (typeof idConjuntoByAtributo != "undefined" && idConjuntoByAtributo != null) {
+                            $("#conjunto_" + idConjuntoByAtributo + " .panel-body:first").show();
+                            if (imagem) {
+                                $("#conjunto_" + idConjuntoByAtributo + " .row-atributo:last .panel-body").show();
+
+                                var base_conjunto = $("#conjunto_" + idConjuntoByAtributo);
+
+                                if (base_conjunto.find(".toggle-conjunto.icomoon-icon-minus").length ){
+                                    base_conjunto.find(".toggle-conjunto").removeClass("icomoon-icon-minus");
+                                    base_conjunto.find(".toggle-conjunto").addClass("icomoon-icon-plus");
+                                } else {
+                                    base_conjunto.find(".toggle-conjunto").removeClass("icomoon-icon-plus");
+                                    base_conjunto.find(".toggle-conjunto").addClass("icomoon-icon-minus");
+                                }
+
+                                var base_atributo = $("#conjunto_" + idConjuntoByAtributo + " .row-atributo:last");
+
+                                if (base_atributo.find(".toggle-atributo.icomoon-icon-minus").length ){
+                                    base_atributo.find(".toggle-atributo").removeClass("icomoon-icon-minus");
+                                    base_atributo.find(".toggle-atributo").addClass("icomoon-icon-plus");
+                                } else {
+                                    base_atributo.find(".toggle-atributo").removeClass("icomoon-icon-plus");
+                                    base_atributo.find(".toggle-atributo").addClass("icomoon-icon-minus");
+                                }
+
+
+                                $("html, body, .main").animate({scrollTop: $("#conjunto_" + idConjuntoByAtributo + " .row-atributo:last").offset().top - 70}, 100);
+                            }
+
+                        }
+                    }, "json").done(function(){
+
+
+                        uniform();
+
+                        $("a[rel^='prettyPhoto']").prettyPhoto({
+                            default_width: 800,
+                            default_height: 600,
+                            theme: 'facebook',
+                            social_tools: false,
+                            show_title: false
+                        });
+                        $('.elastic').autosize();
+
+
+                    });
+                }
+
+                getConjuntos();
+
+                //adicionar conjunto de atributos
+                $(".btn-add-conjunto").on("click", function(){
+                    $("span.click-form").remove();
+                    $("input, textarea, select").css("border-color", "");
+                    var nome_conjunto_atributos = $("#nome_conjunto_atributos").val();
+                    //var tipo_conjunto_atributos = $("#tipo_conjunto_atributos").val();
+                    var descricao_aviso_desabilitado = $("#descricao_aviso_desabilitado").val();
+                    var descricao = $("#descricao").val();
+                    var idscroll = '';
+
+                    if (nome_conjunto_atributos!="") {
+                        //validado
+                        $.ajax({
+                            url: "<?php echo $this->getModule(); ?>/saveGroupAttribute",
+                            type: 'POST',
+                            data: {
+                                id_produto : id_produto,
+                                nome_conjunto_atributos : nome_conjunto_atributos,
+                                descricao_aviso_desabilitado : descricao_aviso_desabilitado,
+                                descricao : descricao,
+                            },
+                            dataType: 'json',
+                            success: function (dt) {
+                                if (dt.type == "success") {
+                                    $.gritter.add({
+                                        title: 'Pronto !!!',
+                                        text: dt.message,
+                                        time: '',
+                                        close_icon: 'entypo-icon-cancel s12',
+                                        icon: 'icomoon-icon-checkmark-3 ',
+                                        class_name: 'success-notice'
+                                    });
+                                    limpaCamposConjutos();
+
+
+                                    idscroll = dt.id;
+
+                                    if (idscroll != "")
+                                        getConjuntos(null, idscroll);
+                                    else
+                                        getConjuntos();
+                                } else if ((dt.type == "error")) {
+                                    $.gritter.add({
+                                        title: 'Erro !!!',
+                                        text: dt.message,
+                                        time: '',
+                                        close_icon: 'entypo-icon-cancel s12',
+                                        icon: 'cut-icon-alert  ',
+                                        class_name: 'error-notice'
+                                    });
+                                }
+
+
+                            }, complete: function (dt) {
+
+                            }
+                        });
+
+                    } else {
+                        //não validado
+                        if (nome_conjunto_atributos=="") {
+                            $("#nome_conjunto_atributos").after("<span class='click-form msg_nome_conjunto_atributos'></span>");
+                            $("#nome_conjunto_atributos").css("border-color", "#b9110d");
+                            $("span.msg_nome_conjunto_atributos").css($styles.messageTipBoxInner);
+                            $("span.msg_nome_conjunto_atributos").html("Preencha o Nome para o Conjunto de Atributos");
+                        }
+                    }
+                });
+
+                $(".btn-salvar-video").on("click", function(){
+                         var videoDesktop = $("#video_desktop").val();
+                         var videoMobile = $("#video_mobile").val();
+                        $.ajax({
+                            url: "<?php echo $this->getModule(); ?>/salvarVideo",
+                            type: 'POST',
+                            data: {
+                                id_produto : id_produto,
+                                video_desktop : videoDesktop,
+                                video_mobile : videoMobile,
+                            },
+                            dataType: 'json',
+                            success: function (dt) {
+                                if (dt.type == "success") {
+                                    $.gritter.add({
+                                        title: 'Pronto !!!',
+                                        text: dt.message,
+                                        time: '',
+                                        close_icon: 'entypo-icon-cancel s12',
+                                        icon: 'icomoon-icon-checkmark-3 ',
+                                        class_name: 'success-notice'
+                                    });
+                                } else if ((dt.type == "error")) {
+                                    $.gritter.add({
+                                        title: 'Erro !!!',
+                                        text: dt.message,
+                                        time: '',
+                                        close_icon: 'entypo-icon-cancel s12',
+                                        icon: 'cut-icon-alert  ',
+                                        class_name: 'error-notice'
+                                    });
+                                }
+
+
+                            }, complete: function (dt) {
+
+                            }
+                        });
+                });
+
+                //salvar conjunto de atributo
+                $(document).on("click", ".btn-save-conjunto", function(){
+                    var base = $(this).parents(".row-conjunto");
+                    var nome = base.find('.nome_conjunto').val();
+                    var descricao_aviso_desabilitado = base.find('.descricao_aviso_desabilitado').val();
+                    var descricao = base.find('.descricao').val();
+                    var id_tipo = base.find('.tipo_atributo_conjunto').val();
+                    var id = base.find('.id_conjunto_atributo').val();
+
+
+                    $.post("<?php echo $this->getModule(); ?>/saveConjunto",
+                        {
+                            id: id,
+                            id_tipo: id_tipo,
+                            nome : nome,
+                            descricao_aviso_desabilitado : descricao_aviso_desabilitado,
+                            descricao : descricao
+
+                        }, function( dt ) {
+
+                    }, "json").done(function(dt){
+                        if (dt.type == "success") {
+                            $.gritter.add({
+                                title: 'Pronto !!!',
+                                text: dt.message,
+                                time: '',
+                                close_icon: 'entypo-icon-cancel s12',
+                                icon: 'icomoon-icon-checkmark-3 ',
+                                class_name: 'success-notice'
+                            });
+                            getConjuntos();
+                        } else if ((dt.type == "error")) {
+                            $.gritter.add({
+                                title: 'Erro !!!',
+                                text: dt.message,
+                                time: '',
+                                close_icon: 'entypo-icon-cancel s12',
+                                icon: 'cut-icon-alert  ',
+                                class_name: 'error-notice'
+                            });
+                        }
+                    });
+
+
+                });
+
+                //apagar conjunto de atributos
+                $(document).on("click", ".btn-remove-conjunto", function(){
+                    var base = $(this).parents('.row-conjunto');
+                    var id = $(this).data('id');
+                    var nome = $(this).data('nome');
+
+                    var mensagem = "Deseja realmente remover este registro [" + nome + "] ?";
+
+                    $.post("<?php echo $this->getModule(); ?>/verifyCustomConjunto", { id: id }, function( data ) {
+                        mensagem += data;
+                    }).done(function(data){
+                        bootbox.confirm({
+                            message: mensagem,
+                            title: "Atenção!!!",
+                            className: "modal-style1",
+                            callback: function (result) {
+                                if (result) {
+                                    $.post("<?php echo $this->getModule(); ?>/delConjunto",
+                                        {
+                                            id: id
+
+                                        }, function( dt ) {
+
+                                    }, "json").done(function(dt){
+                                        if (dt.type == "success") {
+                                            $.gritter.add({
+                                                title: 'Pronto !!!',
+                                                text: dt.message,
+                                                time: '',
+                                                close_icon: 'entypo-icon-cancel s12',
+                                                icon: 'icomoon-icon-checkmark-3 ',
+                                                class_name: 'success-notice'
+                                            });
+                                            base.remove();
+                                        } else if ((dt.type == "error")) {
+                                            $.gritter.add({
+                                                title: 'Erro !!!',
+                                                text: dt.message,
+                                                time: '',
+                                                close_icon: 'entypo-icon-cancel s12',
+                                                icon: 'cut-icon-alert  ',
+                                                class_name: 'error-notice'
+                                            });
+                                        }
+                                    });
+                                }
+                            }
+                        });
+
+                    });
+
+                });
+
+                //upload imagem de atributo
+                $(document).on("change", ".atributo_imagem", function() {
+                    var base = $(this).parents(".row-atributo");
+                    var file_data = base.find('.atributo_imagem').prop('files')[0];
+                    var file_id =  base.find('.atributo_imagem').data('id');
+                    var file_id_conjunto = base.find('.atributo_imagem').data('id-conjunto');
+                    var nome_atributo = base.find('.nome_atributo').val();
+                    var descricao_atributo = base.find('.descricao_atributo').val();
+                    var preco_atributo = base.find('.preco_atributo').val();
+                    var tipo_atributo = base.find('.tipo_atributo').val();
+                    var selecionado = base.find('.selecionado').filter(':checked').val();
+                    var ampliar_fotos = base.find('.ampliar_fotos').filter(':checked').val();
+
+                    var form_data = new FormData();
+                    form_data.append('imagem', file_data);
+                    form_data.append('id', file_id);
+                    form_data.append('id_conjunto_atributo', file_id_conjunto);
+
+                    form_data.append('nome', nome_atributo);
+                    form_data.append('descricao', descricao_atributo);
+                    form_data.append('custo', preco_atributo);
+                    form_data.append('id_tipo', tipo_atributo);
+                    form_data.append('selecionado', selecionado);
+                    form_data.append('ampliar_fotos', ampliar_fotos);
+
+                    var src = 'images/loading.gif';
+                    //base.find('img').removeClass("marginR10");
+                    //base.find('img').removeClass("image");
+                    base.find('img').attr("src", src);
+
+
+                    if (file_id == "")
+                        base.css('opacity', 0.3);
+
+                    $.gritter.add({
+                        title: 'Aguarde !!!',
+                        text: "O arquivo está sendo enviado !!!",
+                        time: '',
+                        close_icon: 'entypo-icon-cancel s12',
+                        icon: 'icomoon-icon-checkmark-3 ',
+                        class_name: 'warning-notice'
+                    });
+
+
+                    $(".btn-salvar-atributo").addClass("btn-salvar-hide-atributo");
+                    $(".btn-salvar-hide-atributo").removeClass("btn-salvar-atributo");
+
+                    $.ajax({
+                        url: "<?php echo $this->getModule();?>/uploadFile", // point to server-side PHP script
+                        dataType: 'json',  // what to expect back from the PHP script, if anything
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: form_data,
+                        type: 'post',
+                        success: function(dt){
+                            if (dt.type == "success") {
+                                $.gritter.add({
+                                    title: 'Pronto !!!',
+                                    text: dt.message,
+                                    time: '',
+                                    close_icon: 'entypo-icon-cancel s12',
+                                    icon: 'icomoon-icon-checkmark-3 ',
+                                    class_name: 'success-notice'
+                                });
+                                if (file_id == "")
+                                    getConjuntos(file_id_conjunto,null,true);
+                                else
+                                    base.find('img').attr("src", dt.imagem);
+                            } else {
+                                $.gritter.add({
+                                    title: 'Erro !!!',
+                                    text: dt.message,
+                                    time: '',
+                                    close_icon: 'entypo-icon-cancel s12',
+                                    icon: 'cut-icon-alert  ',
+                                    class_name: 'error-notice'
+                                });
+                            }
+                        }, complete: function (dt) {
+                            $(".btn-salvar-hide-atributo").addClass("btn-salvar-atributo");
+                            $(".btn-salvar-atributo").removeClass("btn-salvar-hide-atributo");
+                        }
+                     });
+                });
+
+                //salvar atributo
+                $(document).on("click", ".btn-salvar-atributo", function(){
+                    var base = $(this).parents(".row-atributo");
+                    var id = $(this).data('id');
+                    var id_tipo = base.find('.tipo_atributo').val();
+                    var id_conjunto = base.find('.id_conjunto_atributo').val();
+                    var nome = base.find('.nome_atributo').val();
+                    var descricao = base.find('.descricao_atributo').val();
+                    var preco = base.find('.preco_atributo').val();
+                    var selecionado = base.find('.selecionado').filter(':checked').val();
+                    var ampliar_fotos = base.find('.ampliar_fotos').filter(':checked').val();
+
+                    base.css('opacity', '0.7');
+
+                    $.post("<?php echo $this->getModule(); ?>/saveAtributo",
+                        {
+                            id: id,
+                            id_conjunto_atributo:id_conjunto,
+                            id_tipo: id_tipo,
+                            nome : nome,
+                            descricao:descricao,
+                            custo: preco,
+                            selecionado: selecionado,
+                            ampliar_fotos: ampliar_fotos
+
+                        }, function( dt ) {
+
+                    }, "json").done(function(dt){
+                        if (dt.type == "success") {
+                            $.gritter.add({
+                                title: 'Pronto !!!',
+                                text: dt.message,
+                                time: '',
+                                close_icon: 'entypo-icon-cancel s12',
+                                icon: 'icomoon-icon-checkmark-3 ',
+                                class_name: 'success-notice'
+                            });
+                            getConjuntos(id_conjunto);
+                        } else if ((dt.type == "error")) {
+                            $.gritter.add({
+                                title: 'Erro !!!',
+                                text: dt.message,
+                                time: '',
+                                close_icon: 'entypo-icon-cancel s12',
+                                icon: 'cut-icon-alert  ',
+                                class_name: 'error-notice'
+                            });
+                        }
+                    });
+                });
+
+                //apagar atributo
+                $(document).on("click", ".btn-remove-atributo", function(){
+                    var base = $(this).parents(".row-atributo");
+                    var id = $(this).data('id');
+                    var nome = $(this).data('nome');
+                    if (nome != "")
+                        var mensagem = "Deseja realmente remover este registro [" + nome + "] ?";
+                    else
+                        var mensagem = "Deseja realmente remover este registro ?";
+
+                    $.post("<?php echo $this->getModule(); ?>/verifyCustom", { id: id }, function( data ) {
+                        mensagem += data;
+                    }).done(function(data){
+                        bootbox.confirm({
+                            message: mensagem,
+                            title: "Atenção!!!",
+                            className: "modal-style1",
+                            callback: function (result) {
+                                if (result) {
+                                    $.post("<?php echo $this->getModule(); ?>/delAtributo",
+                                        {
+                                            id: id
+                                        }, function( dt ) {
+
+                                    }, "json").done(function(dt){
+                                        if (dt.type == "success") {
+                                            $.gritter.add({
+                                                title: 'Pronto !!!',
+                                                text: dt.message,
+                                                time: '',
+                                                close_icon: 'entypo-icon-cancel s12',
+                                                icon: 'icomoon-icon-checkmark-3 ',
+                                                class_name: 'success-notice'
+                                            });
+                                            base.remove();
+                                        } else if ((dt.type == "error")) {
+                                            $.gritter.add({
+                                                title: 'Erro !!!',
+                                                text: dt.message,
+                                                time: '',
+                                                close_icon: 'entypo-icon-cancel s12',
+                                                icon: 'cut-icon-alert  ',
+                                                class_name: 'error-notice'
+                                            });
+                                        }
+                                    });
+                                }
+                            }
+                        });
+
+                    });
+
+
+                });
+
+                //adicionar atributo
+                var c = 0;
+                $(document).on("click",".btn-add-atributo", function(){
+
+                    /*
+                    if($("#itens").find(".novo-atributo").length) {
+                        $.gritter.add({
+                            title: 'Erro !!!',
+                            text: "Adicione um atributo por vez, tente novamente após salvar o atributo aberto!",
+                            time: '10000',
+                            close_icon: 'entypo-icon-cancel s12',
+                            icon: 'cut-icon-alert  ',
+                            class_name: 'error-notice'
+                        });
+                        exit;
+                    }
+                    */
+
+
+
+                    c++;
+                    var base = $(this).parents(".panel-body");
+                    var id_conjunto = $(this).data("id-conjunto");
+
+                    $.post("<?php echo $this->getModule(); ?>/addAtributo", { id_conjunto: id_conjunto, c: c }, function( data ) {
+                        base.find(".row-atributo:last").after(data);
+                    }).done(function(data){
+                        setTimeout(function(){
+                            $("html, body, .main").animate({scrollTop: base.find(".row-atributo:last").offset().top - 150}, 200);
+                            uniform();
+                            base.find(".btn-toggle-inner:last").trigger("click");
+                        }, 200);
+                    });
+                });
+
+                //apagar imagem
+                $(document).on("click", ".close-img", function(){
+                    var base = $(this).parents(".row-atributo");
+                    var id = base.find('.btn-remove-atributo').data("id");
+                    bootbox.confirm({
+                        message: "Deseja realmente remover esta imagem ?",
+                        title: "Atenção!!!",
+                        className: "modal-style1",
+                        callback: function (result) {
+                            if (result) {
+                                $.post("<?php echo $this->getModule(); ?>/delImage",
+                                    {
+                                        id: id
+
+                                    }, function( dt ) {
+
+                                }, "json").done(function(dt){
+                                    if (dt.type == "success") {
+                                        $.gritter.add({
+                                            title: 'Pronto !!!',
+                                            text: dt.message,
+                                            time: '',
+                                            close_icon: 'entypo-icon-cancel s12',
+                                            icon: 'icomoon-icon-checkmark-3 ',
+                                            class_name: 'success-notice'
+                                        });
+                                        var src = 'images/no-image.gif';
+                                        //base.find('img').removeClass("marginR10");
+                                        //base.find('img').removeClass("image");
+                                        base.find('img').attr("src", src);
+                                        //getConjuntos();
+                                    } else if ((dt.type == "error")) {
+                                        $.gritter.add({
+                                            title: 'Erro !!!',
+                                            text: dt.message,
+                                            time: '',
+                                            close_icon: 'entypo-icon-cancel s12',
+                                            icon: 'cut-icon-alert  ',
+                                            class_name: 'error-notice'
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    });
+
+                });
+
+                var sortable_array_conjunto = [];
+
+                //valor referente ao método a ser acionado (usado para ordenação de conjunto ou atributo)
+                var alvo = "";
+
+                //carrega tabela para ordenação de conjuntos
+                $(document).on("click", ".btn-order-conjunto", function(){
+                    var base = $(this).parents(".row-atributo");
+                    var id = $(this).data('id');
+
+                    $("#sortablesubmitConjunto").removeClass("relsubmit");
+                    $("#sortablesubmitConjunto").addClass("sortablesubmitConjunto");
+
+                    alvo = "/orderConjunto";
+
+                    sortable_array_conjunto = []
+
+                    $("#myModalLabel").html("Ordenar Conjunto de Atributos");
+
+                    $.post("<?php echo $this->getModule();?>/getTableConjunto", { id: id }, function( dt ) {
+                        $("#myModalContent").html(dt);
+
+                        $(document).find(".tabletools").dataTable( {
+                            "oLanguage": {
+                                "sSearch": "",
+                                "sLengthMenu": "<span>_MENU_</span>",
+                                "sProcessing":   "Processando...",
+                                "sZeroRecords":  "Não foram encontrados resultados",
+                                "sInfo":         "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                                "sInfoEmpty":    "Mostrando de 0 até 0 de 0 registros",
+                                "sInfoFiltered": "(filtrado de _MAX_ registros no total)",
+                                "sInfoPostFix":  "",
+                                "sUrl":         "",
+
+                                "oPaginate": {
+                                    "sFirst":    "Primeiro",
+                                    "sPrevious": "Anterior",
+                                    "sNext":     "Seguinte",
+                                    "sLast":     "Último"
+                                }
+                            },
+
+                            "sDom": "T<'row'<'col-md-6 col-xs-12 'l><'col-md-6 col-xs-12'f>r>t<'row'<'col-md-4 col-xs-12'i><'col-md-8 col-xs-12'p>>",
+                            "aaSorting":[[0,"asc"]], "iDisplayLength": 100,
+                            tableTools: {
+                                "sSwfPath": "http://cdn.datatables.net/tabletools/2.2.2/swf/copy_csv_xls_pdf.swf",
+                                "aButtons": [
+                              ]
+                            }
+                        });
+
+                        $(".dataTables_filter").remove();
+                        $(".dataTables_length").remove();
+                        $(".dataTables_paginate").remove();
+                        $(".dataTables_wrapper").css("margin-top","-20px");
+
+
+                        $(document).find("table.sortable_conjunto").sortable({
+                            opacity: 0.7, cursor: 'move', axis: 'y', items: "tbody tr", update: function (e, ui) {
+                                sortable_array_conjunto = $(this).sortable("toArray");
+                            }
+                        });
+
+                        $("#sortablesubmitConjunto").show();
+                        $(".getModal").trigger("click");
+                        uniform();
+
+                    });
+
+                });
+
+                //carrega tabela para ordenação de atributos
+                $(document).on("click", ".btn-order-atributo", function(){
+                    var base = $(this).parents(".row-atributo");
+                    var id = $(this).data('id-conjunto');
+                    var nome = $(this).data('nome');
+
+                    $("#sortablesubmitConjunto").removeClass("relsubmit");
+                    $("#sortablesubmitConjunto").addClass("sortablesubmitConjunto");
+
+                    alvo = "/orderAtributo";
+
+                    sortable_array_conjunto = []
+
+                    $("#myModalLabel").html("Ordenar Atributos do Conjunto " + nome);
+
+                    $.post("<?php echo $this->getModule();?>/getTableAtributo", { id: id }, function( dt ) {
+                        $("#myModalContent").html(dt);
+
+                        $(document).find(".tabletools").dataTable( {
+                            "oLanguage": {
+                                "sSearch": "",
+                                "sLengthMenu": "<span>_MENU_</span>",
+                                "sProcessing":   "Processando...",
+                                "sZeroRecords":  "Não foram encontrados resultados",
+                                "sInfo":         "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                                "sInfoEmpty":    "Mostrando de 0 até 0 de 0 registros",
+                                "sInfoFiltered": "(filtrado de _MAX_ registros no total)",
+                                "sInfoPostFix":  "",
+                                "sUrl":         "",
+
+                                "oPaginate": {
+                                    "sFirst":    "Primeiro",
+                                    "sPrevious": "Anterior",
+                                    "sNext":     "Seguinte",
+                                    "sLast":     "Último"
+                                }
+                            },
+
+                            "sDom": "T<'row'<'col-md-6 col-xs-12 'l><'col-md-6 col-xs-12'f>r>t<'row'<'col-md-4 col-xs-12'i><'col-md-8 col-xs-12'p>>",
+                            "aaSorting":[[0,"asc"]], "iDisplayLength": 100,
+                            tableTools: {
+                                "sSwfPath": "http://cdn.datatables.net/tabletools/2.2.2/swf/copy_csv_xls_pdf.swf",
+                                "aButtons": [
+                              ]
+                            }
+
+                        });
+
+                        $(".dataTables_filter").remove();
+                        $(".dataTables_length").remove();
+                        $(".dataTables_paginate").remove();
+                        $(".dataTables_wrapper").css("margin-top","-20px");
+
+
+                        $(document).find("table.sortable_conjunto").sortable({
+                            opacity: 0.7, cursor: 'move', axis: 'y', items: "tbody tr", update: function (e, ui) {
+                                sortable_array_conjunto = $(this).sortable("toArray");
+                            }
+                        });
+
+                        $("#sortablesubmitConjunto").show();
+                        $(".getModal").trigger("click");
+
+                        $("a[rel^='prettyPhoto']").prettyPhoto({
+                            default_width: 800,
+                            default_height: 600,
+                            theme: 'facebook',
+                            social_tools: false,
+                            show_title: false
+                        });
+
+                        uniform();
+
+                    });
+                });
+
+                //salva ordenação
+                $(document).on("click", ".sortablesubmitConjunto", function (e) {
+                    e.preventDefault();
+                    $(document).find("table.sortable_conjunto").fadeTo(500, 0.5, function () {
+                        $.post("<?php echo $this->getModule(); ?>" + alvo, {"array": sortable_array_conjunto}, function (data) {
+                            $(document).find("table.sortable_conjunto").fadeTo(500, 1);
+                            $.gritter.add({
+                                title: 'Pronto !!!',
+                                text: 'Conjunto ordenado com sucesso !!!',
+                                time: '',
+                                close_icon: 'entypo-icon-cancel s12',
+                                icon: 'icomoon-icon-checkmark-3 ',
+                                class_name: 'success-notice'
+                            });
+                            $(document).find(".close").trigger("click");
+                            getConjuntos();
+                        });
+                    });
+                });
+
+                //chama modal para relacionar atributos
+                $(document).on("click", ".btn-rel-atributo", function(){
+                    var base = $(this).parents(".row-atributo");
+                    var id = $(this).data('id');
+                    var id_conjunto = $(this).data('id-conjunto');
+                    var nome = $(this).data('nome');
+
+                    $("#sortablesubmitConjunto").removeClass("sortablesubmitConjunto");
+                    $("#sortablesubmitConjunto").addClass("relsubmit");
+
+                    $("#myModalLabel").html("Relacionar o Atributo " + nome);
+
+                    $.post("<?php echo $this->getModule();?>/getTableRel", { id: id, id_produto: id_produto, id_conjunto: id_conjunto }, function( dt ) {
+                        $("#myModalContent").html(dt);
+                        $("#sortablesubmitConjunto").hide();
+                        $(".getModal").trigger("click");
+                        uniform();
+                    });
+
+
+                });
+
+
+                //relaciona atributos
+                $(document).on("click", ".selecionar_atributo", function(e){
+                    e.preventDefault();
+                    var base = $(this).find('input');
+
+                    var pai = base.data("id-pai");
+                    var filho = base.data("id-filho");
+                    var valor = base.val();
+
+                    base.prop('checked', true);
+
+                    if (valor == 1) {
+                        var msg = "Conjunto Desabilitado !!!";
+                    } else {
+                        var msg = "Conjunto Habilitado !!!";
+                    }
+
+                    $.post("<?php echo $this->getModule(); ?>/setAtributoRel", { pai: pai, filho: filho, valor:valor }, function( dt ) {
+
+                        $.gritter.add({
+                            title: 'Pronto !!!',
+                            text: msg,
+                            time: '',
+                            close_icon: 'entypo-icon-cancel s12',
+                            icon: 'icomoon-icon-checkmark-3 ',
+                            class_name: 'success-notice'
+                        });
+                    });
+                });
+
+
+                //validação tipo do atributo + descrição
+                $(document).on("change", ".tipo_atributo", function(){
+                    var base_panel = $(this).parents(".panel-body");
+                    var base = $(this).parents(".row-atributo");
+                    var base_tipo = $(this).parents(".row-conjunto").find( ".tipo_atributo" );
+                    var descricao_atributo = base.find(".descricao_atributo");
+                    var id = $(this).val();
+                    $("span.click-form").remove();
+
+                    $("input, textarea, select").css("border-color", "");
+
+                    if ((descricao_atributo.val() == "" && $(this).val() == 8) || (descricao_atributo.val().indexOf("youtu") == -1) && $(this).val() == 8) {
+                        descricao_atributo.after("<span class='click-form msg_nome_conjunto_atributos'></span>");
+                        descricao_atributo.css("border-color", "#b9110d");
+                        $("span.msg_nome_conjunto_atributos").css($styles.messageTipBoxInner);
+                        $("span.msg_nome_conjunto_atributos").html("Preencha este campo com o Link do Youtube");
+                    }
+
+
+                    var idS = "";
+                    base_tipo.each(function() {
+                        if($(this).val() != "") {
+                            if (id == $(this).val()) {
+                                if (idS == id) {
+                                    base_tipo.find('option[value='+$(this).val()+']').removeAttr('selected');
+                                    base.find('option[value='+id+']').attr('selected','selected');
+
+                                    $.gritter.add({
+                                        title: 'Aguarde !!!',
+                                        text: "Não é possível repetir o tipo de atributo no mesmo conjunto, estamos reorganizando!!!",
+                                        time: 10000,
+                                        close_icon: 'entypo-icon-cancel s12',
+                                        icon: 'icomoon-icon-checkmark-3 ',
+                                        class_name: 'warning-notice'
+                                    });
+
+                                    base_panel.find(".selecionado").each(function () {
+                                        var base = $(this).parents(".row-atributo");
+                                        var id = base.find(".btn-salvar-atributo").data('id');
+                                        var id_tipo = base.find('.tipo_atributo').val();
+                                        var id_conjunto = base.find('.id_conjunto_atributo').val();
+                                        var nome = base.find('.nome_atributo').val();
+                                        var descricao = base.find('.descricao_atributo').val();
+                                        var preco = base.find('.preco_atributo').val();
+                                        var selecionado = base.find('.selecionado').filter(':checked').val();
+                                        var ampliar_fotos = base.find('.ampliar_fotos').filter(':checked').val();
+
+                                        $("#itens").css("opacity","0.5");
+
+                                        //não permitir que novo atributo ainda não salvo seja criado
+                                        if($("#itens").find(".novo-atributo").length) {
+                                            if (typeof id == "undefined" || id == "")
+                                                id = -1;
+                                        }
+
+                                        $.post("<?php echo $this->getModule(); ?>/saveAtributo",
+                                            {
+                                                id: id,
+                                                id_conjunto_atributo:id_conjunto,
+                                                id_tipo: id_tipo,
+                                                nome : nome,
+                                                descricao:descricao,
+                                                custo: preco,
+                                                selecionado: selecionado,
+                                                ampliar_fotos: ampliar_fotos
+
+                                            }, function( dt ) {
+
+                                        }, "json").done(function(dt){
+
+                                            setTimeout(function(){ $("#itens").css("opacity",1); }, 3000);
+
+                                            if (dt.type == "success") {
+
+                                            } else if ((dt.type == "error")) {
+
+                                            }
+                                        });
+                                    });
+
+
+
+                                    uniform();
+                                }
+                                idS = id;
+
+                            }
+                        }
+                    });
+
+
+                });
+
+                //validação descrição
+                $(document).on("keyup blur", ".descricao_atributo", function(){
+                    var base = $(this).parents(".row-atributo");
+                    base.find(".tipo_atributo").trigger("change");
+                });
+
+
+               //impedir que dois atributos fiquem como selecionados
+               $(document).on("change", ".selecionado", function(e) {
+                    e.preventDefault();
+                    var base = $(this).parents(".panel-body");
+
+                    var ids = 0;
+                    base.find(".selecionado").each(function () {
+                        if($(this).is(':checked')) {
+                            if($(this).val() == 1 && ids == 1) {
+                                ids = 2;
+                            }
+
+                            if ($(this).val() == 1 && ids == 0) {
+                                ids = 1;
+                            }
+                        }
+                    });
+
+                    if (ids == 2) {
+
+                        base.find(".selecionado.falso").prop('checked', true);
+                        $(this).prop('checked', true);
+                        uniform();
+
+                        $.gritter.add({
+                            title: 'Aguarde !!!',
+                            text: "Não é possível deixar mais de um atributo selecionado no mesmo conjunto, estamos reorganizando!!!",
+                            time: 10000,
+                            close_icon: 'entypo-icon-cancel s12',
+                            icon: 'icomoon-icon-checkmark-3 ',
+                            class_name: 'warning-notice'
+                        });
+
+                        base.find(".selecionado").each(function () {
+                            var base = $(this).parents(".row-atributo");
+                            var id = base.find(".btn-salvar-atributo").data('id');
+                            var id_tipo = base.find('.tipo_atributo').val();
+                            var id_conjunto = base.find('.id_conjunto_atributo').val();
+                            var nome = base.find('.nome_atributo').val();
+                            var descricao = base.find('.descricao_atributo').val();
+                            var preco = base.find('.preco_atributo').val();
+                            var selecionado = base.find('.selecionado').filter(':checked').val();
+                            var ampliar_fotos = base.find('.ampliar_fotos').filter(':checked').val();
+
+
+                            $("#itens").css("opacity","0.5");
+
+                            //não permitir que novo atributo ainda não salvo seja criado
+                            if($("#itens").find(".novo-atributo").length) {
+                                if (typeof id == "undefined" || id == "")
+                                    id = -1;
+                            }
+
+                            $.post("<?php echo $this->getModule(); ?>/saveAtributo",
+                                {
+                                    id: id,
+                                    id_conjunto_atributo:id_conjunto,
+                                    id_tipo: id_tipo,
+                                    nome : nome,
+                                    descricao:descricao,
+                                    custo: preco,
+                                    selecionado: selecionado,
+                                    ampliar_fotos: ampliar_fotos
+
+                                }, function( dt ) {
+
+                            }, "json").done(function(dt){
+                                setTimeout(function(){ $("#itens").css("opacity","1"); }, 3000);
+
+
+                                if (dt.type == "success") {
+
+                                } else if ((dt.type == "error")) {
+
+                                }
+                            });
+
+                        });
+                    }
+                });
+
+                //abrir e fechar box conjuntos
+                $(document).on("click", ".btn-toggle", function(){
+                    base = $(this).parents(".row-conjunto");
+
+                    if (base.find(".toggle-conjunto.icomoon-icon-minus").length ){
+                        base.find(".toggle-conjunto").removeClass("icomoon-icon-minus");
+                        base.find(".toggle-conjunto").addClass("icomoon-icon-plus");
+                        base.find(".panel-body:first").show();
+                    } else {
+                        base.find(".toggle-conjunto").removeClass("icomoon-icon-plus");
+                        base.find(".toggle-conjunto").addClass("icomoon-icon-minus");
+                        base.find(".panel-body:first").slideUp();
+
+                    }
+
+                    $("html, body, .main").animate({scrollTop: base.offset().top}, 1000);
+
+
+                });
+
+                //abrir e fechar box atributos
+                $(document).on("click", ".btn-toggle-inner", function(){
+                    base = $(this).parents(".row-atributo");
+
+                    if (base.find(".toggle-atributo.icomoon-icon-minus").length ){
+                        base.find(".toggle-atributo").removeClass("icomoon-icon-minus");
+                        base.find(".toggle-atributo").addClass("icomoon-icon-plus");
+                        base.find(".panel-body:first").show();
+                    } else {
+                        base.find(".toggle-atributo").removeClass("icomoon-icon-plus");
+                        base.find(".toggle-atributo").addClass("icomoon-icon-minus");
+                        base.find(".panel-body").slideUp();
+                    }
+
+                    $("html, body, .main").animate({scrollTop: base.offset().top -100}, 1000);
+                });
+
+
+            });
+
+
+        </script>
+    </body>
+</html>

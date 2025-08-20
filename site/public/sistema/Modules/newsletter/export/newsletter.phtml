@@ -1,0 +1,18 @@
+<table border="1">
+    <tr>
+        <th>Data</th>
+        <th>E-mail</th>
+    </tr>
+    <?php
+    if ($this->dados->num_rows) {
+        foreach ($this->dados->rows as $registro) {
+            ?>
+            <tr>
+                <td><?php echo $registro["data"]; ?></td>
+                <td><?php echo $registro["email"]; ?></td>
+            </tr>
+            <?php
+        }
+    }
+    ?>
+</table>

@@ -1,0 +1,428 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+    
+    </head>  
+    
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-s-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-s-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                    <i class="s16 <?php echo $this->module_icon; ?>"></i>                                    
+                                </a>
+                            </li>
+                            <span class="divider">
+                                <i class="s16 icomoon-s-arrow-right-3"></i>
+                            </span>
+                            <li class="active">Registro</li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+                  
+                    <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                        <input type="hidden" name="id" value="" />
+                        <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados do Conjunto</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="nome">Nome:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="nome" id="nome" type="text" value="<?php echo $this->registro['nome'] ?> (Cópia)" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        
+                                        <div class="form-group form-group-vertical node">
+                                            <label class="col-lg-2 control-label" for="">Tipo: </label>
+                                            <div class="col-lg-10">
+                                                <select class="form-control input-sm estado" name="id_tipo" id="id_tipo">
+                                                    <option value="">Selecione..</option>
+                                                    <?php if ($this->tipos->num_rows) : ?>
+                                                        <?php foreach ($this->tipos->rows as $tipo) : ?>
+                                                            <option <?php if ($tipo['id'] == $this->registro['id_tipo']) echo 'selected'; ?> value="<?php echo $tipo['id']; ?>"><?php echo $tipo['nome']; ?></option>
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="prazo_capital_padrao">Prazo Padrão - Capital:</label>
+                                            <div class="col-lg-4">
+                                                <input class="form-control" name="prazo_capital_padrao" id="prazo_capital_padrao" type="text" value="<?php echo $this->registro['prazo_capital_padrao'] ?>" />
+                                                
+                                            </div><!-- End .form-group  -->
+                                            <label class="col-lg-2 control-label" for="preco_capital_padrao">Preço Padrão - Capital:</label>
+                                            <div class="col-lg-4">
+                                                <input onKeyUp="moeda(this);" onKeyPress="return checkIt(event)" class="form-control" name="preco_capital_padrao" id="preco_capital_padrao" type="text" value="<?php echo $this->formataMoedaShow($this->registro['preco_capital_padrao']) ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="prazo_padrao">Prazo Padrão - Interior:</label>
+                                            <div class="col-lg-4">
+                                                <input class="form-control" name="prazo_padrao" id="prazo_padrao" type="text" value="<?php echo $this->registro['prazo_padrao'] ?>" />
+                                                
+                                            </div><!-- End .form-group  -->
+                                            <label class="col-lg-2 control-label" for="preco_padrao">Preço Padrão - Interior:</label>
+                                            <div class="col-lg-4">
+                                                <input onKeyUp="moeda(this);" onKeyPress="return checkIt(event)" class="form-control" name="preco_padrao" id="preco_padrao" type="text" value="<?php echo $this->formataMoedaShow($this->registro['preco_padrao']) ?>" />
+                                                
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Não Entregamos</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <span class="rows-negar">
+                                            <?php if (!$this->negados->num_rows) :?>
+                                                <div class="form-group form-group-vertical node_negar">
+                                                    <label class="col-lg-2 control-label" for=""></label>
+                                                    <div class="col-lg-2">
+                                                        <select class="form-control input-sm estado" name="estado_negar[]">
+                                                            <option value="">Estado..</option>
+                                                            <?php if ($this->estados->num_rows) : ?>
+                                                                <?php foreach ($this->estados->rows as $estado) : ?>
+                                                                    <option value="<?php echo $estado['id']; ?>"><?php echo $estado['nome']; ?></option>
+                                                                <?php endforeach; ?>
+                                                            <?php endif; ?>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <select class="form-control input-sm cidade" name="cidade_negar[]">
+                                                            <option value="">Selecione o Estado..</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="col-lg-2">
+                                                        <button type="button" class="btn btn-primary btn-plus-negar">+</button>
+                                                        <button type="button" class="btn btn-danger btn-minus-negar">x</button>
+                                                    </div>
+                                                </div>
+                                            <?php else: ?>
+
+                                                <?php foreach ($this->negados->rows as $negado) : ?>
+                                                <?php
+                                                    $cidades = $this->DB_fetch_array("SELECT * FROM tb_config_cidades WHERE id_estado = {$negado['id_estado']} ORDER BY nome");
+                                                ?>
+                                                    <div class="form-group form-group-vertical node_negar">
+                                                        <label class="col-lg-2 control-label" for=""></label>
+                                                        <div class="col-lg-2">
+                                                            <select class="form-control input-sm estado" name="estado_negar[]">
+                                                                <option value="">Estado..</option>
+                                                                <?php if ($this->estados->num_rows) : ?>
+                                                                    <?php foreach ($this->estados->rows as $estado) : ?>
+                                                                        <option <?php if ($negado['id_estado'] == $estado['id']) echo "selected"; ?> value="<?php echo $estado['id']; ?>"><?php echo $estado['nome']; ?></option>
+                                                                    <?php endforeach; ?>
+                                                                <?php endif; ?>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-lg-2">
+                                                            <select class="form-control input-sm cidade" name="cidade_negar[]">
+                                                                <option value=''>Cidade..</option>
+                                                                <?php if ($cidades->num_rows) : ?>
+                                                                    <?php foreach ($cidades->rows as $cidade) : ?>
+                                                                        <option <?php  if ($negado['id_cidade'] == $cidade['id']) echo "selected"; ?> value="<?php echo $cidade['id']; ?>"><?php echo $cidade['nome']; ?></option>
+                                                                    <?php endforeach; ?>
+                                                                <?php endif; ?>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="col-lg-2">
+                                                            <button type="button" class="btn btn-primary btn-plus-negar">+</button>
+                                                            <button type="button" class="btn btn-danger btn-minus-negar">x</button>
+                                                        </div>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                                
+                                            
+                                            <?php endif; ?>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Preços e Prazos Personalizados</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <span class="rows">
+                                            <?php if (!$this->customizados->num_rows) :?>
+                                                <div class="form-group form-group-vertical node">
+                                                    <label class="col-lg-2 control-label" for=""></label>
+                                                    <div class="col-lg-2">
+                                                        <select class="form-control input-sm estado" name="estado[]">
+                                                            <option value="">Estado..</option>
+                                                            <?php if ($this->estados->num_rows) : ?>
+                                                                <?php foreach ($this->estados->rows as $estado) : ?>
+                                                                    <option value="<?php echo $estado['id']; ?>"><?php echo $estado['nome']; ?></option>
+                                                                <?php endforeach; ?>
+                                                            <?php endif; ?>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <select class="form-control input-sm cidade" name="cidade[]">
+                                                            <option value="">Selecione o Estado..</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <input placeholder="Prazo" class="form-control prazo" name="prazo[]" type="text" value="" />
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <input placeholder="Preço" onKeyUp="moeda(this);" onKeyPress="return checkIt(event)" class="form-control preco" name="preco[]" type="text" value="" />
+                                                    </div>
+
+                                                    <div class="col-lg-2">
+                                                        <button type="button" class="btn btn-primary btn-plus">+</button>
+                                                        <button type="button" class="btn btn-danger btn-minus">x</button>
+                                                    </div>
+                                                </div>
+                                            <?php else: ?>
+
+                                                <?php foreach ($this->customizados->rows as $customizado) : ?>
+                                                <?php
+                                                    $cidades = $this->DB_fetch_array("SELECT * FROM tb_config_cidades WHERE id_estado = {$customizado['id_estado']} ORDER BY nome");
+                                                ?>
+
+                                                <?php
+                                                    if ($customizado['preco'] != "")
+                                                        $customizado['preco'] = $this->formataMoedaShow($customizado['preco']);
+                                                ?>
+                                                    <div class="form-group form-group-vertical node">
+                                                        <label class="col-lg-2 control-label" for=""></label>
+                                                        <div class="col-lg-2">
+                                                            <select class="form-control input-sm estado" name="estado[]">
+                                                                <option value="">Estado..</option>
+                                                                <?php if ($this->estados->num_rows) : ?>
+                                                                    <?php foreach ($this->estados->rows as $estado) : ?>
+                                                                        <option <?php if ($customizado['id_estado'] == $estado['id']) echo "selected"; ?> value="<?php echo $estado['id']; ?>"><?php echo $estado['nome']; ?></option>
+                                                                    <?php endforeach; ?>
+                                                                <?php endif; ?>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-lg-2">
+                                                            <select class="form-control input-sm cidade" name="cidade[]">
+                                                                <option value=''>Cidade..</option>
+                                                                <?php if ($cidades->num_rows) : ?>
+                                                                    <?php foreach ($cidades->rows as $cidade) : ?>
+                                                                        <option <?php  if ($customizado['id_cidade'] == $cidade['id']) echo "selected"; ?> value="<?php echo $cidade['id']; ?>"><?php echo $cidade['nome']; ?></option>
+                                                                    <?php endforeach; ?>
+                                                                <?php endif; ?>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-lg-2">
+                                                            <input placeholder="Prazo" class="form-control prazo" name="prazo[]" type="text" value="<?php echo $customizado['prazo']; ?>" />
+                                                        </div>
+                                                        <div class="col-lg-2">
+                                                            <input placeholder="Preço" onKeyUp="moeda(this);" onKeyPress="return checkIt(event)" class="form-control preco" name="preco[]" type="text" value="<?php echo $customizado['preco']; ?>" />
+                                                        </div>
+
+                                                        <div class="col-lg-2">
+                                                            <button type="button" class="btn btn-primary btn-plus">+</button>
+                                                            <button type="button" class="btn btn-danger btn-minus">x</button>
+                                                        </div>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                                
+                                            
+                                            <?php endif; ?>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="row">
+                            <?php if ($this->id==""): ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['gravar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning "><span class="s24 typ-s-warning"></span>Você não tem permissão para gravar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar novo</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php else: ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['editar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning"><span class="s24 icomoon-s-warning "></span>Você não tem permissão para editar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar alterações</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php endif ?>
+                        </div><!-- End .row -->  
+                    </form>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+        <script type="text/javascript" src="plugins/forms/dualselect/jquery.dualListBox-1.3.min.js"></script>
+        <script type="text/javascript">
+
+            function moeda(z){  
+                v = z.value;
+                v=v.replace(/\D/g,"")  //permite digitar apenas números
+                v=v.replace(/[0-9]{12}/,"inválido")   //limita pra máximo 999.999.999,99
+                v=v.replace(/(\d{1})(\d{8})$/,"$1.$2")  //coloca ponto antes dos últimos 8 digitos
+                v=v.replace(/(\d{1})(\d{5})$/,"$1.$2")  //coloca ponto antes dos últimos 5 digitos
+                v=v.replace(/(\d{1})(\d{1,2})$/,"$1,$2")	//coloca virgula antes dos últimos 2 digitos
+                z.value = v;
+            }
+            
+            $(document).ready(function(){
+
+                $("#cep_init, #cep_end").mask("##.###-###");
+                $(".prazo").mask("#########");
+                
+                $(document).on("change", ".estado", function() {
+                    var base = $(this).parents('.form-group');
+                    var cidades = base.find(".cidade");
+                    var id = $(this).val();
+                    $.post("<?php echo $this->getModule();?>/getCidades", { id: id }, function( data ) {
+                        cidades.html(data);
+                    });
+                });
+                
+                $(document).on("click", ".btn-plus", function(){
+                    $.post("<?php echo $this->getModule();?>/getCustom", function( data ) {
+                        $(".rows").append(data);
+                    });
+                });
+                
+                $(document).on("click", ".btn-minus", function(){
+                    var este = $(this).parents(".node");
+                    bootbox.confirm({
+                        message: "Deseja realmente remover este registro ?",
+                        title: "Atenção!!!",
+                        className: "modal-style1",
+                        callback: function (result) {
+                            if (result) {
+                                este.remove();
+                                if (!$(".node")[0]) {
+                                    $.post("<?php echo $this->getModule();?>/getCustom", function( data ) {
+                                        $(".rows").append(data);
+                                    });
+                                }                                    
+                                $.gritter.add({
+                                    title: 'Pronto !!!',
+                                    text: "Clique em Salvar para confirmar !!!",
+                                    time: '',
+                                    close_icon: 'entypo-icon-cancel s12',
+                                    icon: 'icomoon-icon-checkmark-3 ',
+                                    class_name: 'success-notice'
+                                });
+                            }
+                        }
+                    });
+                    plugin.centerModal();
+                });
+                
+                $(document).on("click", ".btn-plus-negar", function(){
+                    $.post("<?php echo $this->getModule();?>/getNegar", function( data ) {
+                        $(".rows-negar").append(data);
+                    });
+                });
+                
+                $(document).on("click", ".btn-minus-negar", function(){
+                    var este = $(this).parents(".node_negar");
+                    bootbox.confirm({
+                        message: "Deseja realmente remover este registro ?",
+                        title: "Atenção!!!",
+                        className: "modal-style1",
+                        callback: function (result) {
+                            if (result) {
+                                este.remove();
+                                if (!$(".node_negar")[0]) {
+                                    $.post("<?php echo $this->getModule();?>/getNegar", function( data ) {
+                                        $(".rows-negar").append(data);
+                                    });
+                                }                                    
+                                $.gritter.add({
+                                    title: 'Pronto !!!',
+                                    text: "Clique em Salvar para confirmar !!!",
+                                    time: '',
+                                    close_icon: 'entypo-icon-cancel s12',
+                                    icon: 'icomoon-icon-checkmark-3 ',
+                                    class_name: 'success-notice'
+                                });
+                            }
+                        }
+                    });
+                    plugin.centerModal();
+                });
+                
+            });
+        </script>
+    </body>
+</html>

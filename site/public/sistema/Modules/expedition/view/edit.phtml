@@ -1,0 +1,353 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+</head>
+
+<body>
+    <?php require_once "layouts/header.phtml"; ?>
+
+    <!-- / #header -->
+    <div id="wrapper">
+    <!-- #wrapper -->
+
+        <?php  require_once "layouts/sidebar.phtml"; ?>
+
+        <!--Body content-->
+        <div id="content" class="page-content clearfix">
+            <!--Content wrapper-->
+            <div class="contentwrapper">
+                <!-- .heading -->
+                <div class="heading">
+                    <h3><?php echo $this->module_title; ?></h3>
+                    <ul class="breadcrumb">
+                        <li>Você está aqui:</li>
+                        <li>
+                            <a href="#" class="tip" title="Painel">
+                                <i class="s16 icomoon-icon-screen-2"></i>
+                            </a>
+                            <span class="divider">
+                                <i class="s16 icomoon-icon-arrow-right-3"></i>
+                            </span>
+                        </li>
+                        <li>
+                            <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                <i class="s16 <?php echo $this->module_icon; ?>"></i>                                    
+                            </a>
+                        </li>
+                        <span class="divider">
+                            <i class="s16 icomoon-icon-arrow-right-3"></i>
+                        </span>
+                        <li class="active">Registro</li>
+                    </ul>
+                </div>
+                <!-- End .heading-->
+
+                <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                    <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                    <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+
+                    <!-- Start .row -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <!-- Start .panel -->
+                            <div class="panel panel-default toggle panelClose">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">Dados do Conjunto de Etiquetas</h4>
+                                </div>
+                                <!-- Start .panel-body -->
+                                <div class="panel-body">
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="id_pedido">Pedido:</label>
+                                        <div class="col-lg-10">
+                                            <input class="form-control" name="id_pedido" id="id_pedido" type="text" value="<?php echo $this->registro['id_pedido']; ?>"/>
+                                            <label id="id_pedido_error" class="help-block" for="id_pedido" style="display: none;">ID inválido</label>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="id_transportadora">Transportadora:</label>
+                                        <div class="col-lg-10">
+                                            <select class="form-control input-sm" id="id_transportadora" name="id_transportadora">
+                                                <option value="">Selecione..</option>
+                                                <?php foreach($this->transportadoras as $t) :?>
+                                                <option <?php if ($t['id'] == $this->registro['id_transportadora']) echo "selected"; ?> value="<?php echo $t['id']; ?>"><?php echo $t['nome']; ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="departamento">Departamento:</label>
+                                        <div class="col-lg-10">
+                                            <select class="form-control input-sm" id="departamento" name="departamento">
+                                                <?php foreach($this->departamentos as $value => $label) :?>
+                                                <option <?php if($value == $this->registro['departamento']) echo "selected"; ?> value="<?php echo $value; ?>"><?php echo $label; ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="volumes">Volumes:</label>
+                                        <div class="col-lg-1">
+                                            <input class="form-control" name="volumes" id="volumes" type="number" min="1" value="<?php echo $this->registro['volumes'] ?: 1; ?>"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="data_coleta">Data de Coleta:</label>
+                                        <div class="col-lg-10">
+                                            <input class="form-control" name="data_coleta" id="data_coleta" type="text" value="<?php if($this->registro['data_coleta']) echo $this->formataDataDeBanco($this->registro['data_coleta']); else echo date("d/m/Y"); ?>"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="n_nota">Nota Fiscal:</label>
+                                        <div class="col-lg-10">
+                                            <input class="form-control" name="n_nota" id="n_nota" type="text" value="<?php echo $this->registro['n_nota']; ?>"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="nome">Nome do Cliente:</label>
+                                        <div class="col-lg-10">
+                                            <input class="form-control" name="nome" id="nome" type="text" value="<?php echo $this->registro['nome']; ?>"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="telefone">Telefone:</label>
+                                        <div class="col-lg-10">
+                                            <input class="form-control" name="telefone" id="telefone" type="text" value="<?php echo $this->registro['telefone']; ?>"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="cpf_cnpj">CPF / CNPJ:</label>
+                                        <div class="col-lg-10">
+                                            <input class="form-control" name="cpf_cnpj" id="cpf_cnpj" type="text" value="<?php echo $this->registro['cpf_cnpj']; ?>"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                </div>
+                                <!-- End .panel-body -->
+                            </div>
+                            <!-- End .panel -->
+                        </div>
+                    </div>
+                    <!-- End .row -->
+
+                    <!-- Start .row -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <!-- Start .panel -->
+                            <div class="panel panel-default toggle panelClose">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">Endereço</h4>
+                                </div>
+                                <!-- Start .panel-body -->
+                                <div class="panel-body">
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="cep">CEP:</label>
+                                        <div class="col-lg-10">
+                                            <input class="form-control" name="cep" id="cep" type="text" value="<?php echo $this->registro['cep']; ?>"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="endereco">Endereço:</label>
+                                        <div class="col-lg-10">
+                                            <input class="form-control" name="endereco" id="endereco" type="text" value="<?php echo $this->registro['endereco']; ?>"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="numero">Número:</label>
+                                        <div class="col-lg-10">
+                                            <input class="form-control" name="numero" id="numero" type="text" value="<?php echo $this->registro['numero']; ?>"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="bairro">Bairro:</label>
+                                        <div class="col-lg-10">
+                                            <input class="form-control" name="bairro" id="bairro" type="text" value="<?php echo $this->registro['bairro']; ?>"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="complemento">Complemento:</label>
+                                        <div class="col-lg-10">
+                                            <input class="form-control" name="complemento" id="complemento" type="text" value="<?php echo $this->registro['complemento']; ?>"/>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="id_estado">Estado:</label>
+                                        <div class="col-lg-10">
+                                            <select class="form-control input-sm getcidades" id="id_estado" name="id_estado" data-auto-select-estado="<?php echo $this->registro['id_estado']; ?>" data-auto-select-cidade="<?php echo $this->registro['id_cidade']; ?>">
+                                                <option value="">Selecione..</option>
+                                                <?php foreach ($this->estados as $estado) : ?>
+                                                    <option data-uf="<?php echo $estado['uf'];?>" value="<?php echo $estado['id']; ?>"><?php echo $estado['estado']; ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                    <div class="form-group">
+                                        <label class="col-lg-2 control-label" for="id_cidade">Cidade:</label>
+                                        <div class="col-lg-10">
+                                            <select class="form-control input-sm" id="id_cidade" name="id_cidade">
+                                                <option value="">Selecione..</option>
+                                                <!-- Adicionado por javascript -->
+                                            </select>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+
+                                </div>
+                                <!-- End .panel-body -->
+                            </div>
+                            <!-- End .panel -->
+                        </div>
+                    </div>
+                    <!-- End .row -->
+
+                    <!-- Start .row -->
+                    <div class="row">
+                    <?php if ($this->id == ""): ?>
+                        <?php if (!$this->permissions[$this->permissao_ref]['gravar']): ?>
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <span class="label label-warning "><span class="s24 typ-s-warning"></span>Você não tem permissão para gravar esta função.</span>
+                                </div>
+                            </div><!-- End .form-group  -->   
+                        <?php else: ?>
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <button type="button" class="btn btn-info clickformsubmit">Salvar novo</button>
+                                </div>
+                            </div><!-- End .form-group  -->
+                        <?php endif ?>
+                    <?php else: ?>
+                        <?php if (!$this->permissions[$this->permissao_ref]['editar']): ?>
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <span class="label label-warning"><span class="s24 icomoon-s-warning "></span>Você não tem permissão para editar esta função.</span>
+                                </div>
+                            </div><!-- End .form-group  -->   
+                        <?php else: ?>
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <button type="button" class="btn btn-info clickformsubmit">Salvar alterações</button>
+                                </div>
+                            </div><!-- End .form-group  -->
+                        <?php endif ?>
+                    <?php endif ?>
+                    </div>
+                    <!-- End .row -->
+                </form>
+
+                <?php require_once "layouts/options.phtml"; ?>
+            </div>
+            <!-- End contentwrapper -->
+        </div>
+        <!-- End #content -->
+
+        <?php  require_once "layouts/footer.phtml"; ?>
+    </div>
+
+    <?php  require_once "layouts/plugins.phtml"; ?>
+
+    <script src="../../js/jquery.inputmask.bundle.min.js"></script>
+
+    <!-- Init plugins only for page -->
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#data_coleta").datepicker();
+
+            // Buscar lista de cidades ao selecionar o estado
+            $("#id_estado").change(function () {
+                if ($(this).val() != "") {
+                    var id = $(this).find("option:selected").val();
+                    var cidade = $(this).data('auto-select-cidade');
+                    $("#id_cidade").load("client/cidades/?id=" + id, function() {
+                        // Seleciona automaticamente uma, caso esteja marcada no estado
+                        $(`#id_cidade option[data-cidade="${cidade}"]`).prop('selected', true);
+                        $(`#id_cidade option[value="${cidade}"]`).prop('selected', true);
+                        $('#id_estado').removeData('auto-select-cidade');
+                    });
+                }
+            });
+
+            // Buscar dados automaticamente ao digitar o ID do pedido
+            $("#id_pedido").change(function() {
+                $('#id_pedido_error').hide();
+                $.ajax(`${pagina}/order?id=${$(this).val()}`, {
+                    error: function(req, status, error) {
+                        $('#id_pedido').closest('.form-group').addClass('has-error');
+                        $('#id_pedido_error').show();
+                    },
+                    success: function(data, status, req) {
+                        // Limpa a classe de erro do input
+                        $('#id_pedido').closest('.form-group').removeClass('has-error');
+                        // Processa o resultado
+                        var obj = JSON.parse(data);
+                        Object.keys(obj).map(function (k) {
+                            $(`#${k}`).val(obj[k]);
+                        });
+                        if (obj['id_cidade']) $('#id_estado').data(
+                            'auto-select-cidade', obj['id_cidade']
+                        );
+                        $('#id_estado').change();
+                    }
+                });
+            });
+
+            // Seleciona automaticamente um estado, se registrado
+            if (id = $("#id_estado").data('auto-select-estado')) {
+                $('#id_estado').val(id).change();
+            }
+
+            $('#cep').inputmask({'mask': '99.999-999'});
+            $('#cep').keyup(preencherEndereco);
+
+        });
+
+        function preencherEndereco() {
+            cep = limpaCep($("#cep").val());
+            if (cep.length == 8) {
+                $.get('https://viacep.com.br/ws/' + cep + '/json/', function (resultadoCEP) {
+                    if (!("erro" in resultadoCEP)) {
+                        $('#endereco').val(resultadoCEP.logradouro);
+                        $('#bairro').val(resultadoCEP.bairro);
+                        $('#id_estado option').each(function () {
+                            if ($(this).attr("data-uf") == resultadoCEP.uf) {
+                                $(this).prop("selected", true);
+                                $("#id_estado").attr('data-auto-select-cidade', resultadoCEP.localidade);
+                                $("#id_estado").trigger("change");
+                            }
+                        });
+                    }else{
+                        alert('Esse CEP não foi localizado em nossa base, por favor confira se o mesmo está correto.');
+                    }
+                });
+            }
+        }
+
+        function limpaCep(cep) {
+            cep = cep.replace(/[^0-9.]/g, '');
+            cep = cep.replace('.', '');
+            return cep;
+        }
+    </script>
+
+</body>
+</html>

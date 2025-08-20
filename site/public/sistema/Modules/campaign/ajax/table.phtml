@@ -1,0 +1,142 @@
+
+<?php 
+
+function split_name($string) {
+    $arr = explode(' ', $string);
+    return ucfirst(strtolower($arr[0]));
+}
+
+?>
+<table cellpadding="0" cellspacing="0" border="0" class="tabletools table table-striped table-bordered" width="100%">
+    <thead>
+        <tr>
+            <th class="tal">Pedido</th>
+            <th class="tal">Vendedor</th>
+            <th class="tal">Data</th>
+            <th class="tal">Cliente</th>
+            <th class="tal">Telefone</th>
+            <th class="tal">Cidade</th>
+            <th class="tal">Estado</th>
+            <th class="tal">Método Pagamento</th>
+            <th class="tal">Status</th>
+            <th class="tal">Valor</th>
+            <th class="tal"> </th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if ($this->list->num_rows) : ?>
+            <?php foreach($this->list->rows as $registro): ?>
+                <tr id="<?php echo $registro['pedido']; ?>">
+                    <td class="tal"><a href="order/edit/id/<?php echo $registro['pedido']; ?>"><?php echo $registro['pedido']; ?></a></td>
+                    <td class="tal"><?php echo $registro['vendedor']; ?></td>
+                    <td class="tal"><?php echo $registro['data']; ?></td>
+                    <td class="tal"><?php echo $registro['cliente']; ?></td>
+                    <td class="tal">
+                        <a class="zapzap" 
+                        data-number="55<?php echo preg_replace("/[^0-9]/", "",$registro['telefone']) ?>" 
+                        data-nome="<?php echo split_name($registro['cliente']); ?>" 
+                        data-vendedor="<?php echo $registro['vendedor']; ?>" 
+                        data-cidade="<?php echo $registro['cidade']; ?>" 
+                        data-pedido="<?php echo $registro['pedido']; ?>" 
+                        data-data="<?php echo $registro['data2']; ?>" 
+                        href="#" target="_blank">
+                            <img src="../img/icon_televendas_whatsapp.png" alt="Entre em contato" style="width:25px; margin: 0 5px 0 0;">
+                        </a>
+                        <?php echo $registro['telefone']; ?>
+                    </td>
+                    <td class="tal"><?php echo $registro['cidade']; ?></td>
+                    <td class="tal"><?php echo $registro['estado']; ?></td>
+                    <td class="tal"><?php echo $registro['metodo_pagamento']; ?></td>
+                    <td class="tal"><?php echo $registro['status']; ?></td>
+                    <td class="tal">R$ <?php echo $this->formataMoedaShow($registro['valor_final']); ?></td>
+                    <td class="tal">
+                        <div class="iToggle-button" style="float: left; margin-right: 10px;">
+                            <input type="checkbox" class="nostyle marcar_pedido" value="<?php echo $registro['pedido']; ?>" <?php if($registro['marcado']) echo "checked='checked'" ?>>
+                        </div>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    if($('table').hasClass('tabletools')){
+        $('.tabletools').dataTable( {
+            "oLanguage": {
+                "sSearch": "",
+                "sLengthMenu": "<span>_MENU_</span>",
+                "sProcessing":   "Processando...",                    
+                "sZeroRecords":  "Não foram encontrados resultados",
+                "sInfo":         "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                "sInfoEmpty":    "Mostrando de 0 até 0 de 0 registros",
+                "sInfoFiltered": "(filtrado de _MAX_ registros no total)",
+                "sInfoPostFix":  "",
+                "sUrl":         "",
+
+                "oPaginate": {
+                    "sFirst":    "Primeiro",
+                    "sPrevious": "Anterior",
+                    "sNext":     "Seguinte",
+                    "sLast":     "Último"
+                }
+            },
+            "sDom": "T<'row'<'col-md-6 col-xs-12 'l><'col-md-6 col-xs-12'f>r>t<'row'<'col-md-4 col-xs-12'i><'col-md-8 col-xs-12'p>>",
+            "aaSorting":[[0,"asc"]], "iDisplayLength": 100,
+            tableTools: {
+                "sSwfPath": "http://cdn.datatables.net/tabletools/2.2.2/swf/copy_csv_xls_pdf.swf",
+                "aButtons": [
+              ]
+            }
+        });
+    }
+    $('.iToggle-button').toggleButtons({
+        width: 70,
+        label: {
+            enabled: "<span class='icon16 icomoon-icon-checkmark white'></span>",
+            disabled: "<span class='icon16 icomoon-icon-close white marginL10'></span>"
+        }
+    });
+
+    $(".marcar_pedido").change(function(){
+        var action = "check";
+        var id = $(this).val();
+
+        if($(this).is(":checked")){
+            action = "check";
+        }else{
+            action = "uncheck";
+        }
+
+        $.ajax({
+            url: "<?php echo $this->getModule(); ?>/toggleCheck",
+            type: 'POST',
+            data: {
+                action: action,
+                id: id
+            },
+            dataType: 'json'
+        });
+    });
+
+    $(document).on("click", "a.zapzap", function(event){
+        event.preventDefault();
+        var phone = $(this).data("number");
+        var primeiro_nome = $(this).data("nome");
+        var vendedor = $(this).data("vendedor");
+        var cidade = $(this).data("cidade");
+        var pedido = $(this).data("pedido");
+        var data = $(this).data("data");
+
+        var text = $("#zap_text").val();
+        text = text.replace(/{primeiroNome}/g, primeiro_nome);
+        text = text.replace(/{vendedor}/g, vendedor);
+        text = text.replace(/{cidade}/g, cidade);
+        text = text.replace(/{pedido}/g, pedido);
+        text = text.replace(/{data}/g, data);
+
+        //alert(text);
+        window.open("https://web.whatsapp.com/send?phone="+phone+"&text="+encodeURIComponent(text)); 
+    });
+
+</script>

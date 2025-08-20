@@ -1,0 +1,119 @@
+
+<div class="col-sm-12" style="margin-bottom: 8px;position: relative;padding-top: 15px;">
+    
+    <?php if (!isset($cliente['tipo_cliente']) or $cliente['tipo_cliente'] == 'Não Respondeu' or $cliente['tipo_cliente'] == '')  : ?>
+        <img src="/img/question.png" title="Não Respondeu" alt="Cliente" style="width: 16px;">
+    <?php else : ?>
+        <?php if ($cliente['tipo_cliente'] == 'Clube de Poker')  : ?>
+            <img src="/img/ficha_icon.png" title="Clube de Poker" alt="Cliente" style="width: 16px;">
+        <?php endif; ?>
+        <?php if ($cliente['tipo_cliente'] == 'Home Game')  : ?>
+            <img src="/img/home_game_icon.png" title="Home Game"  alt="Cliente" style="width: 16px;">
+        <?php endif; ?>
+        <?php if ($cliente['tipo_cliente'] == 'Troféus')  : ?>
+            <img src="/img/trophy.png" title="Troféus" alt="Cliente" style="width: 16px;">
+        <?php endif; ?>
+        <?php if ($cliente['tipo_cliente'] == 'Cassino Temático')  : ?>
+            <img src="/img/slot-machine.png" title="Cassino Temático" alt="Cliente" style="width: 16px;">
+        <?php endif; ?>
+    <?php endif;?>
+    <a style="margin-left: 4px" class="s16" href="client/edit/id/<?= $cliente['id_cliente'] ?>" target="_blank"><?= $cliente['nome'] ?></a>
+    <?php if ($cliente['possui_orcamento'] == 0) : ?>
+        <a onclick="modalAgendarCrm(<?= $cliente['id_crm'] ?>,<?= $cliente['id_cliente'] ?>,'<?= $cliente['nome'] ?>')"
+           href="#" class="alerta_futura">
+            <div class="pull-right"><img src="/img/seta_alerta_futura.png" alt="Cliente" style="width: 25px;"></div>
+        </a>
+    <?php else : ?>
+        <div style="display: <?php if ($cliente['observacao'] == '') { echo 'none'; } ?>" class="pull-right"><img src="/img/exclamacao_icon.png" title="Observação: <?= $cliente['observacao'] ?>" style="width: 16px;"></div>
+    <?php endif; ?>
+
+</div>
+<?php if($this->id_vendedor == 'todos') : ?>
+    <div class="col-sm-12" style="margin-bottom: 4px; margin-top: -8px">
+        <span style="font-size: 12px; margin-left: 25px"><?=strtoupper($cliente['vendedor'])?></span>
+    </div>
+<?php endif;?>
+
+    <div class="col-sm-12" style="margin-bottom: 8px;">
+    <img src="/img/icon_televendas_whatsapp.png" alt="Telefone" style="width: 20px;">
+    <input class="telefone" type="text"
+           id="telefone-<?= $cliente['id_crm'] ?>"
+           value="<?= $cliente['telefone'] ?>"
+           name="telefone" style="width: 75%"/>
+    <div class="pull-right">
+        <button onclick="updateUser(<?= $cliente['id_crm'] ?>, <?= $cliente['id_cliente'] ?>, 'telefone')"
+                style="height: 25px; width: 25px;padding: 0px;"
+
+                class="btn btn-success">OK
+        </button>
+    </div>
+</div>
+
+<div class="col-sm-12" style="margin-bottom: 8px;">
+    <img src="/img/gmail_icon.png" alt="Email" style="width: 16px; margin-right: 4px">
+    <input id="email-<?= $cliente['id_crm'] ?>" type="text" name="email" value="<?= $cliente['email'] ?>" style="width: 75%"/>
+    <div class="pull-right">
+        <button onclick="updateUser(<?= $cliente['id_crm'] ?>, <?= $cliente['id_cliente'] ?>, 'email')" tyle="height: 25px; width: 25px;padding: 0px;" class="btn btn-success">OK</button>
+    </div>
+</div>
+<div class="col-sm-12"
+     style="margin-bottom: 8px; margin-right: ">
+
+    <?php if ($cliente['possui_compra']): ?>
+        <i style="color: #3399cc;margin: 1%"
+           class="s14 icomoon-icon-cart"></i>
+    <?php else: ?>
+        <i style="color: silver;margin: 1px"
+           class="s14 icomoon-icon-cart"></i>
+    <?php endif; ?>
+
+
+    <?php if ($cliente['possui_compra_cancelada']): ?>
+        <i style="color: red;margin: 1px"
+           class="s14 icomoon-icon-cancel-circle"></i>
+    <?php else: ?>
+        <i style="color: silver;margin: 1px"
+           class="s14 icomoon-icon-cancel-circle"></i>
+    <?php endif; ?>
+    <span id="engajamento-<?= $cliente['id_crm'] ?>">
+        <?php for ($i = 1; $i <= 3; $i++): ?>
+            <?php if ($cliente['engajamento'] >= $i) : ?>
+                <a onclick="updateUser(<?= $cliente['id_crm'] ?>, <?= $cliente['id_cliente'] ?>,'engajamento', <?= $i ?>)"
+                   href="#"><i style="color: red;margin: -2px"
+                               class="s16 icomoon-icon-fire"></i></a>
+            <?php else : ?>
+                <a onclick="updateUser(<?= $cliente['id_crm'] ?>, <?= $cliente['id_cliente'] ?>,'engajamento', <?= $i ?>)"
+                   href="#"><i style="color: silver;margin: -2px"
+                               class="s16 icomoon-icon-fire"></i></a>
+            <?php endif; ?>
+        <?php endfor; ?>
+        <span style="margin: 4px"></span>
+    </span>
+    <span id="poder_aquisitivo-<?= $cliente['id_crm'] ?>">
+       <?php for ($i = 1; $i <= 5; $i++): ?>
+           <?php if ($cliente['poder_aquisitivo'] >= $i) : ?>
+               <a onclick="updateUser(<?= $cliente['id_crm'] ?>, <?= $cliente['id_cliente'] ?>,'poder_aquisitivo', <?= $i ?>)"
+                  href="#"><img src="/img/poder_arqusitivo_green.png" alt="Cliente" style="width: 12px;"></a>
+           <?php else : ?>
+               <a onclick="updateUser(<?= $cliente['id_crm'] ?>, <?= $cliente['id_cliente'] ?>,'poder_aquisitivo', <?= $i ?>)"
+                  href="#"><img src="/img/poder_arqusitivo_silver.png" alt="Cliente" style="width: 12px;"></a>
+           <?php endif; ?>
+       <?php endfor; ?>
+    </span>
+    <div class="pull-right"
+         style="color: <?= $cliente['dias_ultimo_contato'] < 3 ? "black" : ($cliente['dias_ultimo_contato'] < 5 ? '#b86f2c' : 'red') ?>;  font-size: 14px">
+        <a href="#"
+           onclick="updateUser(<?= $cliente['id_crm'] ?>, <?= $cliente['id_cliente'] ?>,'ultimo_contato', '<?= date('Y-m-d H:i:s') ?>')">
+            <img src="/img/ultimo_contato_icon.png"
+                 alt="Entre em contato"
+                 style="width: 25px;"></a> <span
+                id="ultimo_contato-<?= $cliente['id_crm'] ?>"><?= $cliente['dias_ultimo_contato'] ?>  dia(s)</span>
+
+    </div>
+    <div style="padding: 2px 5px; margin: 5px 0;color:#287ce8;">Abertura deste atendimento: <?php echo $cliente['data_crm']; ?></div>
+    <div style="padding: 0 5px; color: #555545;">
+        Último contato em <?php echo $cliente['ultimo_contato']; ?><br>
+        Penúltimo contato em <?php echo $cliente['penultimo_contato']; ?><br>
+    </div>
+    <hr class="blue"/>
+</div>

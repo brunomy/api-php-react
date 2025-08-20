@@ -1,0 +1,429 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+    
+    </head>  
+    
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                    <i class="s16 <?php echo $this->module_icon; ?>"></i>                                    
+                                </a>
+                            </li>
+                            <span class="divider">
+                                <i class="s16 icomoon-icon-arrow-right-3"></i>
+                            </span>
+                            <li class="active">Registro</li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+                  
+                    <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border">
+                        <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                        <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados do Status</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="nome">Nome:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="nome" id="nome" type="text" value="<?php echo $this->registro['nome'] ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="label">Nome do status para cliente:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="label" id="label" type="text" value="<?php echo $this->registro['label'] ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="assunto">Assunto:</label>
+                                            <div class="col-lg-10">
+                                                <input class="form-control" name="assunto" id="assunto" type="text" value="<?php echo $this->registro['assunto'] ?>" />
+                                            </div><!-- End .form-group  -->
+                                        </div>
+                                    
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="mensagem">Mensagem:</label>
+                                            <div class="col-lg-10">
+                                                <textarea id="mensagem" name="mensagem" class="form-control tinymce" rows="5"><?php echo $this->registro['mensagem'] ?></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="cor">Cor:</label>
+                                            <div class="col-lg-10">
+                                                <div id="component-colorpicker" class="input-group">
+                                                    <span class="input-group-addon"><i></i></span>
+                                                    <input type="text" name="cor" id="cor" value="<?php echo $this->registro['cor'] ?>" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>                                       
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="mostrar_botao_pagar">Mostrar Botão Pagar:</label>
+                                            <div class="col-lg-10">
+                                                <label class="pointer" for="mostrar_botao_pagar1">Sim</label><input <?php if ($this->registro['mostrar_botao_pagar'] == 1) { echo 'checked'; } ?> class="form-control" name="mostrar_botao_pagar" id="mostrar_botao_pagar1" type="radio" value="1" /> 
+                                                <label class="pointer" for="mostrar_botao_pagar2">Não</label><input <?php if ($this->registro['mostrar_botao_pagar'] == 0) { echo 'checked'; } ?> class="form-control" name="mostrar_botao_pagar" id="mostrar_botao_pagar2" type="radio" value="0" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="enviar_email">Enviar E-mail:</label>
+                                            <div class="col-lg-10">
+                                                <label class="pointer" for="enviar_email1">Sim</label><input <?php if ($this->registro['enviar_email'] == 1) { echo 'checked'; } ?> class="form-control" name="enviar_email" id="enviar_email1" type="radio" value="1" /> 
+                                                <label class="pointer" for="enviar_email2">Não</label><input <?php if ($this->registro['enviar_email'] == 0) { echo 'checked'; } ?> class="form-control" name="enviar_email" id="enviar_email2" type="radio" value="0" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        
+                                        <div class="form-group notifica_vendedor"<?php if ($this->registro['enviar_email'] == 0){ echo ' style="display:none;"';} ?>>
+                                            <label class="col-lg-2 control-label" for="notificar_vendedor">Notificar Vendedor:</label>
+                                            <div class="col-lg-10">
+                                                <label class="pointer" for="notificar_vendedor1">Sim</label><input <?php if ($this->registro['notificar_vendedor'] == 1) { echo 'checked'; } ?> class="form-control" name="notificar_vendedor" id="notificar_vendedor1" type="radio" value="1" /> 
+                                                <label class="pointer" for="notificar_vendedor2">Não</label><input <?php if ($this->registro['notificar_vendedor'] == 0) { echo 'checked'; } ?> class="form-control" name="notificar_vendedor" id="notificar_vendedor2" type="radio" value="0" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="contabilizar_como">Contabilizar no dashboard como:</label>
+                                            <div class="col-lg-10">
+                                                <label class="pointer" for="contabilizar_como_pendente">Pendentes</label><input <?php if ($this->registro['contabilizar_como'] == "PENDENTE") { echo 'checked'; } ?> class="form-control" name="contabilizar_como" id="contabilizar_como_pendente" type="radio" value="PENDENTE" /> 
+                                                <label class="pointer" for="contabilizar_como_cancelado">Cancelados</label><input <?php if ($this->registro['contabilizar_como'] == "CANCELADO") { echo 'checked'; } ?> class="form-control" name="contabilizar_como" id="contabilizar_como_cancelado" type="radio" value="CANCELADO" />
+                                                <label class="pointer" for="contabilizar_como_faturado">Faturados</label><input <?php if ($this->registro['contabilizar_como'] == "FATURADO") { echo 'checked'; } ?> class="form-control" name="contabilizar_como" id="contabilizar_como_faturado" type="radio" value="FATURADO" />
+                                                <label class="pointer" for="contabilizar_como_nenhum">Nenhum</label><input <?php if ($this->registro['contabilizar_como'] == "") { echo 'checked'; } ?> class="form-control" name="contabilizar_como" id="contabilizar_como_nenhum" type="radio" value="" />
+                                            </div>
+                                        </div><!-- End .form-group  -->
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Relacionamento Status da Cielo</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="">Status Cielo:</label>
+                                            <div class="col-lg-10">
+                                                <div class="leftBox" style="margin:0;">
+                                                    <div class="searchBox">
+                                                        <input type="text" id="box1Filter" class="searchField form-control" style="margin:0;" placeholder="filtrar ..."/>
+                                                        <button id="box1Clear" type="button" class="btn">
+                                                            <span class="s14  entypo-icon-close "></span>
+                                                        </button>
+                                                    </div>
+                                                    <select id="box1View" multiple="multiple" class="multiple nostyle form-control" style="height:300px;">
+                                                        <?php if ($this->cielo->num_rows): ?>
+                                                            <?php foreach ($this->cielo->rows as $cielo): ?>
+                                                                <?php if ($cielo['id_pedido_status'] == "") : ?>
+                                                                    <option value="<?php echo $cielo['id'] ?>"><?php echo $cielo['nome'] ?></option>
+                                                                <?php endif ?>
+                                                            <?php endforeach ?>
+                                                        <?php endif ?>
+                                                    </select>
+                                                    <br>
+                                                    <span>Status da Cielo <span class="label-warning" style="padding:0 2px;">não relacionados</span> a este status</span>
+                                                    <br>
+                                                    <span id="box1Counter" class="count"></span>
+                                                    <div class="dn"><select id="box1Storage" name="box1Storage" class="nostyle"></select></div>
+                                                </div>
+                                                
+
+                                                <div class="dualBtn">
+
+                                                    <button id="to2" type="button" class="btn" ><span class="icon12 minia-icon-arrow-right-3"></span></button>
+                                                    <button id="allTo2" type="button" class="btn" ><span class="icon12 iconic-icon-last"></span></button>
+                                                    <button id="to1" type="button" class="btn marginT5"><span class="icon12 minia-icon-arrow-left-3"></span></button>
+                                                    <button id="allTo1" type="button" class="btn marginT5" ><span class="icon12 iconic-icon-first"></span></button>
+
+                                                </div>
+
+                                                <div class="rightBox" style="margin:0;">
+                                                    <div class="searchBox">
+                                                        <input type="text" id="box2Filter" class="searchField form-control" style="margin:0;" placeholder="filtrar ..." />
+                                                        <button id="box2Clear"  type="button" class="btn" >
+                                                            <span class="s14  entypo-icon-close "></span>
+                                                        </button>
+                                                    </div>
+                                                    <select id="box2View" multiple="multiple" name="cielo[]" class="multiple nostyle form-control" style="height:300px;">
+                                                        <?php if ($this->cielo->num_rows): ?>
+                                                            <?php foreach ($this->cielo->rows as $cielo): ?>
+                                                                <?php if ($cielo['id_pedido_status'] != "") : ?>
+                                                                    <option value="<?php echo $cielo['id'] ?>"><?php echo $cielo['nome'] ?></option>
+                                                                <?php endif ?>
+                                                            <?php endforeach ?>
+                                                        <?php endif ?>
+                                                    </select>
+                                                    <br>
+                                                    <span>Status da Cielo <span class="label-success white" style="padding:0 2px;">relacionados</span> a este status</span>
+                                                    <br>
+                                                    <span id="box2Counter" class="count"></span>
+                                                    <div class="dn"><select id="box2Storage" class="nostyle"></select></div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Relacionamento Status do Pagseguro</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="">Status Pagseguro:</label>
+                                            <div class="col-lg-10">
+                                                <div class="leftBox" style="margin:0;">
+                                                    <div class="searchBox">
+                                                        <input type="text" id="box3Filter" class="searchField form-control" style="margin:0;" placeholder="filtrar ..."/>
+                                                        <button id="box3Clear" type="button" class="btn">
+                                                            <span class="s14  entypo-icon-close "></span>
+                                                        </button>
+                                                    </div>
+                                                    <select id="box3View" multiple="multiple" class="multiple nostyle form-control" style="height:300px;">
+                                                        <?php if ($this->pagseguro->num_rows): ?>
+                                                            <?php foreach ($this->pagseguro->rows as $pagseguro): ?>
+                                                                <?php if ($pagseguro['id_pedido_status'] == "") : ?>
+                                                                    <option value="<?php echo $pagseguro['id'] ?>"><?php echo $pagseguro['nome'] ?></option>
+                                                                <?php endif ?>
+                                                            <?php endforeach ?>
+                                                        <?php endif ?>
+                                                    </select>
+                                                    <br>
+                                                    <span>Status do Pagseguro <span class="label-warning" style="padding:0 2px;">não relacionados</span> a este status</span>
+                                                    <br>
+                                                    <span id="box3Counter" class="count"></span>
+                                                    <div class="dn"><select id="box3Storage" name="box3Storage" class="nostyle"></select></div>
+                                                </div>
+                                                
+
+                                                <div class="dualBtn">
+
+                                                    <button id="to4" type="button" class="btn" ><span class="icon12 minia-icon-arrow-right-3"></span></button>
+                                                    <button id="allTo4" type="button" class="btn" ><span class="icon12 iconic-icon-last"></span></button>
+                                                    <button id="to3" type="button" class="btn marginT5"><span class="icon12 minia-icon-arrow-left-3"></span></button>
+                                                    <button id="allTo3" type="button" class="btn marginT5" ><span class="icon12 iconic-icon-first"></span></button>
+
+                                                </div>
+
+                                                <div class="rightBox" style="margin:0;">
+                                                    <div class="searchBox">
+                                                        <input type="text" id="box4Filter" class="searchField form-control" style="margin:0;" placeholder="filtrar ..." />
+                                                        <button id="box4Clear"  type="button" class="btn" >
+                                                            <span class="s14  entypo-icon-close "></span>
+                                                        </button>
+                                                    </div>
+                                                    <select id="box4View" multiple="multiple" name="pagseguro[]" class="multiple nostyle form-control" style="height:300px;">
+                                                        <?php if ($this->pagseguro->num_rows): ?>
+                                                            <?php foreach ($this->pagseguro->rows as $pagseguro): ?>
+                                                                <?php if ($pagseguro['id_pedido_status'] != "") : ?>
+                                                                    <option value="<?php echo $pagseguro['id'] ?>"><?php echo $pagseguro['nome'] ?></option>
+                                                                <?php endif ?>
+                                                            <?php endforeach ?>
+                                                        <?php endif ?>
+                                                    </select>
+                                                    <br>
+                                                    <span>Status do Pagseguro <span class="label-success white" style="padding:0 2px;">relacionados</span> a este status</span>
+                                                    <br>
+                                                    <span id="box4Counter" class="count"></span>
+                                                    <div class="dn"><select id="box4Storage" class="nostyle"></select></div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Notificações</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-2 control-label" for="">Usuários:</label>
+                                            <div class="col-lg-10">
+                                                <div class="leftBox" style="margin:0;">
+                                                    <div class="searchBox">
+                                                        <input type="text" id="box5Filter" class="searchField form-control" style="margin:0;" placeholder="filtrar ..."/>
+                                                        <button id="box5Clear" type="button" class="btn">
+                                                            <span class="s14  entypo-icon-close "></span>
+                                                        </button>
+                                                    </div>
+                                                    <select id="box5View" multiple="multiple" class="multiple nostyle form-control" style="height:300px;">
+                                                        <?php if ($this->notificacoes->num_rows): ?>
+                                                            <?php foreach ($this->notificacoes->rows as $notificacao): ?>
+                                                                <?php if ($notificacao['id_pedido_status'] == "") : ?>
+                                                                    <option value="<?php echo $notificacao['id'] ?>"><?php echo $notificacao['nome'] ?> - <?php echo $notificacao['email'] ?></option>
+                                                                <?php endif ?>
+                                                            <?php endforeach ?>
+                                                        <?php endif ?>
+                                                    </select>
+                                                    <br>
+                                                    <span>Usuários <span class="label-warning" style="padding:0 2px;">que não serão</span> notificados</span>
+                                                    <br>
+                                                    <span id="box5Counter" class="count"></span>
+                                                    <div class="dn"><select id="box5Storage" name="box5Storage" class="nostyle"></select></div>
+                                                </div>
+                                                
+
+                                                <div class="dualBtn">
+
+                                                    <button id="to6" type="button" class="btn" ><span class="icon12 minia-icon-arrow-right-3"></span></button>
+                                                    <button id="allTo6" type="button" class="btn" ><span class="icon12 iconic-icon-last"></span></button>
+                                                    <button id="to5" type="button" class="btn marginT5"><span class="icon12 minia-icon-arrow-left-3"></span></button>
+                                                    <button id="allTo5" type="button" class="btn marginT5" ><span class="icon12 iconic-icon-first"></span></button>
+
+                                                </div>
+
+                                                <div class="rightBox" style="margin:0;">
+                                                    <div class="searchBox">
+                                                        <input type="text" id="box6Filter" class="searchField form-control" style="margin:0;" placeholder="filtrar ..." />
+                                                        <button id="box6Clear"  type="button" class="btn" >
+                                                            <span class="s14  entypo-icon-close "></span>
+                                                        </button>
+                                                    </div>
+                                                    <select id="box6View" multiple="multiple" name="notificacoes[]" class="multiple nostyle form-control" style="height:300px;">
+                                                        <?php if ($this->notificacoes->num_rows): ?>
+                                                            <?php foreach ($this->notificacoes->rows as $notificacao): ?>
+                                                                <?php if ($notificacao['id_pedido_status'] != "") : ?>
+                                                                    <option value="<?php echo $notificacao['id'] ?>"><?php echo $notificacao['nome'] ?> - <?php echo $notificacao['email'] ?></option>
+                                                                <?php endif ?>
+                                                            <?php endforeach ?>
+                                                        <?php endif ?>
+                                                    </select>
+                                                    <br>
+                                                    <span>Usuários <span class="label-success white" style="padding:0 2px;">que serão</span> notificados</span>
+                                                    <br>
+                                                    <span id="box6Counter" class="count"></span>
+                                                    <div class="dn"><select id="box6Storage" class="nostyle"></select></div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <?php if ($this->id==""): ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['gravar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning "><span class="icon24 typ-icon-warning"></span>Você não tem permissão para gravar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar novo</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php else: ?>
+                                <?php if (!$this->permissions[$this->permissao_ref]['editar']): ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <span class="label label-warning"><span class="icon24 icomoon-icon-warning "></span>Você não tem permissão para editar esta função.</span>
+                                        </div>
+                                    </div><!-- End .form-group  -->   
+                                <?php else: ?>
+                                    <div class="form-group">
+                                        <div class="col-lg-offset-2 col-lg-10">
+                                            <button type="button" class="btn btn-info clickformsubmit">Salvar alterações</button>
+                                        </div>
+                                    </div><!-- End .form-group  -->
+                                <?php endif ?>
+                            <?php endif ?>
+                        </div><!-- End .row -->  
+                    </form>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+        <script src="plugins/forms/bootstrap-colorpicker/bootstrap-colorpicker.js"></script>
+        <!-- Init plugins only for page -->
+        <script src="plugins/forms/tiny_mce/tinymce.min.js"></script>
+        <script type="text/javascript" src="plugins/forms/dualselect/jquery.dualListBox-1.3.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                tinymceInit({'galeria':false, 'status_pagamento': true});                
+                $.configureBoxes();
+                $.configureBoxes1();
+                $.configureBoxes2();
+
+                $('#component-colorpicker').colorpicker();
+                
+                $('input[name=enviar_email]').change(function(){
+                    if($(this).val()==1){
+                        $('.notifica_vendedor').show();
+                    }else{
+                        $('.notifica_vendedor').hide();
+                    }
+                });
+
+            });
+        </script>
+    </body>
+</html>

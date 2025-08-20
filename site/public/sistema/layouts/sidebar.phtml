@@ -1,0 +1,281 @@
+            <div id="sidebarbg" class="hidden-lg hidden-md hidden-sm hidden-xs"></div>
+            <!--Sidebar content-->
+            <div id="sidebar" class="page-sidebar hidden-lg hidden-md hidden-sm hidden-xs">
+
+                <div class="shortcuts">
+                    <ul>
+                        <li><a href="group" title="Grupos de Usuário" class="tip"><i class="s24 icomoon-icon-users-2"></i></a>
+                        </li>
+                        <li><a href="user" title="Usuários" class="tip"><i class="s24 icomoon-icon-users"></i></a>
+                        </li>
+                        <li><a href="notifications" title="Notificações" class="tip"><i class="s24 icomoon-icon-bubble-notification"></i></a>
+                        </li>
+                        <li><a href="log" title="Logs" class="tip"><i class="s24 icomoon-icon-stack"></i></a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- End search -->
+                <!-- Start .sidebar-inner -->
+                <div class="sidebar-inner">
+                    <!-- Start .sidebar-scrollarea -->
+                    <div class="sidebar-scrollarea">
+                        <div class="sidenav">
+                            <div class="sidebar-widget mb0">
+                                <h6 class="title mb0">Navegação</h6>
+                            </div>
+                            <!-- End .sidenav-widget -->
+                            <div class="mainnav">
+                                <ul>
+                                    <?php if ($this->permissions['admin-dashboard']['ler']): ?>
+                                        <li><a href="dashboard"><i class="s16 icomoon-icon-bars"></i><span class="txt">Dashboard</span></a></li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['seo']['ler']): ?>
+                                        <li><a href="seo"><i class="s16 icomoon-icon-stats-up"></i><span class="txt">SEO / Páginas</span></a></li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['admin-files']['ler']): ?>
+                                        <li><a href="file"><i class="s16 icomoon-icon-folder"></i><span class="txt">Arquivos</span></a></li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['ponto-eletronico']['ler'] OR $this->permissions['meu-ponto-eletronico']['ler']): ?>
+                                        <li>
+                                            <a href="#"><i class="s16 icomoon-icon-clock-2"></i><span class="txt">Ponto Eletrônico</span></a>
+                                            <ul class="sub">
+                                                <?php if ($this->permissions['ponto-eletronico']['ler']): ?>
+                                                <li><a href="eletronicpoint"><i class="s16 icomoon-icon-clock-2"></i><span class="txt">Ponto Eletrônico</span></a></li>
+                                                <li><a href="eletronicpointdown"><i class="s16 icomoon-icon-pushpin"></i><span class="txt">Abater horas</span></a></li>
+                                                <?php endif ?>
+                                                <?php if ($this->permissions['meu-ponto-eletronico']['ler']): ?>
+                                                <li><a href="eletronicpointreport"><i class="s16 icomoon-icon-clock-2"></i><span class="txt">Meu Ponto</span></a></li>
+                                                <?php endif ?>
+                                            </ul>
+                                        </li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['links']['ler']): ?>
+                                        <li><a href="link"><i class="s16 iconic-icon-link"></i><span class="txt">Menu Links</span></a></li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['produtos-produtos']['ler'] || $this->permissions['clientes-vitrine']['ler'] || $this->permissions['banners']['ler']): ?>
+                                        <li>
+                                            <a href="#"><i class="s16 icomoon-icon-home-2"></i><span class="txt">Home</span></a>
+                                            <ul class="sub">
+                                                <?php if ($this->permissions['informacao-destaque']['ler']): ?>
+                                                    <li><a href="informacaodestaque"><i class="s16 icomoon-icon-image-3"></i><span class="txt">Informação em Destque</span></a></li>
+                                                <?php endif ?>
+                                                <?php if ($this->permissions['produtos-destaques']['ler']): ?>
+                                                    <li>
+                                                        <a href="#"><i class="s16 icomoon-icon-pushpin"></i><span class="txt">Destaques</span></a>
+                                                        <ul class="sub">
+                                                            <li><a href="producthighlight"><i class="s16 minia-icon-unchecked"></i><span class="txt">Produtos</span></a></li>
+                                                            <li><a href="producthighlightcustom"><i class="s16 minia-icon-pencil-2"></i><span class="txt">Personalizados</span></a></li>
+                                                            <li><a href="producthighlightdelivery"><i class="s16 minia-icon-checked"></i><span class="txt">Pronto Entrega</span></a></li>
+                                                        </ul>
+                                                    </li>
+                                                <?php endif ?>
+                                                <?php if ($this->permissions['banners']['ler']): ?>
+                                                    <li>
+                                                        <a href="#"><i class="s16 icomoon-icon-image-3"></i><span class="txt">Banners</span></a>
+                                                        <ul class="sub">
+                                                            <li><a href="banner"><i class="s16 icomoon-icon-image-3"></i><span class="txt">Topo</span></a></li>
+                                                            <li><a href="bannerseveraltitle"><i class="s16 icomoon-icon-image-3"></i><span class="txt">Avulsos com Título</span></a></li>
+                                                            <li><a href="bannerseveral"><i class="s16 icomoon-icon-image-3"></i><span class="txt">Avulsos sem Título</span></a></li>
+                                                        </ul>
+                                                    </li>
+                                                <?php endif ?>
+                                                <?php if ($this->permissions['clientes-vitrine']['ler']): ?>
+                                                    <li><a href="clientexhibition"><i class="s16 icomoon-icon-user-3"></i><span class="txt">Clientes</span></a></li>
+                                                <?php endif ?>
+                                            </ul>
+                                        </li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['cupons']['ler']): ?>
+                                        <li><a href="coupon"><i class="s16 icomoon-icon-transmission"></i><span class="txt">Cupons</span></a></li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['produtos-produtos']['ler']): ?>
+                                        <li>
+                                            <a href="#"><i class="s16 minia-icon-unchecked"></i><span class="txt">Produtos</span></a>
+                                            <ul class="sub">
+                                                <li><a href="product"><i class="s16 minia-icon-unchecked"></i><span class="txt">Produtos</span></a></li>
+                                                <li><a href="productcustom"><i class="s16 minia-icon-pencil-2"></i><span class="txt">Personalizados</span></a></li>
+                                                <?php if ($this->permissions['produtos-categorias']['ler']): ?>
+                                                    <li><a href="productcategory"><i class="s16 icomoon-icon-tree"></i><span class="txt">Categorias</span></a></li>
+                                                <?php endif; ?>
+                                                <?php if ($this->permissions['produtos-categorias']['ler']): ?>
+                                                    <li><a href="productprerequisites"><i class="s16 icomoon-icon-tree"></i><span class="txt">Pré-requisitos</span></a></li>
+                                                <?php endif; ?>
+                                                <?php if ($this->permissions['produtos-categorias']['ler']): ?>
+                                                    <li><a href="productdependences"><i class="s16 icomoon-icon-tree"></i><span class="txt">Dependencias</span></a></li>
+                                                <?php endif; ?>
+                                                <?php if ($this->permissions['produtos-descontos']['ler']): ?>
+                                                    <li><a href="productdiscount"><i class="s16 entypo-icon-price"></i><span class="txt">Descontos</span></a></li>
+                                                <?php endif; ?>
+                                                <?php if ($this->permissions['produtos-avaliacoes']['ler']): ?>
+                                                    <li><a href="productreview"><i class="s16 entypo-icon-chat"></i><span class="txt">Avaliações</span></a></li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['fichas-modelo']['ler']): ?>
+                                    <li>
+                                        <a href="#"><i class="s16 wpzoom-cd"></i><span class="txt">Fichas</span></a>
+                                        <ul class="sub">
+                                            <li><a href="chipsmodel"><i class="s16 wpzoom-cd"></i><span class="txt">Modelos</span></a></li>
+                                            <li><a href="chiporders"><i class="s16 eco-support"></i><span class="txt">Pedidos</span></a></li>
+                                        </ul>
+                                    </li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['configuracoes']['ler']): ?>
+                                        <li>
+                                            <a href="#"><i class="s16 icomoon-icon-settings"></i><span class="txt">Configurações</span></a>
+                                            <ul class="sub">
+                                                <li>
+                                                    <a href="#"><i class="s16 brocco-icon-forward"></i><span class="txt">Frete e Prazos</span></a>
+                                                    <ul class="sub">
+                                                        <li><a href="state"><i class="s16 entypo-icon-map"></i><span class="txt">Estados</span></a></li>
+                                                        <li><a href="city"><i class="s16 icomoon-icon-location-2"></i><span class="txt">Cidades</span></a></li>
+                                                        <li><a href="setfreight"><i class="s16 brocco-icon-location-2"></i><span class="txt">Conjuntos</span></a></li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['institucional-paginas']['ler']): ?>
+                                        <li><a href="institutional"><i class="s16 icomoon-icon-paragraph-left"></i><span class="txt">Institucional</span></a></li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['blog']['ler']): ?>
+                                        <li>
+                                            <a href="#"><i class="s16 icomoon-icon-paragraph-left"></i><span class="txt">Blog</span></a>
+                                            <ul class="sub">
+                                                <li><a href="blog"><i class="s16 icomoon-icon-paragraph-left"></i><span class="txt">Blog</span></a></li>
+                                                <li><a href="blogfixed"><i class="s16 icomoon-icon-paragraph-left"></i><span class="txt">Página Fixa</span></a></li>
+                                            </ul>
+                                        </li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['clientes']['ler']): ?>
+                                        <li><a href="client"><i class="s16 entypo-icon-users"></i><span class="txt">Clientes</span></a></li>
+                                        <li><a href="crm"><i class="s16 entypo-icon-users"></i><span class="txt">CRM Atendimentos</span></a></li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['orcamentos']['ler']): ?>
+                                        <li><a href="proposal"><i class="s16 icomoon-icon-copy"></i><span class="txt">Orçamentos</span></a></li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['orcamentos']['ler']): ?>
+                                        <li><a href="proposal2"><i class="s16 icomoon-icon-copy"></i><span class="txt">Orçamentos 2.0</span></a></li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['pedidos-pedidos']['ler']): ?>
+                                        <li>
+                                            <a href="#"><i class="s16 icomoon-icon-cart-4"></i><span class="txt">Pedidos</span></a>
+                                            <ul class="sub">
+                                                <li><a href="order"><i class="s16 icomoon-icon-cart-4"></i><span class="txt">Pedidos</span></a></li>
+                                                <!-- <li><a href="production"><i class="s16 wpzoom-factory" style="padding: 0 4px 0 21px;"></i><span class="txt">Produção</span></a></li> -->
+                                                <li><a href="campaign"><i class="s16 icomoon-icon-call-outgoing"></i><span class="txt">Campanhas</span></a></li>
+                                                <li><a href="tracking"><i class="s16 icomoon-icon-truck"></i><span class="txt">Rastreios</span></a></li>
+                                                <?php if ($this->permissions['pedidos-status']['ler']): ?>
+                                                <li><a href="orderstatus"><i class="s16 icomoon-icon-checkmark"></i><span class="txt">Status</span></a></li>
+                                                <li style="display:none"><a href="orderstatuscielo"><i class="s16 icomoon-icon-checkmark"></i><span class="txt">Status Cielo</span></a></li>
+                                                <li style="display:none"><a href="orderstatuspagseguro"><i class="s16 icomoon-icon-checkmark"></i><span class="txt">Status Pagseguro</span></a></li>
+                                                <?php endif ?>
+                                                <li><a href="marketing"><i class="s16 icomoon-icon-megaphone"></i><span class="txt">Marketing</span></a></li>
+                                            </ul>
+                                        </li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['expedicoes']['ler']): ?>
+                                        <li>
+                                            <a href="#"><i class="s16 icomoon-icon-truck"></i><span class="txt">Expedição</span></a>
+                                            <ul class="sub">
+                                                <li><a href="carrier"><i class="s16 icomoon-icon-office"></i><span class="txt">Transportadoras</span></a></li>
+                                                <!-- <li><a href="shipment"><i class="s16 icomoon-icon-office"></i><span class="txt">Remessas</span></a></li> -->
+                                                <li><a href="expedition"><i class="s16 icomoon-icon-barcode"></i><span class="txt">Etiquetas</span></a></li>
+                                            </ul>
+                                        </li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['scripts-scripts']['ler']): ?>
+                                        <li><a href="script"><i class="s16 icomoon-icon-code"></i><span class="txt">Códigos</span></a></li>
+                                    <?php endif ?>
+
+
+                                    <?php if ($this->permissions['expedicoes']['ler']): ?>
+                                        <li>
+                                            <a href="#"><i class="s16 icomoon-icon-code"></i><span class="txt">Prototipos</span></a>
+                                            <ul class="sub">
+                                                <li><a href="production"><i class="s16 wpzoom-factory" style="padding: 0 4px 0 21px;"></i><span class="txt">Produção</span></a></li>
+                                                <li><a href="shipment"><i class="s16 icomoon-icon-office"></i><span class="txt">Remessas</span></a></li>
+                                            </ul>
+                                        </li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['lista-emails']['ler']): ?>
+                                        <li>
+                                            <a href="#"><i class="s16 brocco-icon-envelope"></i><span class="txt">Listas e E-mails</span></a>
+                                            <ul class="sub">
+                                                <li><a href="email"><i class="s16 entypo-icon-email"></i><span class="txt">Todos E-mails</span></a></li>
+                                                <li><a href="emaillist"><i class="s16 minia-icon-list-3"></i><span class="txt">Minhas Listas</span></a></li>
+                                            </ul>
+                                        </li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['producao-servicos']['ler']|| $this->permissions['producao-view-pedidos']['ler']): ?>
+                                        <li>
+                                            <a href="#"><i class="s16 icomoon-icon-office"></i><span class="txt">Produção</span></a>
+                                            <ul class="sub">
+                                                <?php if ($this->permissions['producao-view-pedidos']['ler']): ?>
+                                                <li><a href="productionorderview"><i class="s16 icomoon-icon-cart-4"></i><span class="txt">Visualização de Pedidos</span></a></li>
+                                                <?php endif ?>
+
+                                                <?php if ($this->permissions['producao-servicos']['ler']): ?>
+                                                <li><a href="productionservices"><i class="s16 typ-icon-tag "></i><span class="txt">Cadastro de Serviços</span></a></li>
+                                                <li><a href="productionteams"><i class="s16 entypo-icon-users"></i><span class="txt">Cadastro de Equipe</span></a></li>
+                                                <li><a href="productionorder"><i class="s16 icomoon-icon-profile"></i><span class="txt">Ordem de Produção</span></a></li>
+                                                <?php endif ?>
+                                            </ul>
+                                        </li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['cassino-admin']['ler']): ?>
+                                        <li>
+                                            <a href="#"><i class="s16 icomoon-icon-screen"></i><span class="txt">Cassino</span></a>
+                                            <ul class="sub">
+                                                <?php if ($this->permissions['cassino-admin']['ler']): ?>
+                                                <li><a href="cassinouser"><i class="s16 icomoon-icon-users"></i><span class="txt">Usuários</span></a></li>
+                                                <li><a href="cassinotable"><i class="s16 icomoon-icon-users"></i><span class="txt">Mesas</span></a></li>
+                                                <li><a href="cassinodashboard"><i class="s16 icomoon-icon-screen"></i><span class="txt">Relatório Roletas</span></a></li>
+                                                <?php endif ?>
+                                            </ul>
+                                        </li>
+                                    <?php endif ?>
+
+                                    <?php if ($_SESSION['admin_grupo']==7): ?>
+                                        <li><a href="cassinodashboard"><i class="s16 icomoon-icon-screen"></i><span class="txt">Relatório Roletas</span></a></li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['newsletter']['ler']): ?>
+                                        <li><a href="newsletter"><i class="s16 typ-icon-mail"></i><span class="txt">Newsletter</span></a></li>
+                                    <?php endif ?>
+
+                                    <?php if ($this->permissions['contatos']['ler']): ?>
+                                        <li><a href="contact"><i class="s16 typ-icon-mail"></i><span class="txt">Contatos</span></a></li>
+                                    <?php endif ?>
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End .sidebar-inner -->
+            </div>
+            <!-- End #sidebar -->
+            <!--Sidebar background-->

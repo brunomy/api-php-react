@@ -1,0 +1,347 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>/save";
+        var retorno = "<?php echo $this->retorno; ?>";
+    </script>
+    <style>
+
+        .clear {clear: both;}
+        
+        #topo_fixo {
+            position: absolute;
+            width: 100%;
+            height: 200px;
+            top: 0;
+            background: #fefefe;
+            z-index: 9;
+        }
+
+        #produtos {
+            position: relative;
+            display: flex;
+            padding-top: 10px;
+        }
+
+        #produtos #drag {
+            position: absolute;
+            width: 100%;
+            height: 20px;
+            background: #000;
+            top: -10px;
+        }
+
+        .listar-produtos {
+            width: 100%;
+            overflow-x: scroll;
+        }
+
+        .listar-produtos .produto {
+            width: 280px;
+            float: left;
+            padding: 0 20px 20px;
+            margin-bottom: 50px;
+            border-right: 1px solid #000;
+            opacity: 0.6;
+        }
+
+        .listar-produtos .produto.destaque {
+            background-color: #c4f9b9;
+            opacity: 1;
+        }
+
+        .listar-produtos .produto .prod-nome {
+            margin: 10px 0 20px 0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .listar-produtos .produto .prod-conjunto {
+            margin-bottom: 20px;
+        }
+
+        .listar-produtos .produto .prod-conjunto .conj-nome {
+            margin: 5px 0;
+            font-weight: bold;
+        }
+        .listar-produtos .produto .prod-conjunto .conj-atributos {
+            margin-top: -10px;
+            line-height: 10px;
+        }
+
+        .listar-produtos .produto .prod-conjunto .conj-atributos .checkbox {
+            padding: 0;
+            line-height: 20px;
+        }
+
+        .listar-produtos .produto .prod-conjunto .conj-atributos .checkbox.des {
+            background-color: #fff;
+        }
+
+        .listar-produtos .produto .prod-conjunto .conj-atributos .checkbox .checkbox-custom {
+            margin-top: 5px;
+            margin-right: 0;
+            top: 7px;
+        }
+        .listar-produtos .produto .prod-conjunto .conj-atributos .checkbox .checkbox-custom > label {
+            padding-left: 22px;
+        }
+
+    </style>
+    </head>  
+    
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <a class="tip" title="<?php echo $this->module_title; ?>" href="<?php echo $this->module_link;?>">
+                                    <i class="s16 <?php echo $this->module_icon; ?>"></i>                                    
+                                </a>
+                            </li>
+                            <span class="divider">
+                                <i class="s16 icomoon-icon-arrow-right-3"></i>
+                            </span>
+                            <li class="active">Registro</li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <!-- Start .row -->
+                    
+                    <form name="main" enctype="multipart/form-data" method="post" class="form-horizontal group-border" style="position: relative;">
+                        <input type="hidden" name="id" value="<?php echo $this->id; ?>" />
+                        <input type="hidden" name="retorno" value="<?php echo $this->retorno; ?>">
+                        <div id="topo_fixo">
+                            
+                        </div>
+                        <div class="row" style="position: fixed; width: 100%; z-index: 10;">
+                            <div class="col-lg-12">
+                                <div class="panel panel-default toggle">
+                                    <!-- Start .panel -->
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">Dados do Serviço</h4>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <label class="col-lg-1 control-label" for="nome">Nome</label>
+                                            <div class="col-lg-3">
+                                                <input class="form-control" name="nome" id="nome" type="text" value="<?php echo $this->registro['nome'] ?>" />
+                                            </div><!-- End .form-group  -->
+                                            <label class="col-lg-1 control-label" for="tempo">Tempo</label>
+                                            <div class="col-lg-2">
+                                                <div class="input-group">
+                                                    <input class="form-control" name="tempo" id="tempo" type="text" value="<?php echo $this->registro['tempo'] ?>" /> 
+                                                    <span class="input-group-addon">minutos</span>
+                                                </div>
+                                            </div><!-- End .form-group  -->
+                                            <div class="col-lg-5">
+                                                <?php if ($this->id==""): ?>
+                                                    <?php if (!$this->permissions[$this->permissao_ref]['gravar']): ?>
+                                                        <div class="col-lg-offset-2 col-lg-10">
+                                                            <span class="label label-warning "><span class="icon24 typ-icon-warning"></span>Você não tem permissão para gravar esta função.</span>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <div class="col-lg-offset-2 col-lg-10">
+                                                            <button type="button" class="btn btn-info clickformsubmit">Adicionar</button>
+                                                        </div>
+                                                    <?php endif ?>
+                                                <?php else: ?>
+                                                    <?php if (!$this->permissions[$this->permissao_ref]['editar']): ?>
+                                                        <div class="col-lg-offset-2 col-lg-10">
+                                                            <span class="label label-warning"><span class="icon24 icomoon-icon-warning "></span>Você não tem permissão para editar esta função.</span>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <div class="col-lg-offset-2 col-lg-10">
+                                                            <button type="button" class="btn btn-info clickformsubmit">Adicionar</button>
+                                                        </div>
+                                                    <?php endif ?>
+                                                <?php endif ?>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="col-lg-1 control-label" for="categoria">Categoria</label>
+                                            <div class="col-lg-11">
+                                                <?php foreach ($this->categorias->rows as $categoria): ?>
+                                                    <label class="checkbox-inline"><input type="checkbox" name="categorias[]" class="checkbox-categorias" value="<?php echo $categoria['id'] ?>" <?php if (in_array($categoria['id'],$this->categorias_ativas)): ?> checked="checked"<?php endif ?>><?php echo $categoria['nome'] ?></label>
+                                                <?php endforeach ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="listar-produtos" style="padding-top: 250px;">
+                            <?php /* TEMPLATE HMTML ?>
+                            <div class="produto">
+                                <div class="prod-nome">Mesa de Poker Profissional para Clubes de Poker e Residências</div>
+                                <div class="prod-conjunto">
+                                    <div class="conj-nome">TAMANHO DA MESA</div>
+                                    <div class="conj-atributos">
+                                        <label class="checkbox"><input type="checkbox" name="atributos[]" class="conj-atributo" value="">6 (1,80 x 0,90)</label>
+                                        <label class="checkbox"><input type="checkbox" name="atributos[]" class="conj-atributo" value="">7 (2,00 x 1,00)</label>
+                                        <label class="checkbox"><input type="checkbox" name="atributos[]" class="conj-atributo" value="">8 (2,20 x 1,10)</label>
+                                        <label class="checkbox"><input type="checkbox" name="atributos[]" class="conj-atributo" value="">9 (2,40 x 1,10)</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="produto">
+                                <div class="prod-nome">Mesa de Poker Profissional para Clubes de Poker e Residências</div>
+                                <div class="prod-conjunto">
+                                    <div class="conj-nome">TAMANHO DA MESA</div>
+                                    <div class="conj-atributos">
+                                        <label class="checkbox"><input type="checkbox" name="atributos[]" class="conj-atributo" value="">6 (1,80 x 0,90)</label>
+                                        <label class="checkbox"><input type="checkbox" name="atributos[]" class="conj-atributo" value="">7 (2,00 x 1,00)</label>
+                                        <label class="checkbox"><input type="checkbox" name="atributos[]" class="conj-atributo" value="">8 (2,20 x 1,10)</label>
+                                        <label class="checkbox"><input type="checkbox" name="atributos[]" class="conj-atributo" value="">9 (2,40 x 1,10)</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php */ ?>
+                        </div>
+                        <div class="clear"></div>
+                    </form>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+        <!-- Init plugins only for page -->
+        <script src="plugins/forms/autosize/jquery.autosize.js"></script>
+        <script type="text/javascript">
+            var atributos = [<?php echo implode(',', $this->atributos); ?>];
+            $(document).ready(function(){     
+                $('.elastic').autosize();
+                $('.checkbox-categorias').change(loadAtributos);
+                $("#tempo").mask("###");
+                loadAtributos();
+            });
+
+            $(window).scroll(function(e){
+                console.log($(window).scrollTop());
+                $('#topo_fixo').height(200+$(window).scrollTop())
+            });
+
+            function loadAtributos(){
+                $.post('<?php echo $this->getModule(); ?>/getProdutos', $('.checkbox-categorias:checked').serialize(), function (data) {
+                    $(".listar-produtos").html(data);
+                    $('.checkbox-atributo').change(changeAtributo);
+                    setAtributos();
+                    uniform();
+                    dragElement(document.getElementById("produtos"));
+                });
+            }
+
+            function setAtributos(){
+                //console.log(atributos);
+                $('.checkbox-atributo').each(function(i){
+                    if(atributos.includes(parseInt($(this).val())))
+                        $(this).attr('checked','checked');
+                });
+                destacarProdutoSelecionado();
+            }
+
+            function changeAtributo(e){
+                atributos=[];
+                $('.checkbox-atributo:checked').each(function(i){
+                    atributos.push(parseInt($(this).val()));
+                });
+                //console.log(atributos);
+                destacarProdutoSelecionado();
+            }
+
+            function destacarProdutoSelecionado(){
+                $('.produto').removeClass('destaque');
+                $('.checkbox').removeClass('des');
+                $('.produto').each(function(i){
+                    flag=0;
+                    $(this).find('.checkbox-atributo:checked').each(function(j){
+                        flag=1;
+                        $(this).parents('.checkbox').addClass('des');
+                    });
+                    if(flag) $(this).addClass('destaque');
+                });
+            }
+
+            //Make the DIV element draggagle:
+            function dragElement(elmnt) {
+              var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+              if (document.getElementById("drag")) {
+                /* if present, the header is where you move the DIV from:*/
+                document.getElementById("drag").onmousedown = dragMouseDown;
+              } else {
+                /* otherwise, move the DIV from anywhere inside the DIV:*/
+                elmnt.onmousedown = dragMouseDown;
+              }
+
+              function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // get the mouse cursor position at startup:
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                // call a function whenever the cursor moves:
+                document.onmousemove = elementDrag;
+              }
+
+              function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // calculate the new cursor position:
+                pos1 = pos3 - e.clientX;
+                //pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                //pos4 = e.clientY;
+                // set the element's new position:
+                //elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+
+                lft = (elmnt.offsetLeft - pos1);
+                if(lft>0) lft=0;
+                elmnt.style.left = lft + "px";
+              }
+
+              function closeDragElement() {
+                /* stop moving when mouse button is released:*/
+                document.onmouseup = null;
+                document.onmousemove = null;
+              }
+            }
+        </script>
+    </body>
+</html>

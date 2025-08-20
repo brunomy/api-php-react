@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <base href="<?php echo $this->system_path; ?>" />
+        <title>Sistema Administrativo 2.0</title>
+        <!-- Mobile specific metas -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <!-- Force IE9 to render in normal mode -->
+        <!--[if IE]><meta http-equiv="x-ua-compatible" content="IE=9" /><![endif]-->
+        <meta name="author" content="" />
+        <meta name="description" content="" />
+        <meta name="keywords" content="" />
+        <meta name="application-name" content="" />
+        <!-- Import google fonts - Heading first/ text second -->
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700" rel="stylesheet" type="text/css">
+        <!-- Css files -->
+        <!-- Icons -->
+        <link href="css/icons.css" rel="stylesheet" />
+        <!-- Bootstrap stylesheets (included template modifications) -->
+        <link href="css/bootstrap.css" rel="stylesheet" />
+        <!-- Plugins stylesheets (all plugin custom css) -->
+        <link href="css/plugins.css" rel="stylesheet" />
+        <!-- Main stylesheets (template main css file) -->
+        <link href="css/main.css" rel="stylesheet" />
+        <!-- Custom stylesheets ( Put your own changes here ) -->
+        <link href="css/custom.css" rel="stylesheet" />
+        <!-- Fav and touch icons -->
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="images/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="images/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="images/ico/apple-touch-icon-57-precomposed.png">
+        <link rel="icon" href="images/ico/favicon.ico" type="image/png">
+        <!-- Windows8 touch icon ( https://www.buildmypinnedsite.com/ )-->
+        <meta name="msapplication-TileColor" content="#3399cc" />
+    </head>
+    <body class="login-page">
+        <div id="header" class="animated fadeInDown">
+            <div class="row">
+                <div class="navbar">
+                    <div class="container text-center" style="margin-top: -5px">
+                        <div class="logo-login-custom"><a href="https://www.realpoker.com.br" target="_blank"><span class="slogan-custom"><img src="images/logo-realpoker.png" width="120" /></span></a></div>
+                    </div>
+                </div>
+                <!-- /navbar -->
+            </div>
+            <!-- End .row -->
+        </div>
+        <!-- End #header -->
+        <!-- Start login container -->
+        <div class="container login-container">
+            <div class="login-panel panel panel-default plain animated bounceIn">
+                <!-- Start .panel -->
+                <div class="panel-body">
+                    <form class="form-horizontal" action="javascript:;" id="loginForm" role="form" method="post">
+                        <?php if(isset($_GET['code']) && $_GET['code'] != "") :?>
+                            <input id="recuperar-senha" value="2" name="recuperar_senha" type="hidden"/>
+                            <input id="code" value="<?php echo $_GET['code']; ?>" name="code" type="hidden"/>
+                            <div class="form-group">
+                                <div class="col-lg-12">
+                                    <div class="input-group input-icon">
+                                        <input type="password" name="password" id="password" class="form-control" value="" placeholder="Nova senha">
+                                        <span class="input-group-addon"><i class="icomoon-icon-lock s16"></i></span> 
+                                    </div>
+
+                                </div>
+                            </div><!-- End .form-group  -->
+                            <div class="form-group">
+                                <div class="col-lg-12">
+                                    <button class="btn btn-default pull-right clickformsubmit" id="loginBtn">Salvar</button>
+                                </div>
+                            </div><!-- End .form-group  -->
+                        <?php else : ?>           
+                            <input id="recuperar-senha" value="" name="recuperar_senha" type="hidden"/>
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <!-- col-md-12 start here -->
+                                    <label for="">Usuário:</label>
+                                </div>
+                                <!-- col-md-12 end here -->
+                                <div class="col-lg-12">
+                                    <div class="input-group input-icon">
+                                        <input type="text" name="username" id="username" class="form-control" value="" placeholder="Entre com seu usuário ...">
+                                        <span class="input-group-addon"><i class="icomoon-icon-user s16"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group div-senha">
+                                <div class="col-md-12">
+                                    <!-- col-md-12 start here -->
+                                    <label for="">Senha:</label>
+                                </div>
+                                <!-- col-md-12 end here -->
+                                <div class="col-lg-12">
+                                    <div class="input-group input-icon">
+                                        <input type="password" name="password" id="password" class="form-control" value="" placeholder="Sua senha">
+                                        <span class="input-group-addon"><i class="icomoon-icon-lock s16"></i></span> 
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <span class="help-block text-right"><a id="esqueceu-senha" href="#">Esqueceu a senha ?</a></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb0">
+
+                                <div class="clearfix col-lg-6 col-md-6 col-sm-6 col-xs-8">
+                                    <div class="checkbox left">
+                                        <label><input type="checkbox" id="keepLoged" value="1" class="styled" name="keepLoged" /> Mantenha-me conectado</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-4 mb25">
+                                    <button class="btn btn-default pull-right clickformsubmit" id="loginBtn">Entrar</button>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </form>
+                    
+                </div>
+                
+            </div>
+            <!-- End .panel -->
+        </div>
+        <!-- End login container -->
+        <div class="container">
+            <div class="footer">
+                <p class="text-center">&copy;<?php echo date('Y');?> Copyright. Todos os direitos reservados !!!</p>
+            </div>
+        </div>
+        <!-- Javascripts -->
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <script type="text/javascript" src="plugins/forms/uniform/jquery.uniform.min.js"></script>
+        <!--[if lt IE 9]>
+        <script type="text/javascript" src="js/libs/excanvas.min.js"></script>
+        <script type="text/javascript" src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <script type="text/javascript" src="js/libs/respond.min.js"></script>
+        <![endif]-->
+        <!-- Bootstrap plugins -->
+        <script src="js/bootstrap/bootstrap.js"></script>
+        <script type="text/javascript" src="plugins/forms/clickform/jquery.clickform.js"></script>
+        
+        <script type="text/javascript">
+            $(document).ready(function() {
+                //------------- Options for Supr - admin tempalte -------------//
+
+                $("#username").focus();
+
+                $(document).on("click", "a[href^=#]", function (e) {
+                    e.preventDefault();
+                });
+                
+                $('body').on('click', 'span.click-form', function () {
+                    $("input, textarea").css("border-color","#ccc");
+                    $("span.click-form").hide();
+                });
+
+                $("#loginForm").clickform({"validateUrl":"login/entrar", "activateEnterKey": true}, function(data){
+                    if(data.type=="success"){
+                        if (data.action != "") {
+                         window.location.href = data.action;
+                        } else {
+                         window.location.href = data.action;
+                        }                    
+                    }
+                });
+
+                
+                var countClic = 0;
+                var texto = "";
+                $("#esqueceu-senha").on("click", function(){
+                    if (countClic%2==0) {
+                        texto = "Fazer Login?";
+                        $("#loginBtn").html('Enviar');
+                        $("#recuperar-senha").val(1);
+                    } else {
+                        texto = "Esqueceu a Senha?";
+                        $("#loginBtn").html('Entrar');
+                        $("#recuperar-senha").val("");
+                    }
+                    $("#usuario").focus();
+
+                    $(".div-senha").slideToggle('fast');
+                    $("#esqueceu-senha").html(texto);
+
+
+                    countClic++;
+
+                });
+            
+            });
+        </script> 
+    </body>
+</html>

@@ -1,0 +1,79 @@
+
+<table cellpadding="0" cellspacing="0" border="0" class="tabletools table table-striped table-bordered" width="100%">
+    <thead>
+        <tr>            
+            <th width="15%" class="tal">UTM CAMPAIGN</th>
+            <th class="tal">UTM SOURCE</th>
+            <th class="tal">UTM MEDIUM</th>
+            <th class="tal">UTM TERM</th>
+            <th class="tal">UTM CONTENT</th>
+            <th class="tal">VISTAS</th>
+            <th class="tal">CONTATOS</th>
+            <th class="tal">CADASTROS</th>
+            <th class="tal">COMPRAS</th>
+            <th class="tal">FATURADOS</th>
+            <th width="10%" class="tal">FATURAMENTO</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if ($this->utms->num_rows) : ?>
+            <?php foreach ($this->utms->rows as $utm): ?>
+                <tr>
+                    <td class="tal"><?php echo $utm['utm_campaign']; ?></td>
+                    <td class="tal"><?php echo $utm['utm_source']; ?></td>
+                    <td class="tal"><?php echo $utm['utm_medium']; ?></td>
+                    <td class="tal"><?php echo $utm['utm_term']; ?></td>
+                    <td class="tal"><?php echo $utm['utm_content']; ?></td>                    
+                    <td class="tal"><?php echo $utm['visitas']; ?></td>
+                    <td class="tal"><?php echo $utm['contatos'];?></td>
+                    <td class="tal"><?php echo $utm['cadastros'];?></td>
+                    <td class="tal"><?php echo $utm['compras'];?></td>
+                    <td class="tal"><?php echo $utm['faturados'];?></td>
+                    <td class="tal"><?php echo $this->formataMoedaShow($utm['faturamentos']);?></td>
+                </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        //--------------- Data tables ------------------//
+        //--------------- Data tables ------------------//
+        if($('table').hasClass('tabletools')){
+            $('.tabletools').dataTable( {
+                "oLanguage": {
+                    "sSearch": "",
+                    "sLengthMenu": "<span>_MENU_</span>",
+                    "sProcessing":   "Processando...",                    
+                    "sZeroRecords":  "Não foram encontrados resultados",
+                    "sInfo":         "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                    "sInfoEmpty":    "Mostrando de 0 até 0 de 0 registros",
+                    "sInfoFiltered": "(filtrado de _MAX_ registros no total)",
+                    "sInfoPostFix":  "",
+                    "sUrl":         "",
+
+                    "oPaginate": {
+                        "sFirst":    "Primeiro",
+                        "sPrevious": "Anterior",
+                        "sNext":     "Seguinte",
+                        "sLast":     "Último"
+                    }
+                },
+                "sDom": "T<'row'<'col-md-6 col-xs-12 'l><'col-md-6 col-xs-12'f>r>t<'row'<'col-md-4 col-xs-12'i><'col-md-8 col-xs-12'p>>",
+                "aaSorting":[[0,"asc"]], "iDisplayLength": 100,
+                tableTools: {
+                    "sSwfPath": "http://cdn.datatables.net/tabletools/2.2.2/swf/copy_csv_xls_pdf.swf",
+                    "aButtons": [
+                      "copy", 
+                      "csv", 
+                      "xls"
+                  ]
+                }
+
+
+            });
+
+        }
+    });
+</script>

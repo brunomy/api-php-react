@@ -1,0 +1,237 @@
+<?php
+    require_once "layouts/headers.phtml";
+?>
+
+    <script type="text/javascript">
+        var pagina = "<?php echo $this->getModule(); ?>";
+        var permissao = "<?php echo $this->permissao_ref; ?>";
+        var controller = "<?php echo $this->getModule(); ?>";
+    </script>
+    <style>
+        tr.atencao td {
+            background-color: #FEF102;
+        }
+        tr.alerta td {
+            background-color: #E55A44;
+        }
+        tr.alerta td a {
+            color: #fff !important;
+        }
+    </style>
+    </head>  
+    
+    
+    <body>
+<?php  require_once "layouts/header.phtml"; ?>
+
+        <!-- / #header -->
+        <div id="wrapper">
+        <!-- #wrapper -->
+
+<?php  require_once "layouts/sidebar.phtml"; ?>
+            
+            <!--Body content-->
+            <div id="content" class="page-content clearfix">
+                <div class="contentwrapper">
+                    <!--Content wrapper-->
+                    <div class="heading">
+                        <!--  .heading-->
+                        <h3><?php echo $this->module_title; ?></h3>
+
+                        <ul class="breadcrumb">
+                            <li>Você está aqui:</li>
+                            <li>
+                                <a href="#" class="tip" title="Painel">
+                                    <i class="s16 icomoon-icon-screen-2"></i>
+                                </a>
+                                <span class="divider">
+                                    <i class="s16 icomoon-icon-arrow-right-3"></i>
+                                </span>
+                            </li>
+                            <li class="active"><?php echo $this->module_title;?></li>
+                        </ul>
+                    </div>
+                    <!-- End  / heading-->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="panel panel-default toggle panelClose">
+                                <!-- Start .panel -->
+                                <div class="panel-heading">
+                                    <h4 class="panel-title"><i class="<?php echo $this->module_icon ?>"></i> Tabela de Rastreio de Entregas
+                                    </h4>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="scroll" data-height="50%">
+                                        <table cellpadding="0" cellspacing="0" border="0" class="tabletools table table-striped table-bordered sortable" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th width="5%" style="display: none;">Stats</th>
+                                                    <th width="5%" class="center">Pedido</th>
+                                                    <th width="10%" class="tal">Previsão</th>
+                                                    <th width="25%" class="tal">Link de Rastreio</th>
+                                                    <th width="25%" class="tal">Cliente</th>
+                                                    <th width="10%" class="tal">Telefone</th>
+                                                    <th width="10%" class="tal">Cidade</th>
+                                                    <th width="10%" class="tal">Estado</th>
+                                                    <th width="5%" class="center">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php if ($this->list->num_rows) : ?>
+
+                                                <?php 
+                                                    $ordem=1; 
+                                                    $atencao = strtotime("-1 week");
+                                                    $alerta = strtotime("-2 week");
+                                                ?>
+                                                    <?php foreach($this->list->rows as $registro):?>
+
+                                                        <?php 
+                                                            $class="";
+                                                            if($registro['stats']==0){
+                                                                if (strtotime($registro['prazo_entrega']) <= strtotime(date("Y-m-d")) && strtotime($registro['prazo_entrega']) >= strtotime('-2 days')){
+                                                                    $class = ' class="atencao"';
+                                                                }elseif(strtotime($registro['prazo_entrega']) < strtotime('-2 days')){
+                                                                    $class = ' class="alerta"';
+                                                                }
+                                                            }
+                                                        ?>
+                                                        <tr<?php echo $class; ?>>
+                                                            <td class="tal" style="display: none;"><?php echo $registro['stats']; ?></td>
+                                                            <td class="center"><a href="order/edit/id/<?php echo $registro['pedido']; ?>"><?php echo $registro['pedido'];?></a></td>
+                                                            <td class="tal"><?php echo $registro['prazo_entrega']; ?></td>
+                                                            <td class="tal"><a href="<?php echo $registro['link']; ?>" data-id="<?php echo $registro['pedido'];?>" data-id-rastreio="<?php echo $registro['id'];?>" data-stats="<?php echo $registro['stats']; ?>" target="target_links" class="target" data-toggle="modal" data-target="#myLargeModal"><?php echo $registro['descricao']; ?></a></td>
+                                                            <td class="tal"><?php echo $registro['nome']; ?></td>
+                                                            <td class="tal"><?php echo $registro['telefone']; ?></td>
+                                                            <td class="tal"><?php echo $registro['cidade']; ?></td>
+                                                            <td class="tal"><?php echo $registro['estado']; ?></td>
+                                                            <td class="center">
+                                                                <?php if($registro['stats']==0){ ?>
+                                                                    <a href="#" class="bt_system_stats" data-permit="<?php echo $this->permissao_ref ?>" data-table="<?php echo $this->table; ?>" data-action="ativar" data-id="<?php echo $registro['id']; ?>"><img src="images/status_vermelho.png" alt="Ativar"></a>
+                                                                <?php }else{ ?>
+                                                                    <a href="#" class="bt_system_stats" data-permit="<?php echo $this->permissao_ref ?>" data-table="<?php echo $this->table; ?>" data-action="desativar" data-id="<?php echo $registro['id']; ?>"><img src="images/status_verde.png" alt="Desativar"></a>
+                                                                <?php } ?>
+                                                            </td>
+                                                        </tr>
+                                                        <?php $ordem++; ?>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- End .row -->
+                    <?php require_once "layouts/options.phtml"; ?>
+                </div>
+                <!-- End contentwrapper -->
+            </div>
+            <!-- End #content -->
+            
+            
+<?php  require_once "layouts/footer.phtml"; ?>
+        
+        </div>
+
+        <div class="modal fade" id="myLargeModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" style="width:90vw; height:90vh;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                    </div>
+                    <div class="modal-body">
+                        <iframe src="" name="target_links" class="target_links" style="width:100%;height:70vh;" frameborder="0"></iframe>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success status1" data-dismiss="modal">Entregue</button>
+                        <button type="button" class="btn btn-danger status2" data-dismiss="modal">Não Entregue</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+<?php  require_once "layouts/plugins.phtml"; ?>
+
+        <!-- Table plugins -->
+        <script src="plugins/tables/dataTables/jquery.dataTables.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.tableTools.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.bootstrap.js"></script>
+        <script src="plugins/tables/dataTables/dataTables.responsive.js"></script>
+        <script src="js/pages/modals.js"></script>
+
+
+        <!-- Init plugins only for page -->
+        <script type="text/javascript">
+            $(document).ready(function(){
+
+                //--------------- Data tables ------------------//
+                if($('table').hasClass('tabletools')){
+                    $('.tabletools').dataTable( {
+                        "oLanguage": {
+                            "sSearch": "",
+                            "sLengthMenu": "<span>_MENU_</span>",
+                            "sProcessing":   "Processando...",                    
+                            "sZeroRecords":  "Não foram encontrados resultados",
+                            "sInfo":         "Mostrando de _START_ até _END_ de _TOTAL_ registros",
+                            "sInfoEmpty":    "Mostrando de 0 até 0 de 0 registros",
+                            "sInfoFiltered": "(filtrado de _MAX_ registros no total)",
+                            "sInfoPostFix":  "",
+                            "sUrl":         "",
+
+                            "oPaginate": {
+                                "sFirst":    "Primeiro",
+                                "sPrevious": "Anterior",
+                                "sNext":     "Seguinte",
+                                "sLast":     "Último"
+                            }
+                        },
+                        "sDom": "T<'row'<'col-md-6 col-xs-12 'l><'col-md-6 col-xs-12'f>r>t<'row'<'col-md-4 col-xs-12'i><'col-md-8 col-xs-12'p>>",
+                        "aaSorting":[[0,"asc"]], "iDisplayLength": 100,
+                        tableTools: {
+                            "sSwfPath": "http://cdn.datatables.net/tabletools/2.2.2/swf/copy_csv_xls_pdf.swf",
+                            "aButtons": [
+                          ]
+                        }
+
+
+                    });
+
+                }
+
+                $('iframe.target_links').load(function(){
+                    $(this).animate({'opacity':1});
+                });
+
+                $('a.target').click(function(e){
+                    $('#myLargeModal #myModalLabel').html("Pedido "+$(this).attr('data-id'));
+                    $('iframe.target_links').attr('src',$(this).attr('href'));
+                    $('iframe.target_links').animate({'opacity':0.1});
+                    $('button.status1').attr('data-id',$(this).attr('data-id-rastreio'));
+                    $('button.status2').attr('data-id',$(this).attr('data-id-rastreio'));
+                    if($(this).attr('data-stats')==0){
+                        $('button.status1').show();
+                        $('button.status2').hide();
+                    }else{
+                        $('button.status2').show();
+                        $('button.status1').hide();
+                    }
+                });
+
+                $(document).on('click','button.status1',function(){
+                    $('.bt_system_stats[data-id='+$(this).attr('data-id')+']').trigger('click');
+                    $('a.target[data-id-rastreio='+$(this).attr('data-id')+']').attr('data-stats',1);
+                });
+
+                $(document).on('click','button.status2',function(){
+                    $('.bt_system_stats[data-id='+$(this).attr('data-id')+']').trigger('click');
+                    $('a.target[data-id-rastreio='+$(this).attr('data-id')+']').attr('data-stats',0);
+                });
+
+            });
+        </script>
+    </body>
+</html>

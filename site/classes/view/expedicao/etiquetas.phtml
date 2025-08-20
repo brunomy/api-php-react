@@ -1,0 +1,288 @@
+<?php ?>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Etiquetas - Expedição</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+        * {
+            margin:0;
+            padding:0;
+            list-style:none;
+            text-decoration:none;
+            border:none;
+            line-height:inherit;
+            outline:none;
+            box-sizing: border-box;
+        }
+        body,html {
+            height: 100%;
+            font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+            font-size: 16px;
+            color: #000;
+        }
+
+        img.img {
+            max-width: 100%;
+            max-height: 100%;
+            vertical-align: middle;
+        }
+
+        .etiqueta {
+            width: 567px;
+            height: 365px;
+            /* float: left; */
+            margin: 10px;
+            /*border: 1px solid #000;*/
+        }
+
+        .etiqueta .global {
+            width: 400px;
+            float: left;
+            margin: 10px;
+        }
+
+        .etiqueta .global > span {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .etiqueta .dados {
+            width: 100%;
+            border: 1px solid #000;
+        }
+
+        .etiqueta .dados .row {
+            height: 30px;
+            line-height: 30px;
+            overflow: hidden;
+            border-bottom: 1px solid #000;
+            padding-left: 10px;
+            font-weight: bold;
+        }
+
+        .etiqueta .dados .row.black {
+            border: 3px solid #000;
+            border-bottom-width: 4px;
+        }
+
+        .etiqueta .dados .row:last-child { border-bottom: none; }
+        .etiqueta .dados .row.endereco { height: 70px; line-height: 23px; font-size: 14px; }
+        .etiqueta .dados .row span { font-weight: normal; }
+
+        .etiqueta .dados .row .col {
+            float: left;
+            border-left: 1px solid #000;
+            padding-left: 10px;
+        }
+
+        .etiqueta .dados .row .col:first-child { border-left: none; padding-left: 0; }
+
+        .etiqueta .remetente {
+            margin: 10px 0;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .etiqueta .remetente span {
+            display: block;
+            padding: 2px 0;
+        }
+
+        .etiqueta .remetente .row {
+            border: 1px solid #000;
+            padding: 10px;
+        }
+        
+        .etiqueta .codbarras {
+            position: relative;
+            width: 130px;
+            height: 340px;
+            float: left;
+            margin: 10px 5px;
+            /* border: 1px solid #ccc; */
+        }
+
+        .etiqueta .codbarras .barcode {
+            width: 75px;
+            float: left;
+            margin: 5px;
+            /* border: 1px solid #000; */
+            /* text-align: center; */
+        }
+
+        .etiqueta .codbarras .info {
+            position: relative;
+            width: 40px;
+            height: 340px;
+            float: right;
+            /* border: 1px solid #000; */
+            /* text-align: center; */
+        }
+
+        .etiqueta .codbarras .info .num {
+            position: absolute;
+            width: 100px;
+            height: 40px;
+            line-height: 40px;
+            top: 20px;
+            left: -25px;
+            font-size: 30px;
+            font-weight: bold;
+            text-align: center;
+            -webkit-transform: rotate(-90deg);
+            -moz-transform: rotate(-90deg);
+            -o-transform: rotate(-90deg);
+            -ms-transform: rotate(-90deg);
+            transform: rotate(-90deg);
+        }
+
+        .etiqueta .codbarras .info .logomarca {
+            position: absolute;
+            bottom: 50px;
+            left: -55px;
+            -webkit-transform: rotate(-90deg);
+            -moz-transform: rotate(-90deg);
+            -o-transform: rotate(-90deg);
+            -ms-transform: rotate(-90deg);
+            transform: rotate(-90deg);
+        }
+
+        .etiqueta .codbarras .volumes {
+            height: 40px;
+            line-height: 40px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .etiqueta .codbarras .preencher {
+            position: absolute;
+            width: 320px;
+            top: 140px;
+            left: -110px;
+            -webkit-transform: rotate(-90deg);
+            -moz-transform: rotate(-90deg);
+            -o-transform: rotate(-90deg);
+            -ms-transform: rotate(-90deg);
+            transform: rotate(-90deg);
+            /* border: 1px solid #000; */
+        }
+
+        .etiqueta .codbarras .preencher .preenchimento {
+            width: 100%;
+        }
+
+        .etiqueta .codbarras .preencher .preenchimento.half {
+            width: 50%;
+            float: left;
+            margin-top: 40px;
+        }
+
+        .etiqueta .codbarras .preencher .preenchimento div {
+            display: inline-block;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="grid">
+<?php for($i = 0; $i <= $this->registro['volumes']; $i++) :?>
+    <div class="etiqueta">
+        <div class="global" <?php if($i == $this->registro['volumes']){ echo "style='margin-top:50px;'"; } ?>>
+            <div class="dados">
+                <div class="row"><?php echo $this->registro['transportadora']; ?></div>
+                <div class="row">
+                    <div class="col" style="width: 50%;">
+                        <span>PEDIDO: </span><?php echo $this->registro['id_pedido']; ?>
+                    </div>
+                    <div class="col" style="width: 50%;">
+                        <span>NOTA: </span><?php echo $this->registro['n_nota']; ?>
+                    </div>
+                </div>
+            </div>
+            <div class="remetente">
+                <span>Remetente:</span>
+                <div class="row">
+                <?php
+                    if($this->registro['cnpj']){
+                        echo $this->registro['razao_social'].'<br>CNPJ: '.$this->registro['cnpj'].'<br>Av. Madrid, Qd. 90 Lt. 5, St. Faiçalville, Goiânia/GO - CEP: 74.350-730';
+                    }
+                    else if ($i < $this->registro['volumes']){
+                        if($this->registro['faturado_por'] == '' || $this->registro['faturado_por'] == 'Real Poker'){
+                            echo 'Real Poker Mesas e Fichas Personalizadas Eireli<br>CNPJ: 20.087.324/0001-16<br>Av. Madrid, Qd. 90 Lt. 5, St. Faiçalville, Goiânia/GO - CEP: 74.350-730';
+                        }else{
+                            echo 'Real Acessórios para Jogos Eireli<br>CNPJ: 32.746.259/0001-72<br>Av. Madrid, Qd. 90 Lt. 5, St. Faiçalville, Goiânia/GO - CEP: 74.350-730';
+                        }
+                    }else{
+                        echo 'REAL POKER';
+                    }
+                ?>
+                </div>
+            </div>
+            <span>Destinatário:</span> 
+            <div class="dados destinatario">
+                <div class="row black"><?php echo $this->registro['nome']; ?></div>
+                <?php if ($i < $this->registro['volumes']) :?>
+                    <div class="row">
+                        <div class="col" style="width: 50%; font-size: 12px;">
+                            <span>CONTATO: </span><?php echo $this->registro['telefone']; ?>
+                        </div>
+                        <div class="col" style="width: 50%; font-size: 12px;">
+                            <span>CPF/CNPJ: </span><?php echo $this->registro['cpf_cnpj']; ?>
+                        </div>
+                    </div>
+                <?php endif ?>
+                <div class="row endereco">
+                    <?php if ($i < $this->registro['volumes']) :?>
+                        <span>ENDEREÇO: </span><?php echo "{$this->registro['endereco']}, {$this->registro['numero']}, {$this->registro['complemento']}, {$this->registro['bairro']}. {$this->registro['cidade']} - {$this->registro['uf']} - CEP {$this->registro['cep']}"; ?>
+                    <?php else: ?>
+                        <span>ENDEREÇO: </span><?php echo "{$this->registro['cidade']} - {$this->registro['uf']}"; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+        <div class="codbarras">
+            <?php
+                // Calcula o texto e os pesos (factor, height e fontSize)
+                $text = "R{$this->registro['id']}P" . ($i + 1);
+                $w = max(1.6, (10 - strlen($text)) * 0.25);
+                $h = (int)(60.0 / $w);
+                $f = 17 / $w;
+
+                $src = "/barcode.php?factor=2.7&barHeight=25&text={$text}&fontSize=7&orientation=270&drawText=false&withChecksum=true";
+            ?>
+            <?php if ($i < $this->registro['volumes']) :?>
+                <div class="barcode">
+                    <img alt="barcode" src="<?php echo $src; ?>"/>
+                </div>
+                <div class="info">
+                    <div class="num"><?php echo ($i + 1) . " / {$this->registro['volumes']}"; ?></div>
+                    <div class="logomarca"><img alt="realpoker logo" src="/imagens/logo_realpoker.png"/></div>
+                </div>
+            <?php else :?>
+                <div class="volumes"><?php echo $this->registro['volumes']; ?> volumes</div>
+                <div class="preencher">
+                    <div class="preenchimento">
+                        <div class="label">Motorista:</div>
+                        <div class="campo">_________________________</div>
+                    </div>
+                    <div class="preenchimento half">
+                        <div class="label">Data:</div>
+                        <div class="campo">_____/_____</div>
+                    </div>
+                    <div class="preenchimento half">
+                        <div class="label">Hora:</div>
+                        <div class="campo">_____:_____</div>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+<?php endfor; ?>
+</div>
+</body>
+<html>

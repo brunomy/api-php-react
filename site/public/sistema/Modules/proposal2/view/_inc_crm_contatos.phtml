@@ -1,0 +1,63 @@
+<div class="col-sm-12  <?php if ($cliente['data_futura'] < 0) {
+    echo "mostrar";
+} ?>" style="margin-bottom: 10px">
+    <div style="width: 95%; background-color: #f6f6f6; border: #aeaeae 1px solid; padding: 10px;vertical-align: center">
+        <div class="row">
+            <?php include '_inc_crm_cliente.phtml' ?>
+            <div class="col-sm-12" style="margin-bottom: 8px;">
+                <textarea style="width:100%"
+                          onblur="updateUser(<?= $cliente['id_crm'] ?>, <?= $cliente['id_cliente'] ?>,'observacao')"
+                          id="observacao-<?= $cliente['id_crm'] ?>"><?=$cliente['observacao']?></textarea>
+            </div>
+            <?php if ($cliente['descricao']) : ?>
+                <div class="col-sm-12">
+                    <span style="color:red; font-weight: bold"><?= $cliente['data_formatada'] ?> - <?= $cliente['descricao'] ?></span>
+                    <hr style="border: silver 0.5px solid"/>
+                </div>
+            <?php endif; ?>
+            <?php count($cliente['pedidos']) >= 10 ? $total = 10 : $total = count($cliente['pedidos']) ?>
+            <div id="todosPedidos-<?= $cliente['id_crm'] ?>">
+                <?php for ($i = 0; $i < $total; $i++): ?>
+                    <div <?php if ($i > 2) echo "class='mostrarTodosPedidos'" ?>>
+                        <div class="col-sm-12">
+                        <span style="color:silver; font-weight: bold">
+                            <?= $cliente['pedidos'][$i]['data'] ?> - <?= $cliente['pedidos'][$i]['quantidade_dias'] ?> dia(s)
+
+                            <?php if ($cliente['pedidos'][$i]['possui_orcamento']) : ?>
+                                - <?= $cliente['pedidos'][$i]['id'] ?>
+                                <?php if (!$cliente['pedidos'][$i]['possui_compra_cancelada'] and !$cliente['pedidos'][$i]['possui_compra'] and $cliente['pedidos'][$i]['pode_reativa'])  : ?>
+                                    <a href="#" onclick="reativarOrçamento(<?= $cliente['pedidos'][$i]['id'] ?>, <?=$cliente['id_crm']?>)"><i
+                                                 class="s14 icomoon-icon-file-7"></i></a>
+                                <?php else : ?>
+                                    <i style="color: silver" class="s14 icomoon-icon-file-7"></i>
+                                <?php endif; ?>
+                                 <?php if ($cliente['pedidos'][$i]['possui_compra_cancelada']): ?>
+                                    <i class="s14 icomoon-icon-cancel-circle red"></i>
+                                <?php endif; ?>
+                                 <?php if ($cliente['pedidos'][$i]['possui_compra']): ?>
+                                    <i class="s14 icomoon-icon-cart blue"></i>
+
+                                <?php endif; ?>
+                                <a href="<?= $this->site_url; ?>/carrinho/orcamento/<?= $cliente['pedidos'][$i]['id'] ?>" title="Adicionar no Carrinho" target="_blank"><i class="s14 brocco-icon-forward"></i></a>
+                            <?php else : ?>
+                                <i class="s14 icomoon-icon-arrow-down-3 silver"></i>
+                            <?php endif; ?>
+                        </span>
+
+                        </div>
+                        <hr style="width: 95%; margin-bottom: 10px"/>
+                    </div>
+                <?php endfor; ?>
+            </div>
+            <?php if (count($cliente['pedidos']) > 3) : ?>
+                <div class="col-sm-12">
+
+                    <div class="pull-right"
+                         style="font-size: 40px; margin-top: -20px; margin-bottom: -10px">
+                        <a style="text-decoration: none; color: silver" href="#" onclick="mostrarTodosPedidos('<?= 'todosPedidos-' . $cliente['id_crm'] ?>')">...</a>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
