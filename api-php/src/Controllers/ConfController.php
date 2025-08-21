@@ -35,10 +35,25 @@ final class ConfController {
 		$pdo = Database::pdo();
 
 		$query = 
-			'SELECT * 
-					FROM tb_produtos_categorias A
-					LEFT JOIN dp_categoria_departamento B ON A.id = B.id_categoria
-					WHERE departamento_id = ?';
+			'SELECT 
+					A.id,
+					A.nome,
+					COUNT(DISTINCT C.id) AS etapas_count,
+					COUNT(DISTINCT D.id) AS atividades_count,
+					COUNT(DISTINCT E.id) AS checklists_count,
+					COUNT(DISTINCT F.id) AS volumes_count
+			FROM tb_produtos_categorias A
+			LEFT JOIN dp_categoria_departamento B ON A.id = B.id_categoria
+			LEFT JOIN dp_conf_etapas C ON A.id = C.id_categoria
+			LEFT JOIN dp_conf_atividades D ON C.id = D.id_conf_etapa
+			LEFT JOIN dp_conf_checklists E ON D.id = E.id_conf_atividade
+			LEFT JOIN dp_conf_volumes F ON D.id = F.id_conf_atividade
+			WHERE 
+					A.stats = 1
+					AND A.deleted_at IS NULL
+					AND B.id_departamento = ?
+			GROUP BY A.id, A.nome
+			ORDER BY A.nome ASC;';
 
 		$stmt = $pdo->prepare($query);
 		$stmt->execute([$idDepartamento]);

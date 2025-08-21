@@ -16,6 +16,12 @@ $router->get('/api/ordens', fn() => OrderController::index());
 $router->get('/api/ordem/{id}', fn($params) => OrderController::show($params));
 
 
+//USER
+$router->post('/api/login', fn($params) => UserController::login($params));
+$router->get('/api/getDepartamentos/{idUser}', fn($params) => UserController::getDepartamentos($params));
+
+
+
 //CONFIGURAÇÂO
 $router->get('/api/configuracao/{id}', fn($params) => ConfController::getCategoriasDepartamento($params));
 

@@ -13,11 +13,11 @@ final class Database {
 
         $dsn  = sprintf('mysql:host=%s;dbname=%s;charset=utf8mb4',
             $_ENV['DB_HOST'] ?? '127.0.0.1',
-            $_ENV['DB_NAME'] ?? 'test'
+            $_ENV['DB_DATABASE'] ?? 'test'
         );
 
-        $user = $_ENV['DB_USER'] ?? 'root';
-        $pass = $_ENV['DB_PASS'] ?? '';
+        $user = $_ENV['DB_USERNAME'] ?? 'root';
+        $pass = $_ENV['DB_PASSWORD'] ?? '';
 
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
