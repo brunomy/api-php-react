@@ -1,0 +1,100 @@
+{
+	"info": {
+		"_postman_id": "29ba6965-e42e-46fe-b23b-00f9f47616b7",
+		"name": "Realpoker",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39137459"
+	},
+	"item": [
+		{
+			"name": "Ordens",
+			"item": []
+		},
+		{
+			"name": "Configuracoes",
+			"item": []
+		},
+		{
+			"name": "Ordens",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/ordens",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"ordens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ordem",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/ordem/332",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"ordem",
+						"332"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "createEtapa",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"titulo\": \"Montagem inicial\",\n  \"id_categoria\": 0,\n  \"id_departamento\": 7\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/configuracao/criarEtapa",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"configuracao",
+						"criarEtapa"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
