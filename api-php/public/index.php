@@ -32,8 +32,14 @@ $router->delete('/api/configuracao/deletarEtapa/{idEtapa}', fn($params) => ConfC
 
 $router->get('/api/configuracao/buscarAtividades/{idConfEtapa}', fn($params) => ConfController::getAtividades($params));
 $router->post('/api/configuracao/criarAtividade', fn($params) => ConfController::createAtividade($params));
+$router->put('/api/configuracao/atividade/{id}', fn($params) => ConfController::updateAtividade($params));
 $router->delete('/api/configuracao/deletarAtividade/{idAtividade}', fn($params) => ConfController::deleteAtividade($params));
 
+$router->get('/api/configuracao/buscarChecklistVolumes/{idConfAtividade}', fn($params) => ConfController::getChecklistsVolumes($params));
+$router->post('/api/configuracao/criarChecklist', fn($params) => ConfController::createChecklist($params));
+$router->delete('/api/configuracao/deletarChecklist/{idChecklist}', fn($params) => ConfController::deleteChecklist($params));
+$router->post('/api/configuracao/criarVolume', fn($params) => ConfController::createVolume($params));
+$router->delete('/api/configuracao/deletarVolume/{idVolume}', fn($params) => ConfController::deleteVolume($params));
 
 
 
