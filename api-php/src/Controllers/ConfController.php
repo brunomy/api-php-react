@@ -6,30 +6,6 @@ namespace App\Controllers;
 use App\Database;
 
 final class ConfController {
-
-	public static function index(): void {
-			$pdo = Database::pdo();
-			$stmt = $pdo->query('SELECT * FROM dp_ordens WHERE deleted_at IS NULL ORDER BY id DESC LIMIT 100');
-			json_response(['data' => $stmt->fetchAll()]);
-			return; // opcional
-	}
-
-	public static function show(array $params): void {
-			$id = (int)($params['id'] ?? 0);
-			$pdo = Database::pdo();
-			$stmt = $pdo->prepare('SELECT * FROM dp_ordens WHERE id = ?');
-			$stmt->execute([$id]);
-			$order = $stmt->fetch();
-
-			if (!$order) {
-					json_response(['error' => 'Not Found'], 404);
-					return;
-			}
-
-			json_response(['data' => $order]);
-			return;
-	}
-
 	public static function getCategoriasDepartamento(array $params): void {
 		$idDepartamento = (int)($params['id'] ?? 0);
 		$pdo = Database::pdo();
@@ -51,6 +27,10 @@ final class ConfController {
 			WHERE 
 					A.stats = 1
 					AND A.deleted_at IS NULL
+					AND C.deleted_at IS NULL
+					AND D.deleted_at IS NULL
+					AND E.deleted_at IS NULL
+					AND F.deleted_at IS NULL
 					AND B.id_departamento = ?
 			GROUP BY A.id, A.nome
 			ORDER BY A.nome ASC;';
@@ -71,28 +51,61 @@ final class ConfController {
 
 	//Etapas
 	public static function getEtapas(array $params): void {
-		$idCategoria = (int)($params['idCategoria'] ?? 0);
 		$idDepartamento = (int)($params['idDepartamento'] ?? 0);
+		$idCategoria = (int)($params['idCategoria'] ?? 0);
 
 		$pdo = Database::pdo();
 
 		$query = 
-			'SELECT * 
-					FROM dp_conf_etapas
-					WHERE id_categoria = ? && id_departamento = ? && deleted_at IS NULL
-					ORDER BY id ASC';
+			'SELECT 
+					A.id,
+					A.titulo,
+					COUNT(DISTINCT B.id) AS atividades_count,
+					COUNT(DISTINCT C.id) AS checklists_count,
+					COUNT(DISTINCT D.id) AS volumes_count
+			FROM dp_conf_etapas A
+			LEFT JOIN dp_conf_atividades B ON A.id = B.id_conf_etapa
+			LEFT JOIN dp_conf_checklists C ON B.id = C.id_conf_atividade
+			LEFT JOIN dp_conf_volumes D ON B.id = D.id_conf_atividade
+			WHERE 
+					A.deleted_at IS NULL
+					AND B.deleted_at IS NULL
+					AND C.deleted_at IS NULL
+					AND D.deleted_at IS NULL
+					AND A.id_departamento = ?
+					AND A.id_categoria = ?
+			GROUP BY A.id, A.titulo
+			ORDER BY A.id ASC;';
+
+		$query2 = 
+			'SELECT 
+				id, nome
+			FROM tb_produtos_categorias
+			WHERE 
+				id = ?;';
 
 		$stmt = $pdo->prepare($query);
-		$stmt->execute([$idCategoria, $idDepartamento]);
+		$stmt->execute([$idDepartamento, $idCategoria]);
 
 		$etapas = $stmt->fetchAll();
-		
+
+		$stmt = $pdo->prepare($query2);
+		$stmt->execute([$idCategoria]);
+
+		$categoria = $stmt->fetch();
+
 		if (!$etapas) {
-			json_response(['error' => 'Not Found'], 404);
+			json_response(['data' => [
+				'categoria' => $categoria,
+				'etapas' => [],
+			]]);
 			return;
 		}
 
-		json_response(['data' => $etapas]);
+		json_response(['data' => [
+			'categoria' => $categoria,
+			'etapas' => $etapas,
+		]]);
 		return;
 	}
 
@@ -146,6 +159,32 @@ final class ConfController {
 
 		json_response(['message' => 'Etapa deleted successfully']);
 		return;
+	}
+
+	public static function updateEtapa(array $params): void {
+		$id = (int)($params['id'] ?? 0);
+		$body = read_json_body();
+
+		$titulo = trim((string)($body['titulo'] ?? ''));
+
+		if ($id <= 0 || $titulo === '') {
+				json_response(['error' => 'Payload inválido'], 422);
+				return;
+		}
+
+		$pdo = Database::pdo();
+
+		$query = 'UPDATE dp_conf_etapas SET titulo = ? WHERE id = ? AND deleted_at IS NULL';
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$titulo, $id]);
+
+		json_response([
+				'message' => 'Etapa atualizada com sucesso',
+				'data' => [
+						'id' => $id,
+						'titulo' => $titulo,
+				]
+		], 200);
 	}
 
 	//Atividades

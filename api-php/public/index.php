@@ -25,8 +25,9 @@ $router->get('/api/getDepartamentos/{idUser}', fn($params) => UserController::ge
 //CONFIGURAÇÂO
 $router->get('/api/configuracao/{id}', fn($params) => ConfController::getCategoriasDepartamento($params));
 
-$router->put('/api/configuracao/criarEtapa', fn($params) => ConfController::createEtapa($params));
-$router->get('/api/configuracao/buscarEtapas/{idDepartamento}/{idCategoria}', fn($params) => ConfController::getEtapas($params));
+$router->get('/api/configuracao/buscarEtapas/{idDepartamento}/categoria/{idCategoria}/etapas', fn($params) => ConfController::getEtapas($params));
+$router->post('/api/configuracao/criarEtapa', fn($params) => ConfController::createEtapa($params));
+$router->put('/api/configuracao/etapa/{id}', fn($params) => ConfController::updateEtapa($params));
 $router->delete('/api/configuracao/deletarEtapa/{idEtapa}', fn($params) => ConfController::deleteEtapa($params));
 
 $router->put('/api/configuracao/criarAtividade', fn($params) => ConfController::createAtividade($params));
