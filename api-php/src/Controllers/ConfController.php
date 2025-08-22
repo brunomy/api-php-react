@@ -193,23 +193,66 @@ final class ConfController {
 
 		$pdo = Database::pdo();
 
+
+
 		$query = 
-			'SELECT * 
-					FROM dp_conf_atividades
-					WHERE id_conf_etapa = ? && deleted_at IS NULL
-					ORDER BY id ASC';
+			'SELECT 
+					A.id,
+					A.titulo,
+					COUNT(DISTINCT B.id) AS checklists_count,
+					COUNT(DISTINCT C.id) AS volumes_count
+			FROM dp_conf_atividades A
+			LEFT JOIN dp_conf_checklists B ON A.id = B.id_conf_atividade
+			LEFT JOIN dp_conf_volumes C ON A.id = C.id_conf_atividade
+			WHERE 
+					A.deleted_at IS NULL
+					AND B.deleted_at IS NULL
+					AND C.deleted_at IS NULL
+					AND A.id_conf_etapa = ?
+			GROUP BY A.id, A.titulo
+			ORDER BY A.id ASC;';
+
+		$query2 = 
+			'SELECT 
+				id, titulo
+			FROM dp_conf_etapas
+			WHERE 
+				id = ?;';
+
+		$query3 = 
+			'SELECT 
+				A.id, A.nome
+			FROM tb_produtos_categorias A
+			LEFT JOIN dp_conf_etapas B ON A.id = B.id_categoria
+			WHERE 
+				B.id = ?;';
 
 		$stmt = $pdo->prepare($query);
 		$stmt->execute([$id_conf_etapa]);
-
 		$atividades = $stmt->fetchAll();
 		
+		$stmt = $pdo->prepare($query2);
+		$stmt->execute([$id_conf_etapa]);
+		$etapa = $stmt->fetch();
+
+		$stmt = $pdo->prepare($query3);
+		$stmt->execute([$id_conf_etapa]);
+		$categoria = $stmt->fetch();
+
 		if (!$atividades) {
-			json_response(['error' => 'Not Found'], 404);
+			json_response(['data' => [
+				'categoria' => $categoria,
+				'etapa' => $etapa,
+				'atividades' => [],
+			]]);
 			return;
 		}
 
-		json_response(['data' => $atividades]);
+		json_response(['data' => [
+			'categoria' => $categoria,
+			'etapa' => $etapa,
+			'atividades' => $atividades,
+		]]);
 		return;
 	}
 

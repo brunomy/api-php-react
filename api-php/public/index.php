@@ -30,8 +30,8 @@ $router->post('/api/configuracao/criarEtapa', fn($params) => ConfController::cre
 $router->put('/api/configuracao/etapa/{id}', fn($params) => ConfController::updateEtapa($params));
 $router->delete('/api/configuracao/deletarEtapa/{idEtapa}', fn($params) => ConfController::deleteEtapa($params));
 
-$router->put('/api/configuracao/criarAtividade', fn($params) => ConfController::createAtividade($params));
 $router->get('/api/configuracao/buscarAtividades/{idConfEtapa}', fn($params) => ConfController::getAtividades($params));
+$router->post('/api/configuracao/criarAtividade', fn($params) => ConfController::createAtividade($params));
 $router->delete('/api/configuracao/deletarAtividade/{idAtividade}', fn($params) => ConfController::deleteAtividade($params));
 
 
