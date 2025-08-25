@@ -19,6 +19,16 @@ $router->get('/api/ordem/{id}', fn($params) => OrderController::show($params));
 //USER
 $router->post('/api/login', fn($params) => UserController::login($params));
 $router->get('/api/getDepartamentos/{idUser}', fn($params) => UserController::getDepartamentos($params));
+$router->get('/api/getUsersDepartamento/{idDepartamento}', fn($params) => UserController::getUsersDepartamento($params));
+
+$router->get('/api/getUserEquipes/{idUser}/{idDepartamento}', fn($params) => UserController::getUserEquipes($params));
+$router->post('/api/criarEquipe', fn($params) => UserController::createEquipe($params));
+$router->put('/api/updateEquipe/{id}', fn($params) => UserController::updateEquipe($params));
+$router->delete('/api/deletarEquipe/{idEquipe}', fn($params) => UserController::deleteEquipe($params));
+
+$router->get('/api/getFuncionarios/{idEquipe}', fn($params) => UserController::getFuncionarios($params));
+$router->post('/api/criarFuncionario', fn($params) => UserController::createFuncionario($params));
+$router->delete('/api/deletarFuncionario/{idFuncionario}', fn($params) => UserController::deleteFuncionario($params));
 
 
 
