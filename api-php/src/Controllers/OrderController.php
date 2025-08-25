@@ -6,50 +6,29 @@ namespace App\Controllers;
 use App\Database;
 
 final class OrderController {
-    public static function index(): void {
-        $pdo = Database::pdo();
-        $stmt = $pdo->query('SELECT * FROM dp_ordens WHERE deleted_at IS NULL ORDER BY id DESC LIMIT 100');
-        json_response(['data' => $stmt->fetchAll()]);
-        return; // opcional
-    }
+    public static function getOrdensDepartamento(array $params): void {
+		$idDepartamento = (int)($params['idDepartamento'] ?? 0);
 
-    public static function show(array $params): void {
-        $id = (int)($params['id'] ?? 0);
-        $pdo = Database::pdo();
-        $stmt = $pdo->prepare('SELECT * FROM dp_ordens WHERE id = ?');
-        $stmt->execute([$id]);
-        $order = $stmt->fetch();
+		$pdo = Database::pdo();
+        $query = 
+            'SELECT A.*, C.titulo AS titulo_remessa, C.entrega, C.nova_entrega, C.saida, C.nova_saida, C.nome
+                FROM dp_ordens A
+                LEFT JOIN dp_categoria_departamento B ON A.id_categoria = B.id_categoria
+                LEFT JOIN dp_remessas C ON A.id_remessa = C.id
+                WHERE B.id_departamento = ?';
 
-        if (!$order) {
-            json_response(['error' => 'Not Found'], 404);
-            return; // <— sem valor
-        }
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$idDepartamento]);
 
-        json_response(['data' => $order]);
-        return;
-    }
+		$ordens = $stmt->fetchAll();
+		
+		if (!$ordens) {
+			json_response(['error' => 'Not Found'], 404);
+			return;
+		}
 
-    public static function store(): void {
-        // $body = read_json_body();
-        // $name  = trim((string)($body['name']  ?? ''));
-        // $email = trim((string)($body['email'] ?? ''));
+		json_response(['data' => $ordens]);
+		return;
+	}
 
-        // if ($name === '' || $email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        //     json_response(['error' => 'Invalid payload'], 422);
-        //     return; // <— sem valor
-        // }
-
-        // $pdo = Database::pdo();
-        // $stmt = $pdo->prepare('INSERT INTO users (name, email) VALUES (?, ?)');
-        // $stmt->execute([$name, $email]);
-
-        // json_response([
-        //     'data' => [
-        //         'id'    => (int)$pdo->lastInsertId(),
-        //         'name'  => $name,
-        //         'email' => $email,
-        //     ]
-        // ], 201);
-        // return;
-    }
 }

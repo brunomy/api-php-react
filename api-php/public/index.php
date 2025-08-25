@@ -31,7 +31,6 @@ $router->post('/api/criarFuncionario', fn($params) => UserController::createFunc
 $router->delete('/api/deletarFuncionario/{idFuncionario}', fn($params) => UserController::deleteFuncionario($params));
 
 
-
 //CONFIGURAÇÂO
 $router->get('/api/configuracao/{id}', fn($params) => ConfController::getCategoriasDepartamento($params));
 
@@ -51,6 +50,10 @@ $router->delete('/api/configuracao/deletarChecklist/{idChecklist}', fn($params) 
 $router->post('/api/configuracao/criarVolume', fn($params) => ConfController::createVolume($params));
 $router->delete('/api/configuracao/deletarVolume/{idVolume}', fn($params) => ConfController::deleteVolume($params));
 
+
+
+//ORDENS
+$router->get('/api/getOrdensDepartamento/{idDepartamento}', fn($params) => OrderController::getOrdensDepartamento($params));
 
 
 
