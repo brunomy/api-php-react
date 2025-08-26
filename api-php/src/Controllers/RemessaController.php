@@ -150,4 +150,29 @@ final class RemessaController {
 		], 200);
 	}
 
+	public static function getOrdensRemessa(array $params): void {
+		$id = (int)($params['id'] ?? 0);
+
+		$pdo = Database::pdo();
+
+		$query = 
+			'SELECT A.* 
+				FROM dp_ordens A
+				LEFT JOIN dp_remessas B ON A.id_remessa = B.id
+				WHERE B.id = ?;';
+
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id]);
+
+		$ordens = $stmt->fetchAll();
+
+		if (!$ordens) {
+			json_response(['error' => 'Not Found'], 404);
+			return;
+		}
+
+		json_response(['data' => $ordens]);
+		return;
+	}
+
 }
