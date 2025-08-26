@@ -84,12 +84,6 @@ final class RemessaController {
 		$numero = trim((string)($body['numero'] ?? ''));
 		$bairro = trim((string)($body['bairro'] ?? ''));
 
-		if ($id <= 0 || $titulo === '' || $entrega === '' || $nome === '' || $telefone === '' || 
-		    $cep === '' || $id_estado <= 0 || $id_cidade <= 0 || $endereco === '' || $numero === '' || $bairro === '') {
-			json_response(['error' => 'Dados obrigatórios não informados'], 422);
-			return;
-		}
-
 		$pdo = Database::pdo();
 
 		// Campos opcionais
