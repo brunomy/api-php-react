@@ -6,42 +6,42 @@ namespace App\Controllers;
 use App\Database;
 
 final class UserController {
-    public static function login(array $params): void {
-        $data = json_decode(file_get_contents('php://input'), true) ?? [];
+	public static function login(array $params): void {
+		$data = json_decode(file_get_contents('php://input'), true) ?? [];
 
-        $usuario = trim((string)($data['user'] ?? ''));
-        $senha   = trim((string)($data['password'] ?? ''));
+		$usuario = trim((string)($data['user'] ?? ''));
+		$senha   = trim((string)($data['password'] ?? ''));
 
-        if ($usuario === '' || $senha === '') {
-            self::json_response(['error' => 'Invalid payload'], 422);
-            return;
-        }
+		if ($usuario === '' || $senha === '') {
+			self::json_response(['error' => 'Invalid payload'], 422);
+			return;
+		}
 
-        $pdo = Database::pdo();
-        $stmt = $pdo->prepare("SELECT * FROM dp_users WHERE usuario = :usuario AND stats = 1 AND deleted_at IS NULL LIMIT 1");
-        $stmt->execute(['usuario' => $usuario]);
-        $userDb = $stmt->fetch();
+		$pdo = Database::pdo();
+		$stmt = $pdo->prepare("SELECT * FROM dp_users WHERE usuario = :usuario AND stats = 1 AND deleted_at IS NULL LIMIT 1");
+		$stmt->execute(['usuario' => $usuario]);
+		$userDb = $stmt->fetch();
 
-        if (!$userDb || !password_verify($senha, $userDb['senha'])) {
-            self::json_response(['error' => 'Usuário ou senha inválidos'], 401);
-            return;
-        }
+		if (!$userDb || !password_verify($senha, $userDb['senha'])) {
+				self::json_response(['error' => 'Usuário ou senha inválidos'], 401);
+				return;
+		}
 
-        // Aqui você pode usar JWT, por enquanto só devolve um token fake
-        $token = base64_encode(random_bytes(32));
+		// Aqui você pode usar JWT, por enquanto só devolve um token fake
+		$token = base64_encode(random_bytes(32));
 
-        self::json_response([
-            'success' => true,
-            'user' => [
-                'id' => $userDb['id'],
-                'nome' => $userDb['nome'],
-                'permissao' => $userDb['permissao'],
-            ],
-            'token' => $token
-        ]);
-    }
+		self::json_response([
+			'success' => true,
+			'user' => [
+					'id' => $userDb['id'],
+					'nome' => $userDb['nome'],
+					'permissao' => $userDb['permissao'],
+			],
+			'token' => $token
+		]);
+	}
 
-    public static function getDepartamentos(array $params): void {
+	public static function getDepartamentos(array $params): void {
 		$idUser = (int)($params['idUser'] ?? 0);
 
 		$pdo = Database::pdo();
@@ -66,32 +66,32 @@ final class UserController {
 		return;
 	}
 
-    public static function getUsersDepartamento(array $params): void {
+	public static function getUsersDepartamento(array $params): void {
 		$idDepartamento = (int)($params['idDepartamento'] ?? 0);
 
 		$pdo = Database::pdo();
 
-        $query = 
-            'SELECT 
-                A.id, 
-                A.nome, 
-                A.descricao, 
-                A.email, 
-                A.telefone, 
-                A.permissao, 
-                A.usuario,
-                COUNT(DISTINCT C.id) AS equipes_count,
-                COUNT(DISTINCT D.id) AS funcionarios_count
-            FROM dp_users A
-            LEFT JOIN dp_user_departamento B ON A.id = B.id_user
-            LEFT JOIN dp_equipes C ON A.id = C.id_user AND B.id_departamento = C.id_departamento AND C.deleted_at IS NULL
-            LEFT JOIN dp_funcionarios D ON C.id = D.id_equipe AND D.deleted_at IS NULL
-            WHERE B.id_departamento = ? 
-            AND A.stats = 1 
-            AND A.deleted_at IS NULL 
-            AND A.permissao != "gerente"
-            GROUP BY A.id, A.nome, A.descricao, A.email, A.telefone, A.permissao, A.usuario
-            ORDER BY A.nome ASC;';
+		$query = 
+			'SELECT 
+					A.id, 
+					A.nome, 
+					A.descricao, 
+					A.email, 
+					A.telefone, 
+					A.permissao, 
+					A.usuario,
+					COUNT(DISTINCT C.id) AS equipes_count,
+					COUNT(DISTINCT D.id) AS funcionarios_count
+			FROM dp_users A
+			LEFT JOIN dp_user_departamento B ON A.id = B.id_user
+			LEFT JOIN dp_equipes C ON A.id = C.id_user AND B.id_departamento = C.id_departamento AND C.deleted_at IS NULL
+			LEFT JOIN dp_funcionarios D ON C.id = D.id_equipe AND D.deleted_at IS NULL
+			WHERE B.id_departamento = ? 
+			AND A.stats = 1 
+			AND A.deleted_at IS NULL 
+			AND A.permissao != "gerente"
+			GROUP BY A.id, A.nome, A.descricao, A.email, A.telefone, A.permissao, A.usuario
+			ORDER BY A.nome ASC;';
 
 		$stmt = $pdo->prepare($query);
 		$stmt->execute([$idDepartamento]);
@@ -107,33 +107,33 @@ final class UserController {
 		return;
 	}
 
-    public static function getUserEquipes(array $params): void {
+	public static function getUserEquipes(array $params): void {
 		$idUser = (int)($params['idUser'] ?? 0);
 		$idDepartamento = (int)($params['idDepartamento'] ?? 0);
 
 		$pdo = Database::pdo();
 
-        $query = 
-            'SELECT 
-                A.*,
-                COUNT(DISTINCT B.id) AS funcionarios_count
-            FROM dp_equipes A
-            LEFT JOIN dp_funcionarios B ON A.id = B.id_equipe AND B.deleted_at IS NULL
-            WHERE A.id_user = ? AND A.id_departamento = ? AND A.deleted_at IS NULL
-            GROUP BY A.id
-            ORDER BY A.nome ASC;';
+		$query = 
+				'SELECT 
+						A.*,
+						COUNT(DISTINCT B.id) AS funcionarios_count
+				FROM dp_equipes A
+				LEFT JOIN dp_funcionarios B ON A.id = B.id_equipe AND B.deleted_at IS NULL
+				WHERE A.id_user = ? AND A.id_departamento = ? AND A.deleted_at IS NULL
+				GROUP BY A.id
+				ORDER BY A.nome ASC;';
 
 		$stmt = $pdo->prepare($query);
 		$stmt->execute([$idUser, $idDepartamento]);
 
 		$equipes = $stmt->fetchAll();
 
-        $query = 
-            'SELECT 
-                id, nome
-            FROM dp_users 
-            WHERE id = ? AND stats = 1 AND deleted_at IS NULL
-            ORDER BY nome ASC;';
+		$query = 
+				'SELECT 
+						id, nome
+				FROM dp_users 
+				WHERE id = ? AND stats = 1 AND deleted_at IS NULL
+				ORDER BY nome ASC;';
 
 		$stmt = $pdo->prepare($query);
 		$stmt->execute([$idUser]);
@@ -149,7 +149,7 @@ final class UserController {
 		return;
 	}
 
-    public static function createEquipe(array $params): void {
+	public static function createEquipe(array $params): void {
 		$body = read_json_body();
 		$id_user  = trim((string)($body['id_user']  ?? ''));
 		$id_departamento  = trim((string)($body['id_departamento']  ?? ''));
@@ -180,7 +180,7 @@ final class UserController {
 		return;
 	}
 
-    public static function updateEquipe(array $params): void {
+	public static function updateEquipe(array $params): void {
 		$id = (int)($params['id'] ?? 0);
 		$body = read_json_body();
 
@@ -206,7 +206,7 @@ final class UserController {
 		], 200);
 	}
 
-    public static function deleteEquipe(array $params): void {
+	public static function deleteEquipe(array $params): void {
 		$id = (int)($params['idEquipe'] ?? 0);
 
 		$pdo = Database::pdo();
@@ -234,35 +234,35 @@ final class UserController {
 
 		$pdo = Database::pdo();
 
-        $query = 
-            'SELECT 
-                *
-            FROM dp_funcionarios
-            WHERE id_equipe = ? AND deleted_at IS NULL
-            ORDER BY nome ASC;';
+		$query = 
+				'SELECT 
+						*
+				FROM dp_funcionarios
+				WHERE id_equipe = ? AND deleted_at IS NULL
+				ORDER BY nome ASC;';
 
 		$stmt = $pdo->prepare($query);
 		$stmt->execute([$idEquipe]);
 
 		$funcionarios = $stmt->fetchAll();
 
-        $query = 
-            'SELECT 
-                A.nome, A.id
-            FROM dp_users A
-            LEFT JOIN dp_equipes B ON A.id = B.id_user
-            WHERE B.id = ?;';
+		$query = 
+				'SELECT 
+						A.nome, A.id
+				FROM dp_users A
+				LEFT JOIN dp_equipes B ON A.id = B.id_user
+				WHERE B.id = ?;';
 
 		$stmt = $pdo->prepare($query);
 		$stmt->execute([$idEquipe]);
 
 		$user = $stmt->fetch();
 
-        $query = 
-            'SELECT 
-                nome, id
-            FROM dp_equipes
-            WHERE id = ?;';
+		$query = 
+				'SELECT 
+						nome, id
+				FROM dp_equipes
+				WHERE id = ?;';
 
 		$stmt = $pdo->prepare($query);
 		$stmt->execute([$idEquipe]);
@@ -278,7 +278,7 @@ final class UserController {
 		return;
 	}
 
-    public static function createFuncionario(array $params): void {
+	public static function createFuncionario(array $params): void {
 		$body = read_json_body();
 		$id_equipe  = trim((string)($body['id_equipe']  ?? ''));
 		$nome  = trim((string)($body['nome']  ?? ''));
@@ -313,7 +313,7 @@ final class UserController {
 		return;
 	}
 
-    public static function deleteFuncionario(array $params): void {
+	public static function deleteFuncionario(array $params): void {
 		$id = (int)($params['idFuncionario'] ?? 0);
 
 		$pdo = Database::pdo();

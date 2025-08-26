@@ -7,6 +7,7 @@ use App\Router;
 use App\Controllers\UserController;
 use App\Controllers\OrderController;
 use App\Controllers\ConfController;
+use App\Controllers\RemessaController;
 
 cors();
 
@@ -54,6 +55,13 @@ $router->delete('/api/configuracao/deletarVolume/{idVolume}', fn($params) => Con
 
 //ORDENS
 $router->get('/api/getOrdensDepartamento/{idDepartamento}', fn($params) => OrderController::getOrdensDepartamento($params));
+
+
+//REMESSAS
+$router->get('/api/getEstados', fn() => RemessaController::getEstados());
+$router->get('/api/getCidades/{idEstado}', fn($params) => RemessaController::getCidades($params));
+$router->get('/api/getRemessa/{idRemessa}', fn($params) => RemessaController::getRemessa($params));
+$router->put('/api/updateRemessa/{id}', fn($params) => RemessaController::updateRemessa($params));
 
 
 
