@@ -26,14 +26,14 @@ final class RemessaController {
 	}
 
 	public static function getCidades(array $params): void {
-		$idEstado = (int)($params['idEstado'] ?? 0);
+		$id = (int)($params['id'] ?? 0);
 
 		$pdo = Database::pdo();
 		$query = 
 			'SELECT * FROM tb_utils_cidades WHERE id_estado = ?;';
 
 		$stmt = $pdo->prepare($query);
-		$stmt->execute([$idEstado]);
+		$stmt->execute([$id]);
 
 		$cidades = $stmt->fetchAll();
 
@@ -47,7 +47,7 @@ final class RemessaController {
 	}
 
 	public static function getRemessa(array $params): void {
-		$idRemessa = (int)($params['idRemessa'] ?? 0);
+		$id = (int)($params['id'] ?? 0);
 
 		$pdo = Database::pdo();
 
@@ -55,7 +55,7 @@ final class RemessaController {
 			'SELECT * FROM dp_remessas WHERE id = ?;';
 
 		$stmt = $pdo->prepare($query);
-		$stmt->execute([$idRemessa]);
+		$stmt->execute([$id]);
 
 		$remessa = $stmt->fetch();
 

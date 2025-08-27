@@ -7,7 +7,7 @@ use App\Database;
 
 final class OrderController {
 	public static function getOrdensDepartamento(array $params): void {
-		$idDepartamento = (int)($params['idDepartamento'] ?? 0);
+		$id = (int)($params['id'] ?? 0);
 
 		$pdo = Database::pdo();
         $query = 
@@ -45,7 +45,7 @@ final class OrderController {
 				ORDER BY A.created_at ASC;";
 
 		$stmt = $pdo->prepare($query);
-		$stmt->execute([$idDepartamento]);
+		$stmt->execute([$id]);
 
 		$ordens = $stmt->fetchAll();
 
