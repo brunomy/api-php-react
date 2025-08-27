@@ -63,6 +63,7 @@ $router->get('/api/getCidades/{idEstado}', fn($params) => RemessaController::get
 $router->get('/api/getRemessa/{idRemessa}', fn($params) => RemessaController::getRemessa($params));
 $router->put('/api/updateRemessa/{id}', fn($params) => RemessaController::updateRemessa($params));
 $router->get('/api/getOrdensRemessa/{id}', fn($params) => RemessaController::getOrdensRemessa($params));
+$router->get('/api/getOrdensRemessaDepartamento/{id_departamento}/{id}', fn($params) => RemessaController::getOrdensRemessaDepartamento($params));
 
 
 

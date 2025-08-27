@@ -175,4 +175,56 @@ final class RemessaController {
 		return;
 	}
 
+	public static function getOrdensRemessaDepartamento(array $params): void {
+		$id_departamento = (int)($params['id_departamento'] ?? 0);
+		$id = (int)($params['id'] ?? 0);
+
+		$pdo = Database::pdo();
+
+		$query = 
+		"SELECT 
+				A.*,
+				COALESCE(JSON_ARRAYAGG(
+						JSON_OBJECT(
+								'requisito_id', r.id,
+								'nome', r.nome,
+								'ordem', r.ordem,
+								'status', r.status,
+								'dependencias', (
+										SELECT JSON_ARRAYAGG(
+												JSON_OBJECT(
+														'id', d.id,
+														'nome', d.nome,
+														'cor', d.cor,
+														'status', d.status
+												)
+										)
+										FROM dp_dependencias d
+										WHERE d.id_requisito = r.id
+								)
+						)
+				), JSON_ARRAY()) AS requisitos
+		FROM dp_ordens A
+		LEFT JOIN dp_categoria_departamento B ON A.id_categoria = B.id_categoria
+		LEFT JOIN dp_remessas C ON A.id_remessa = C.id
+		LEFT JOIN dp_requisitos r ON r.id_ordem = A.id
+		WHERE B.id_departamento = ? 
+			AND C.id = ?
+		GROUP BY A.id
+		ORDER BY A.id ASC";
+
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id_departamento, $id]);
+
+		$ordens = $stmt->fetchAll();
+
+		if (!$ordens) {
+			json_response(['error' => 'Not Found'], 404);
+			return;
+		}
+
+		json_response(['data' => $ordens]);
+		return;
+	}
+
 }
