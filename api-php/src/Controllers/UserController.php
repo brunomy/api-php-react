@@ -336,9 +336,57 @@ final class UserController {
 		return;
 	}
 
-    private static function json_response(array $data, int $status = 200): void {
-        http_response_code($status);
-        header('Content-Type: application/json');
-        echo json_encode($data);
-    }
+
+	public static function getEquipesDepartamentoAtividades(array $params): void {
+		$idUser = (int)($params['idUser'] ?? 0);
+		$idDepartamento = (int)($params['idDepartamento'] ?? 0);
+
+		$pdo = Database::pdo();
+
+		$query = 
+				'SELECT 
+						A.*,
+						COUNT(DISTINCT B.id) AS funcionarios_count
+				FROM dp_equipes A
+				LEFT JOIN dp_funcionarios B ON A.id = B.id_equipe AND B.deleted_at IS NULL
+				WHERE A.id_user = ? AND A.id_departamento = ? AND A.deleted_at IS NULL
+				GROUP BY A.id
+				ORDER BY A.nome ASC;';
+
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$idUser, $idDepartamento]);
+
+		$equipes = $stmt->fetchAll();
+
+		$query = 
+				'SELECT 
+						id, nome
+				FROM dp_users 
+				WHERE id = ? AND stats = 1 AND deleted_at IS NULL
+				ORDER BY nome ASC;';
+
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$idUser]);
+
+		$user = $stmt->fetch();
+
+		if (!$equipes) {
+    		json_response(['data' => ['user' => $user, 'equipes' => []]]);
+			return;
+		}
+
+		json_response(['data' => ['user' => $user, 'equipes' => $equipes]]);
+		return;
+	}
+
+
+
+
+
+
+	private static function json_response(array $data, int $status = 200): void {
+		http_response_code($status);
+		header('Content-Type: application/json');
+		echo json_encode($data);
+	}
 }

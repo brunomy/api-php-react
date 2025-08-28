@@ -512,5 +512,69 @@ final class ConfController {
 		json_response(['message' => 'Volume deleted successfully']);
 		return;
 	}
-	
+
+
+
+	//Buscar Etapas e Atividades relacionadas a categoria
+	public static function getEtapasAtividadesByCategory(array $params): void {
+		$id = (int)($params['id'] ?? 0);
+
+		$pdo = Database::pdo();
+		$query = 'SELECT 
+				A.id,
+				A.id_categoria,
+				A.id_departamento,
+				A.titulo,
+				COALESCE(JSON_ARRAYAGG(
+						CASE 
+								WHEN B.id IS NOT NULL THEN
+										JSON_OBJECT(
+												"id", B.id,
+												"id_conf_etapa", B.id_conf_etapa,
+												"titulo", B.titulo
+										)
+								ELSE NULL
+						END
+				), JSON_ARRAY()) AS atividades
+		FROM dp_conf_etapas A
+		LEFT JOIN dp_conf_atividades B ON A.id = B.id_conf_etapa AND B.deleted_at IS NULL
+		WHERE A.deleted_at IS NULL AND A.id_categoria = ?
+		GROUP BY A.id, A.id_categoria, A.id_departamento, A.titulo
+		ORDER BY A.id ASC';
+
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id]);
+		$etapas = $stmt->fetchAll();
+
+		if (!$etapas) {
+				json_response(['data' => []]);
+				return;
+		}
+
+		json_response(['data' => $etapas]);
+		return;
+	}
+
+	public static function getEquipesAtividade(array $params): void {
+		$id = (int)($params['id_departamento'] ?? 0);
+
+		$pdo = Database::pdo();
+		$query = 
+			'SELECT A.* from dp_equipes A
+				LEFT JOIN dp_users B ON B.id = A.id_user
+				WHERE A.id_departamento = ? AND A.deleted_at IS NULL AND B.stats = 1 AND B.permissao = "atividades"
+				ORDER BY A.nome ASC;';
+
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id]);
+		$equipes = $stmt->fetchAll();
+
+		if (!$equipes) {
+				json_response(['data' => []]);
+				return;
+		}
+
+		json_response(['data' => $equipes]);
+		return;
+	}
 }

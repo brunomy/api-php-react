@@ -8,6 +8,7 @@ use App\Controllers\UserController;
 use App\Controllers\OrderController;
 use App\Controllers\ConfController;
 use App\Controllers\RemessaController;
+use App\Controllers\AtividadeController;
 
 cors();
 
@@ -51,6 +52,8 @@ $router->delete('/api/configuracao/deletarChecklist/{idChecklist}', fn($params) 
 $router->post('/api/configuracao/criarVolume', fn($params) => ConfController::createVolume($params));
 $router->delete('/api/configuracao/deletarVolume/{idVolume}', fn($params) => ConfController::deleteVolume($params));
 
+$router->get('/api/configuracao/getEtapasAtividadesByCategory/{id}', fn($params) => ConfController::getEtapasAtividadesByCategory($params));
+$router->get('/api/configuracao/getEquipesAtividade/{id_departamento}', fn($params) => ConfController::getEquipesAtividade($params));
 
 
 //ORDENS
@@ -67,6 +70,10 @@ $router->put('/api/updateRemessa/{id}', fn($params) => RemessaController::update
 $router->get('/api/getOrdensRemessa/{id}', fn($params) => RemessaController::getOrdensRemessa($params));
 $router->get('/api/getOrdensRemessaDepartamento/{id_departamento}/{id}', fn($params) => RemessaController::getOrdensRemessaDepartamento($params));
 
+
+//ATIVIDADES
+$router->post('/api/criarAtividade', fn($params) => AtividadeController::createAtividade($params));
+$router->get('/api/getAtividadesOrdem/{id}', fn($params) => AtividadeController::getAtividadesOrdem($params));
 
 
 
