@@ -55,6 +55,8 @@ $router->delete('/api/configuracao/deletarVolume/{idVolume}', fn($params) => Con
 
 //ORDENS
 $router->get('/api/getOrdensDepartamento/{id}', fn($params) => OrderController::getOrdensDepartamento($params));
+$router->get('/api/getOrdem/{id}', fn($params) => OrderController::getOrdem($params));
+$router->get('/api/getProduto/{ordem_id}', fn($params) => OrderController::getProduto($params));
 
 
 //REMESSAS
