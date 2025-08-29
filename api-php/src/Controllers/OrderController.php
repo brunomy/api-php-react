@@ -153,4 +153,28 @@ final class OrderController {
     json_response(['data' => $produto]);
     return;
 	}
+
+	public static function enviarProducao(array $params): void {
+		$id = (int)($params['id'] ?? 0);
+		$body = read_json_body();
+
+		$pdo = Database::pdo();
+
+		// Atualizar status da ordem
+		$query = 'UPDATE dp_ordens SET id_status = 1 WHERE id = ? AND deleted_at IS NULL';
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id]);
+
+		// Atualizar status das atividades
+		$query = 'UPDATE dp_atividades SET id_status = 1 WHERE id_ordem = ? AND deleted_at IS NULL';
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id]);
+
+		json_response([
+				'message' => 'Ordem enviada para produção',
+				'data' => [
+						'id' => $id
+				]
+		], 200);
+	}
 }
