@@ -9,7 +9,6 @@ use DateTime;
 use Exception;
 
 final class AtividadeController {
-
 	public static function createAtividade(array $params): void {
     $body = read_json_body();
 
@@ -71,6 +70,57 @@ final class AtividadeController {
 
 		json_response(['data' => $id_atividade]);
     return;
+	}
+
+	public static function updateAtividade(array $params): void {
+		$id = (int)($params['id'] ?? 0);
+		$body = read_json_body();
+
+    $id_equipe = (int)($body['id_equipe'] ?? null);
+    $id_status = (int)($body['id_status'] ?? null);
+    $data = trim((string)($body['data'] ?? ''));
+
+		if ($id <= 0 || $id_equipe === null || $id_status === null || $data === '') {
+			json_response(['error' => 'Payload inválido'], 422);
+			return;
+		}
+
+		$pdo = Database::pdo();
+
+		$query = 'UPDATE dp_atividades SET id_equipe = ?, id_status = ?, data = ? WHERE id = ? AND deleted_at IS NULL';
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id_equipe, $id_status, $data, $id]);
+
+		json_response([
+			'message' => 'Atividade atualizada com sucesso',
+			'data' => [
+					'id' => $id,
+					'id_equipe' => $id_equipe,
+					'id_status' => $id_status,
+					'data' => $data,
+			]
+		], 200);
+	}
+
+	public static function deleteAtividade(array $params): void {
+		$id = (int)($params['id'] ?? 0);
+
+		$pdo = Database::pdo();
+
+		$stmt = $pdo->prepare('SELECT * FROM dp_atividades WHERE id = ? AND deleted_at IS NULL');
+		$stmt->execute([$id]);
+		$atividade = $stmt->fetch();
+
+		if (!$atividade) {
+			json_response(['error' => 'Not Found'], 404);
+			return;
+		}
+
+		$stmt = $pdo->prepare('DELETE FROM dp_atividades WHERE id = ?');
+		$stmt->execute([$id]);
+
+		json_response(['message' => 'Atividade deleted successfully']);
+		return;
 	}
 
 	public static function getAtividadesOrdem(array $params): void {

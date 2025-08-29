@@ -72,10 +72,9 @@ $router->get('/api/getOrdensRemessaDepartamento/{id_departamento}/{id}', fn($par
 
 
 //ATIVIDADES
-$router->post('/api/criarAtividade', fn($params) => AtividadeController::createAtividade($params));
 $router->get('/api/getAtividadesOrdem/{id}', fn($params) => AtividadeController::getAtividadesOrdem($params));
-
-
-
+$router->post('/api/criarAtividade', fn($params) => AtividadeController::createAtividade($params));
+$router->put('/api/updateAtividade/{id}', fn($params) => AtividadeController::updateAtividade($params));
+$router->delete('/api/deletarAtividade/{id}', fn($params) => AtividadeController::deleteAtividade($params));
 
 $router->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $_SERVER['REQUEST_URI'] ?? '/');
