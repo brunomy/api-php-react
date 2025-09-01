@@ -9,6 +9,7 @@ use App\Controllers\OrderController;
 use App\Controllers\ConfController;
 use App\Controllers\RemessaController;
 use App\Controllers\AtividadeController;
+use App\Controllers\ChecklistController;
 
 cors();
 
@@ -77,5 +78,13 @@ $router->get('/api/getAtividadesOrdem/{id}', fn($params) => AtividadeController:
 $router->post('/api/criarAtividade', fn($params) => AtividadeController::createAtividade($params));
 $router->put('/api/updateAtividade/{id}', fn($params) => AtividadeController::updateAtividade($params));
 $router->delete('/api/deletarAtividade/{id}', fn($params) => AtividadeController::deleteAtividade($params));
+
+
+//CHECKLIST
+$router->get('/api/getChecklistOrdem/{id}', fn($params) => ChecklistController::getChecklistOrdem($params));
+
+
+
+
 
 $router->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $_SERVER['REQUEST_URI'] ?? '/');

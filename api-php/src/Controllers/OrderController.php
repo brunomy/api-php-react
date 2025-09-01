@@ -59,53 +59,93 @@ final class OrderController {
 	}
 
 	public static function getOrdem(array $params): void {
-		$id = (int)($params['id'] ?? 0);
+    $id = (int)($params['id'] ?? 0);
 
-		$pdo = Database::pdo();
-        $query = 
-					"SELECT 
-						A.*, C.titulo AS titulo_remessa, C.entrega, C.nova_entrega, C.saida, C.nova_saida, C.nome, D.cidade, E.uf,
-						COALESCE(JSON_ARRAYAGG(
-								JSON_OBJECT(
-										'requisito_id', r.id,
-										'nome', r.nome,
-										'ordem', r.ordem,
-										'status', r.status,
-										'dependencias', (
-												SELECT JSON_ARRAYAGG(
-														JSON_OBJECT(
-																'id', d.id,
-																'nome', d.nome,
-																'cor', d.cor,
-																'status', d.status
-														)
-												)
-												FROM dp_dependencias d
-												WHERE d.id_requisito = r.id
-										)
-								)
-						), JSON_ARRAY()) AS requisitos
-				FROM dp_ordens A
-				LEFT JOIN dp_categoria_departamento B ON A.id_categoria = B.id_categoria
-				LEFT JOIN dp_remessas C ON A.id_remessa = C.id
-				LEFT JOIN tb_utils_cidades D ON C.id_cidade = D.id
-				LEFT JOIN tb_utils_estados E ON D.id_estado = E.id
-				LEFT JOIN dp_requisitos r ON r.id_ordem = A.id
-				WHERE A.deleted_at IS NULL AND A.id = ?;";
+    $pdo = Database::pdo();
+    $query = 
+    $query = 
+        "SELECT 
+            A.*, C.titulo AS titulo_remessa, C.entrega, C.nova_entrega, C.saida, C.nova_saida, C.nome, D.cidade, E.uf,
+            COALESCE(JSON_ARRAYAGG(
+                CASE 
+                    WHEN r.id IS NOT NULL THEN
+                        JSON_OBJECT(
+                            'requisito_id', r.id,
+                            'nome', r.nome,
+                            'ordem', r.ordem,
+                            'status', r.status,
+                            'dependencias', (
+                                SELECT JSON_ARRAYAGG(
+                                    JSON_OBJECT(
+                                        'id', d.id,
+                                        'nome', d.nome,
+                                        'cor', d.cor,
+                                        'status', d.status
+                                    )
+                                )
+                                FROM dp_dependencias d
+                                WHERE d.id_requisito = r.id
+                            )
+                        )
+                    ELSE NULL
+                END
+            ), JSON_ARRAY()) AS requisitos,
+            (
+                SELECT COUNT(*) 
+                FROM dp_atividades at 
+                WHERE at.id_ordem = A.id AND at.deleted_at IS NULL
+            ) AS atividades,
+            (
+                SELECT COUNT(*) 
+                FROM dp_atividades at 
+                WHERE at.id_ordem = A.id AND at.status = 4 AND at.deleted_at IS NULL
+            ) AS atividades_finalizadas,
+            (
+                SELECT COUNT(*) 
+                FROM dp_checklists ch 
+                INNER JOIN dp_atividades at ON ch.id_atividade = at.id 
+                WHERE at.id_ordem = A.id AND ch.status IN (0, 1)
+            ) AS checklists,
+            (
+                SELECT COUNT(*) 
+                FROM dp_checklists ch 
+                INNER JOIN dp_atividades at ON ch.id_atividade = at.id 
+                WHERE at.id_ordem = A.id AND ch.status = 1
+            ) AS checklists_finalizados,
+            (
+                SELECT COUNT(*) 
+                FROM dp_volumes v 
+                INNER JOIN dp_atividades at ON v.id_atividade = at.id 
+                WHERE at.id_ordem = A.id
+            ) AS volumes,
+            (
+                SELECT COUNT(*) 
+                FROM dp_volumes v 
+                INNER JOIN dp_atividades at ON v.id_atividade = at.id 
+                WHERE at.id_ordem = A.id AND v.id_embalagem IS NOT NULL
+            ) AS volumes_embalados
+        FROM dp_ordens A
+        LEFT JOIN dp_categoria_departamento B ON A.id_categoria = B.id_categoria
+        LEFT JOIN dp_remessas C ON A.id_remessa = C.id
+        LEFT JOIN tb_utils_cidades D ON C.id_cidade = D.id
+        LEFT JOIN tb_utils_estados E ON D.id_estado = E.id
+        LEFT JOIN dp_requisitos r ON r.id_ordem = A.id
+        WHERE A.deleted_at IS NULL AND A.id = ?
+        GROUP BY A.id";
 
-		$stmt = $pdo->prepare($query);
-		$stmt->execute([$id]);
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$id]);
 
-		$ordem = $stmt->fetch();
+    $ordem = $stmt->fetch();
 
-		if (!$ordem) {
-			json_response(['error' => 'Not Found'], 404);
-			return;
-		}
+    if (!$ordem) {
+        json_response(['error' => 'Not Found'], 404);
+        return;
+    }
 
-		json_response(['data' => $ordem]);
-		return;
-	}
+    json_response(['data' => $ordem]);
+    return;
+}
 
 	public static function getProduto(array $params): void {
     $id = (int)($params['ordem_id'] ?? 0);

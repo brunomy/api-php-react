@@ -217,7 +217,11 @@ final class AtividadeController {
 		$id = (int)($params['id'] ?? 0);
 
 		$pdo = Database::pdo();
-		$query = 'SELECT * FROM dp_atividades WHERE id_ordem = ? AND deleted_at IS NULL';
+		$query = 
+			'SELECT A.*, B.nome AS nome_equipe
+			FROM dp_atividades A
+			LEFT JOIN dp_equipes B ON A.id_equipe = B.id
+			WHERE A.id_ordem = ? AND A.deleted_at IS NULL ORDER BY data ASC';
 
 		$stmt = $pdo->prepare($query);
 		$stmt->execute([$id]);
@@ -231,5 +235,4 @@ final class AtividadeController {
 		json_response(['data' => $atividades]);
 		return;
 	}
-
 }
