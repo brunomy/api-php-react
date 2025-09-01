@@ -10,39 +10,54 @@ final class OrderController {
 		$id = (int)($params['id'] ?? 0);
 
 		$pdo = Database::pdo();
-        $query = 
-					"SELECT 
-						A.*, C.titulo AS titulo_remessa, C.entrega, C.nova_entrega, C.saida, C.nova_saida, C.nome, D.cidade, E.uf,
-						COALESCE(JSON_ARRAYAGG(
-								JSON_OBJECT(
-										'requisito_id', r.id,
-										'nome', r.nome,
-										'ordem', r.ordem,
-										'status', r.status,
-										'dependencias', (
-												SELECT JSON_ARRAYAGG(
-														JSON_OBJECT(
-																'id', d.id,
-																'nome', d.nome,
-																'cor', d.cor,
-																'status', d.status
-														)
+		$query = 
+			"SELECT 
+				A.*, C.titulo AS titulo_remessa, C.entrega, C.nova_entrega, C.saida, C.nova_saida, C.nome, D.cidade, E.uf,
+				(
+					SELECT MAX(at.data)
+					FROM dp_atividades at 
+					WHERE at.id_ordem = A.id AND at.deleted_at IS NULL
+				) AS maior_data_atividade,
+				(
+					SELECT COUNT(*) 
+					FROM dp_atividades at 
+					WHERE at.id_ordem = A.id AND at.status = 4 AND at.deleted_at IS NULL
+				) AS atividades_finalizadas,
+				(
+					SELECT COUNT(*) 
+					FROM dp_atividades at 
+					WHERE at.id_ordem = A.id AND at.deleted_at IS NULL
+				) AS atividades,
+				COALESCE(JSON_ARRAYAGG(
+						JSON_OBJECT(
+								'requisito_id', r.id,
+								'nome', r.nome,
+								'ordem', r.ordem,
+								'status', r.status,
+								'dependencias', (
+										SELECT JSON_ARRAYAGG(
+												JSON_OBJECT(
+														'id', d.id,
+														'nome', d.nome,
+														'cor', d.cor,
+														'status', d.status
 												)
-												FROM dp_dependencias d
-												WHERE d.id_requisito = r.id
 										)
+										FROM dp_dependencias d
+										WHERE d.id_requisito = r.id
 								)
-						), JSON_ARRAY()) AS requisitos
-				FROM dp_ordens A
-				LEFT JOIN dp_categoria_departamento B ON A.id_categoria = B.id_categoria
-				LEFT JOIN dp_remessas C ON A.id_remessa = C.id
-				LEFT JOIN tb_utils_cidades D ON C.id_cidade = D.id
-				LEFT JOIN tb_utils_estados E ON D.id_estado = E.id
-				
-				LEFT JOIN dp_requisitos r ON r.id_ordem = A.id
-				WHERE A.deleted_at IS NULL AND B.id_departamento = ?
-				GROUP BY A.id
-				ORDER BY A.created_at ASC;";
+						)
+				), JSON_ARRAY()) AS requisitos
+		FROM dp_ordens A
+		LEFT JOIN dp_categoria_departamento B ON A.id_categoria = B.id_categoria
+		LEFT JOIN dp_remessas C ON A.id_remessa = C.id
+		LEFT JOIN tb_utils_cidades D ON C.id_cidade = D.id
+		LEFT JOIN tb_utils_estados E ON D.id_estado = E.id
+		
+		LEFT JOIN dp_requisitos r ON r.id_ordem = A.id
+		WHERE A.deleted_at IS NULL AND B.id_departamento = ?
+		GROUP BY A.id
+		ORDER BY A.created_at ASC;";
 
 		$stmt = $pdo->prepare($query);
 		$stmt->execute([$id]);
@@ -63,24 +78,25 @@ final class OrderController {
 
     $pdo = Database::pdo();
     $query = 
-    $query = 
         "SELECT 
             A.*, C.titulo AS titulo_remessa, C.entrega, C.nova_entrega, C.saida, C.nova_saida, C.nome, D.cidade, E.uf,
             COALESCE(JSON_ARRAYAGG(
                 CASE 
                     WHEN r.id IS NOT NULL THEN
                         JSON_OBJECT(
-                            'requisito_id', r.id,
+                            'id', r.id,
                             'nome', r.nome,
                             'ordem', r.ordem,
                             'status', r.status,
+														'updated_at', r.updated_at,
                             'dependencias', (
                                 SELECT JSON_ARRAYAGG(
                                     JSON_OBJECT(
                                         'id', d.id,
                                         'nome', d.nome,
                                         'cor', d.cor,
-                                        'status', d.status
+                                        'status', d.status,
+																				'updated_at', d.updated_at
                                     )
                                 )
                                 FROM dp_dependencias d
@@ -95,6 +111,11 @@ final class OrderController {
                 FROM dp_atividades at 
                 WHERE at.id_ordem = A.id AND at.deleted_at IS NULL
             ) AS atividades,
+						(
+                SELECT MAX(at.data)
+                FROM dp_atividades at 
+                WHERE at.id_ordem = A.id AND at.deleted_at IS NULL
+            ) AS maior_data_atividade,
             (
                 SELECT COUNT(*) 
                 FROM dp_atividades at 
@@ -145,7 +166,7 @@ final class OrderController {
 
     json_response(['data' => $ordem]);
     return;
-}
+	}
 
 	public static function getProduto(array $params): void {
     $id = (int)($params['ordem_id'] ?? 0);
@@ -201,7 +222,7 @@ final class OrderController {
 		$pdo = Database::pdo();
 
 		// Atualizar status da ordem
-		$query = 'UPDATE dp_ordens SET id_status = 1 WHERE id = ? AND deleted_at IS NULL';
+		$query = 'UPDATE dp_ordens SET id_status = 1, data_producao = NOW() WHERE id = ? AND deleted_at IS NULL';
 		$stmt = $pdo->prepare($query);
 		$stmt->execute([$id]);
 
@@ -215,6 +236,44 @@ final class OrderController {
 				'data' => [
 						'id' => $id
 				]
+		], 200);
+	}
+
+	public static function concluirDependencia(array $params): void {
+		$id = (int)($params['id'] ?? 0);
+		$body = read_json_body();
+
+		$pdo = Database::pdo();
+
+		// Atualizar status da ordem
+		$query = 'UPDATE dp_dependencias SET status = 1, updated_at = NOW() WHERE id = ?';
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id]);
+
+		json_response([
+			'message' => 'Dependência concluída',
+			'data' => [
+				'id' => $id
+			]
+		], 200);
+	}
+
+	public static function concluirRequisito(array $params): void {
+		$id = (int)($params['id'] ?? 0);
+		$body = read_json_body();
+
+		$pdo = Database::pdo();
+
+		// Atualizar status da ordem
+		$query = 'UPDATE dp_requisitos SET status = 1, updated_at = NOW() WHERE id = ?';
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id]);
+
+		json_response([
+			'message' => 'Requisito concluído',
+			'data' => [
+				'id' => $id
+			]
 		], 200);
 	}
 }

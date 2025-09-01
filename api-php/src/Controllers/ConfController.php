@@ -525,17 +525,23 @@ final class ConfController {
 				A.id_categoria,
 				A.id_departamento,
 				A.titulo,
-				COALESCE(JSON_ARRAYAGG(
-						CASE 
-								WHEN B.id IS NOT NULL THEN
-										JSON_OBJECT(
-												"id", B.id,
-												"id_conf_etapa", B.id_conf_etapa,
-												"titulo", B.titulo
-										)
-								ELSE NULL
-						END
-				), JSON_ARRAY()) AS atividades
+				COALESCE(
+            NULLIF(
+                JSON_ARRAYAGG(
+                    CASE 
+                        WHEN B.id IS NOT NULL THEN
+                            JSON_OBJECT(
+                                "id", B.id,
+                                "id_conf_etapa", B.id_conf_etapa,
+                                "titulo", B.titulo
+                            )
+                        ELSE NULL
+                    END
+                ), 
+                JSON_ARRAY(NULL)
+            ), 
+            JSON_ARRAY()
+        ) AS atividades
 		FROM dp_conf_etapas A
 		LEFT JOIN dp_conf_atividades B ON A.id = B.id_conf_etapa AND B.deleted_at IS NULL
 		WHERE A.deleted_at IS NULL AND A.id_categoria = ?

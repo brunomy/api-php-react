@@ -62,6 +62,8 @@ $router->get('/api/getOrdensDepartamento/{id}', fn($params) => OrderController::
 $router->get('/api/getOrdem/{id}', fn($params) => OrderController::getOrdem($params));
 $router->get('/api/getProduto/{ordem_id}', fn($params) => OrderController::getProduto($params));
 $router->put('/api/enviarProducao/{id}', fn($params) => OrderController::enviarProducao($params));
+$router->put('/api/concluirDependencia/{id}', fn($params) => OrderController::concluirDependencia($params));
+$router->put('/api/concluirRequisito/{id}', fn($params) => OrderController::concluirRequisito($params));
 
 
 //REMESSAS
