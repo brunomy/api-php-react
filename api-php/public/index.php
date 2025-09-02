@@ -54,15 +54,15 @@ $router->delete('/api/configuracao/deletarChecklist/{idChecklist}', fn($params) 
 $router->post('/api/configuracao/criarVolume', fn($params) => ConfController::createVolume($params));
 $router->delete('/api/configuracao/deletarVolume/{idVolume}', fn($params) => ConfController::deleteVolume($params));
 
-$router->get('/api/configuracao/getEtapasAtividadesByCategory/{id}', fn($params) => ConfController::getEtapasAtividadesByCategory($params));
+$router->get('/api/configuracao/getEtapasAtividadesByCategory/{id_departamento}/{id}', fn($params) => ConfController::getEtapasAtividadesByCategory($params));
 $router->get('/api/configuracao/getEquipesAtividade/{id_departamento}', fn($params) => ConfController::getEquipesAtividade($params));
 
 
 //ORDENS
 $router->get('/api/getOrdensDepartamento/{id}', fn($params) => OrderController::getOrdensDepartamento($params));
-$router->get('/api/getOrdem/{id}', fn($params) => OrderController::getOrdem($params));
+$router->get('/api/getOrdem/{id_departamento}/{id}', fn($params) => OrderController::getOrdem($params));
 $router->get('/api/getProduto/{ordem_id}', fn($params) => OrderController::getProduto($params));
-$router->put('/api/enviarProducao/{id}', fn($params) => OrderController::enviarProducao($params));
+$router->put('/api/enviarProducao/{id_departamento}/{id}', fn($params) => OrderController::enviarProducao($params));
 $router->put('/api/concluirDependencia/{id}', fn($params) => OrderController::concluirDependencia($params));
 $router->put('/api/concluirRequisito/{id}', fn($params) => OrderController::concluirRequisito($params));
 
@@ -77,16 +77,17 @@ $router->get('/api/getOrdensRemessaDepartamento/{id_departamento}/{id}', fn($par
 
 
 //ATIVIDADES
-$router->get('/api/getAtividadesOrdem/{id}', fn($params) => AtividadeController::getAtividadesOrdem($params));
+$router->get('/api/getAtividadesOrdem/{id_departamento}/{id}', fn($params) => AtividadeController::getAtividadesOrdem($params));
 $router->post('/api/criarAtividade', fn($params) => AtividadeController::createAtividade($params));
 $router->put('/api/updateAtividade/{id}', fn($params) => AtividadeController::updateAtividade($params));
 $router->delete('/api/deletarAtividade/{id}', fn($params) => AtividadeController::deleteAtividade($params));
+$router->get('/api/getAtividades/{id_departamento}/{id}', fn($params) => AtividadeController::getAtividades($params));
 
 
 //CHECKLIST
-$router->get('/api/getChecklistOrdem/{id}', fn($params) => ChecklistController::getChecklistOrdem($params));
+$router->get('/api/getChecklistOrdem/{id_departamento}/{id}', fn($params) => ChecklistController::getChecklistOrdem($params));
 
 //VOLUMES
-$router->get('/api/getVolumesOrdem/{id}', fn($params) => VolumesController::getVolumesOrdem($params));
+$router->get('/api/getVolumesOrdem/{id_departamento}/{id}', fn($params) => VolumesController::getVolumesOrdem($params));
 
 $router->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $_SERVER['REQUEST_URI'] ?? '/');

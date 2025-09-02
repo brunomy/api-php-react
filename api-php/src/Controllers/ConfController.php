@@ -21,9 +21,7 @@ final class ConfController {
 			FROM tb_produtos_categorias A
 			LEFT JOIN dp_categoria_departamento B 
 					ON A.id = B.id_categoria
-			LEFT JOIN dp_conf_etapas C 
-					ON A.id = C.id_categoria 
-					AND C.deleted_at IS NULL
+			LEFT JOIN dp_conf_etapas C ON A.id = C.id_categoria AND C.id_departamento = B.id_departamento AND C.deleted_at IS NULL
 			LEFT JOIN dp_conf_atividades D 
 					ON C.id = D.id_conf_etapa
 					AND D.deleted_at IS NULL
@@ -518,6 +516,7 @@ final class ConfController {
 	//Buscar Etapas e Atividades relacionadas a categoria
 	public static function getEtapasAtividadesByCategory(array $params): void {
 		$id = (int)($params['id'] ?? 0);
+		$id_departamento = (int)($params['id_departamento'] ?? 0);
 
 		$pdo = Database::pdo();
 		$query = 'SELECT 
@@ -544,12 +543,12 @@ final class ConfController {
         ) AS atividades
 		FROM dp_conf_etapas A
 		LEFT JOIN dp_conf_atividades B ON A.id = B.id_conf_etapa AND B.deleted_at IS NULL
-		WHERE A.deleted_at IS NULL AND A.id_categoria = ?
+		WHERE A.deleted_at IS NULL AND A.id_categoria = ? AND A.id_departamento = ?
 		GROUP BY A.id, A.id_categoria, A.id_departamento, A.titulo
 		ORDER BY A.id ASC';
 
 		$stmt = $pdo->prepare($query);
-		$stmt->execute([$id]);
+		$stmt->execute([$id, $id_departamento]);
 		$etapas = $stmt->fetchAll();
 
 		if (!$etapas) {

@@ -15,6 +15,7 @@ final class AtividadeController {
     $id = (int)($body['id'] ?? 0);
     $id_ordem = (int)($body['id_ordem'] ?? 0);
     $id_conf_etapa = (int)($body['id_conf_etapa'] ?? 0);
+    $id_departamento = (int)($body['id_departamento'] ?? 0);
     $etapa = trim((string)($body['etapa'] ?? ''));
     $id_conf_atividade = (int)($body['id_conf_atividade'] ?? 0);
     $atividade = trim((string)($body['atividade'] ?? ''));
@@ -40,10 +41,11 @@ final class AtividadeController {
     }
 
 		if(!$id) {
-			$query = 'INSERT INTO dp_atividades (id_conf_atividade, id_ordem, id_etapa, id_equipe, id_status, etapa, atividade, data, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())';
+			$query = 'INSERT INTO dp_atividades (id_conf_atividade, id_departamento, id_ordem, id_etapa, id_equipe, id_status, etapa, atividade, data, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())';
 			$stmt = $pdo->prepare($query);
 			$stmt->execute([
 					$id_conf_atividade, 
+					$id_departamento,
 					$id_ordem, 
 					$id_etapa, 
 					$id_equipe, 
@@ -214,6 +216,7 @@ final class AtividadeController {
 	}
 
 	public static function getAtividadesOrdem(array $params): void {
+		$id_departamento = (int)($params['id_departamento'] ?? 0);
 		$id = (int)($params['id'] ?? 0);
 
 		$pdo = Database::pdo();
@@ -221,10 +224,35 @@ final class AtividadeController {
 			'SELECT A.*, B.nome AS nome_equipe
 			FROM dp_atividades A
 			LEFT JOIN dp_equipes B ON A.id_equipe = B.id
-			WHERE A.id_ordem = ? AND A.deleted_at IS NULL ORDER BY data ASC';
+			WHERE A.id_ordem = ? AND A.id_departamento = ? AND A.deleted_at IS NULL ORDER BY data ASC';
 
 		$stmt = $pdo->prepare($query);
-		$stmt->execute([$id]);
+		$stmt->execute([$id, $id_departamento]);
+		$atividades = $stmt->fetchAll();
+
+		if (!$atividades) {
+			json_response(['Not Found']);
+			return;
+		}
+
+		json_response(['data' => $atividades]);
+		return;
+	}
+
+	public static function getAtividades(array $params): void {
+		$id = (int)($params['id'] ?? 0);
+		$id_departamento = (int)($params['id_departamento'] ?? 0);
+
+		$pdo = Database::pdo();
+		//Buscar atividades atrasadas da semana passada
+		$query = 
+			'SELECT A.*, B.nome AS nome_equipe
+			FROM dp_atividades A
+			LEFT JOIN dp_equipes B ON A.id_equipe = B.id
+			WHERE A.id_ordem = ? AND A.id_departamento = ? AND A.deleted_at IS NULL AND A.data < NOW() - INTERVAL 7 DAY ORDER BY data ASC';
+
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id, $id_departamento]);
 		$atividades = $stmt->fetchAll();
 
 		if (!$atividades) {

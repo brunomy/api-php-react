@@ -11,6 +11,7 @@ use Exception;
 final class ChecklistController {
 	public static function getChecklistOrdem(array $params): void {
 		$id = (int)($params['id'] ?? 0);
+		$id_departamento = (int)($params['id_departamento'] ?? 0);
 
 		$pdo = Database::pdo();
 		$query = 
@@ -18,10 +19,10 @@ final class ChecklistController {
 			FROM dp_checklists A
 			LEFT JOIN dp_atividades B ON A.id_atividade = B.id
 			LEFT JOIN dp_equipes C ON B.id_equipe = C.id
-			WHERE B.id_ordem = ? ORDER BY B.data ASC';
+			WHERE B.id_ordem = ? AND B.id_departamento = ? ORDER BY B.data ASC';
 
 		$stmt = $pdo->prepare($query);
-		$stmt->execute([$id]);
+		$stmt->execute([$id, $id_departamento]);
 		$atividades = $stmt->fetchAll();
 
 		if (!$atividades) {
