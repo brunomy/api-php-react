@@ -10,6 +10,7 @@ use App\Controllers\ConfController;
 use App\Controllers\RemessaController;
 use App\Controllers\AtividadeController;
 use App\Controllers\ChecklistController;
+use App\Controllers\VolumesController;
 
 cors();
 
@@ -85,8 +86,7 @@ $router->delete('/api/deletarAtividade/{id}', fn($params) => AtividadeController
 //CHECKLIST
 $router->get('/api/getChecklistOrdem/{id}', fn($params) => ChecklistController::getChecklistOrdem($params));
 
-
-
-
+//VOLUMES
+$router->get('/api/getVolumesOrdem/{id}', fn($params) => VolumesController::getVolumesOrdem($params));
 
 $router->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $_SERVER['REQUEST_URI'] ?? '/');
