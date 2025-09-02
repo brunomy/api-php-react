@@ -244,57 +244,120 @@ final class AtividadeController {
 
     $pdo = Database::pdo();
 
-    //Buscar atividades do domingo desta semana para trás
     $query = 
-			'SELECT A.*, B.nome AS nome_equipe
+        'SELECT A.*, B.nome AS nome_equipe, C.nome_categoria, D.titulo as titulo_remessa,
+        CASE 
+            WHEN A.data <= DATE_SUB(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY), INTERVAL 1 DAY) THEN "atrasadas"
+            WHEN A.data >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY) 
+                 AND A.data <= DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY), INTERVAL 6 DAY) THEN "da_semana"
+            WHEN A.data > DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY), INTERVAL 6 DAY) THEN "futuras"
+        END as categoria
         FROM dp_atividades A
         LEFT JOIN dp_equipes B ON A.id_equipe = B.id
+        LEFT JOIN dp_ordens C ON A.id_ordem = C.id
+        LEFT JOIN dp_remessas D ON C.id_remessa = D.id
         WHERE A.id_departamento = ? 
         AND A.id_status > 0 
         AND A.deleted_at IS NULL 
-        AND A.data <= DATE_SUB(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY), INTERVAL 1 DAY)
         ORDER BY A.data ASC';
 
     $stmt = $pdo->prepare($query);
     $stmt->execute([$id]);
-    $atividades_atrasadas = $stmt->fetchAll();
+    $todas_atividades = $stmt->fetchAll();
 
-		//Buscar atividades desta semana
-		$query = 
-			'SELECT A.*, B.nome AS nome_equipe
-        FROM dp_atividades A
-        LEFT JOIN dp_equipes B ON A.id_equipe = B.id
-        WHERE A.id_departamento = ? 
-        AND A.id_status > 0 
-        AND A.deleted_at IS NULL 
-        AND A.data >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY)
-        AND A.data <= DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY), INTERVAL 6 DAY)
-        ORDER BY A.data ASC';
+    // Organizar as atividades por categoria
+    $atividades_organizadas = [
+        "atrasadas" => [],
+        "da_semana" => [],
+        "futuras" => []
+    ];
 
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([$id]);
-    $atividades_da_semana = $stmt->fetchAll();
+    foreach ($todas_atividades as $atividade) {
+        $categoria = $atividade['categoria'];
+        
+        // Aplicar filtro específico para atrasadas (status < 4)
+        if ($categoria === 'atrasadas' && $atividade['id_status'] >= 4) {
+            continue;
+        }
+        
+        // Remover a coluna categoria do resultado final
+        unset($atividade['categoria']);
+        
+        $atividades_organizadas[$categoria][] = $atividade;
+    }
 
-		//Atividades da próxima semana em diante
-		$query = 
-			'SELECT A.*, B.nome AS nome_equipe
-        FROM dp_atividades A
-        LEFT JOIN dp_equipes B ON A.id_equipe = B.id
-        WHERE A.id_departamento = ? 
-        AND A.id_status > 0 
-        AND A.deleted_at IS NULL 
-        AND A.data > DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY), INTERVAL 6 DAY)
-        ORDER BY A.data ASC';
-
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([$id]);
-    $atividades_futuras = $stmt->fetchAll();
-
-		json_response(['data' => [
-			"atrasadas" => $atividades_atrasadas,
-			"da_semana" => $atividades_da_semana,
-			"futuras" => $atividades_futuras
-		]]);
+    json_response(['data' => $atividades_organizadas]);
     return;
+	}
+
+	public static function iniciarAtividade(array $params): void {
+		$id = (int)($params['id'] ?? 0);
+		$body = read_json_body();
+
+		$id_user = (int)($body['id_user'] ?? null);
+		$id_departamento = (int)($body['id_departamento'] ?? null);
+		$id_ordem = (int)($body['id_ordem'] ?? null);
+		$id_equipe = (int)($body['id_equipe'] ?? null);
+		$codigo = (string)($body['codigo'] ?? null);
+		$titulo = trim((string)($body['titulo'] ?? ''));
+
+		if ($id <= 0 || $id_user === null || $id_ordem === null || $id_equipe === null || $codigo === null || $titulo === '') {
+				json_response(['error' => 'Dado inválido'], 422);
+				return;
+		}
+
+		$funcionario = self::validarFuncionario($id_user, $id_departamento, $id_equipe, $codigo);
+
+		if (!$funcionario) {
+				json_response(['error' => 'Código inválido'], 200);
+				return;
+		}
+
+		$pdo = Database::pdo();
+
+		// Atualizar status da atividade
+		$query = 'UPDATE dp_atividades SET id_status = 2, inicio = IF(inicio IS NULL, NOW(), inicio) WHERE id = ? AND deleted_at IS NULL';
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id]);
+
+		// Limitar drasticamente o tamanho da descrição
+		$descricao = 'Iniciou a atividade: ' . $titulo;
+		$descricao = mb_substr($descricao, 0, 255);
+
+		// Inserir dado no histórico
+		$query = 'INSERT INTO dp_historico (id_departamento, id_ordem, id_equipe, id_funcionario, id_atividade, descricao, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())';
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([
+				$id_departamento,
+				$id_ordem, 
+				$funcionario['id_equipe'], 
+				$funcionario['id'], 
+				$id, 
+				$descricao
+		]);
+
+		json_response([
+				'message' => 'Atividade atualizada com sucesso'
+		], 200);
+	}
+
+
+
+
+
+	private static function validarFuncionario(int $id_user, int $id_departamento, int $id_equipe, string $codigo): array|false {
+		$pdo = Database::pdo();
+		
+		$query = 
+				'SELECT A.*, B.id as id_equipe
+					FROM dp_funcionarios A
+					LEFT JOIN dp_equipes B ON A.id_equipe = B.id
+					WHERE B.id_user = ? AND B.id_departamento = ? AND B.deleted_at IS NULL 
+					AND A.deleted_at IS NULL AND A.id_equipe = ? AND (A.senha = ? OR A.codigo = ?)';
+
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id_user, $id_departamento, $id_equipe, $codigo, $codigo]);
+		
+		return $stmt->fetch();
 	}
 }

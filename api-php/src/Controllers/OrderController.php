@@ -280,4 +280,30 @@ final class OrderController {
 			]
 		], 200);
 	}
+
+    public static function getHistorico(array $params): void {
+        $id = (int)($params['id'] ?? 0);
+        $id_departamento = (int)($params['id_departamento'] ?? 0);
+
+        $pdo = Database::pdo();
+        $query = 
+        "SELECT A.created_at, A.descricao, B.nome AS nome_funcionario, C.nome AS nome_equipe
+            FROM dp_historico A
+            LEFT JOIN dp_funcionarios B ON A.id_funcionario = B.id
+            LEFT JOIN dp_equipes C ON B.id_equipe = C.id
+            WHERE A.id_ordem = ? AND A.id_departamento = ? ORDER BY created_at ASC";
+
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([$id, $id_departamento]);
+
+        $historico = $stmt->fetchAll();
+
+        if (!$historico) {
+            json_response(['error' => 'Not Found'], 404);
+            return;
+        }
+
+        json_response(['data' => $historico]);
+        return;
+	}
 }

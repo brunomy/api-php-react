@@ -65,6 +65,7 @@ $router->get('/api/getProduto/{ordem_id}', fn($params) => OrderController::getPr
 $router->put('/api/enviarProducao/{id_departamento}/{id}', fn($params) => OrderController::enviarProducao($params));
 $router->put('/api/concluirDependencia/{id}', fn($params) => OrderController::concluirDependencia($params));
 $router->put('/api/concluirRequisito/{id}', fn($params) => OrderController::concluirRequisito($params));
+$router->get('/api/getHistorico/{id_departamento}/{id}', fn($params) => OrderController::getHistorico($params));
 
 
 //REMESSAS
@@ -82,6 +83,7 @@ $router->post('/api/criarAtividade', fn($params) => AtividadeController::createA
 $router->put('/api/updateAtividade/{id}', fn($params) => AtividadeController::updateAtividade($params));
 $router->delete('/api/deletarAtividade/{id}', fn($params) => AtividadeController::deleteAtividade($params));
 $router->get('/api/getAtividadesProducao/{id}', fn($params) => AtividadeController::getAtividadesProducao($params));
+$router->put('/api/iniciarAtividade/{id}', fn($params) => AtividadeController::iniciarAtividade($params));
 
 
 //CHECKLIST
