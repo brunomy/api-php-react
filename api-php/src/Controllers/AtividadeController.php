@@ -239,28 +239,62 @@ final class AtividadeController {
 		return;
 	}
 
-	public static function getAtividades(array $params): void {
-		$id = (int)($params['id'] ?? 0);
-		$id_departamento = (int)($params['id_departamento'] ?? 0);
+	public static function getAtividadesProducao(array $params): void {
+    $id = (int)($params['id'] ?? 0);
 
-		$pdo = Database::pdo();
-		//Buscar atividades atrasadas da semana passada
+    $pdo = Database::pdo();
+
+    //Buscar atividades do domingo desta semana para trás
+    $query = 
+			'SELECT A.*, B.nome AS nome_equipe
+        FROM dp_atividades A
+        LEFT JOIN dp_equipes B ON A.id_equipe = B.id
+        WHERE A.id_departamento = ? 
+        AND A.id_status > 0 
+        AND A.deleted_at IS NULL 
+        AND A.data <= DATE_SUB(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY), INTERVAL 1 DAY)
+        ORDER BY A.data ASC';
+
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$id]);
+    $atividades_atrasadas = $stmt->fetchAll();
+
+		//Buscar atividades desta semana
 		$query = 
 			'SELECT A.*, B.nome AS nome_equipe
-			FROM dp_atividades A
-			LEFT JOIN dp_equipes B ON A.id_equipe = B.id
-			WHERE A.id_ordem = ? AND A.id_departamento = ? AND A.deleted_at IS NULL AND A.data < NOW() - INTERVAL 7 DAY ORDER BY data ASC';
+        FROM dp_atividades A
+        LEFT JOIN dp_equipes B ON A.id_equipe = B.id
+        WHERE A.id_departamento = ? 
+        AND A.id_status > 0 
+        AND A.deleted_at IS NULL 
+        AND A.data >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY)
+        AND A.data <= DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY), INTERVAL 6 DAY)
+        ORDER BY A.data ASC';
 
-		$stmt = $pdo->prepare($query);
-		$stmt->execute([$id, $id_departamento]);
-		$atividades = $stmt->fetchAll();
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$id]);
+    $atividades_da_semana = $stmt->fetchAll();
 
-		if (!$atividades) {
-			json_response(['Not Found']);
-			return;
-		}
+		//Atividades da próxima semana em diante
+		$query = 
+			'SELECT A.*, B.nome AS nome_equipe
+        FROM dp_atividades A
+        LEFT JOIN dp_equipes B ON A.id_equipe = B.id
+        WHERE A.id_departamento = ? 
+        AND A.id_status > 0 
+        AND A.deleted_at IS NULL 
+        AND A.data > DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY), INTERVAL 6 DAY)
+        ORDER BY A.data ASC';
 
-		json_response(['data' => $atividades]);
-		return;
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$id]);
+    $atividades_futuras = $stmt->fetchAll();
+
+		json_response(['data' => [
+			"atrasadas" => $atividades_atrasadas,
+			"da_semana" => $atividades_da_semana,
+			"futuras" => $atividades_futuras
+		]]);
+    return;
 	}
 }

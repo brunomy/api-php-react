@@ -81,7 +81,7 @@ $router->get('/api/getAtividadesOrdem/{id_departamento}/{id}', fn($params) => At
 $router->post('/api/criarAtividade', fn($params) => AtividadeController::createAtividade($params));
 $router->put('/api/updateAtividade/{id}', fn($params) => AtividadeController::updateAtividade($params));
 $router->delete('/api/deletarAtividade/{id}', fn($params) => AtividadeController::deleteAtividade($params));
-$router->get('/api/getAtividades/{id_departamento}/{id}', fn($params) => AtividadeController::getAtividades($params));
+$router->get('/api/getAtividadesProducao/{id}', fn($params) => AtividadeController::getAtividadesProducao($params));
 
 
 //CHECKLIST
