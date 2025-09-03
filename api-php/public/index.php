@@ -86,6 +86,8 @@ $router->get('/api/getAtividadesProducao/{id}', fn($params) => AtividadeControll
 $router->put('/api/iniciarAtividade/{id}', fn($params) => AtividadeController::iniciarAtividade($params));
 $router->put('/api/pararAtividade/{id}', fn($params) => AtividadeController::pararAtividade($params));
 $router->put('/api/finalizarAtividade/{id}', fn($params) => AtividadeController::finalizarAtividade($params));
+$router->get('/api/getVolumesAtividade/{id}', fn($params) => AtividadeController::getVolumesAtividade($params));
+$router->put('/api/updateVolume/{id}', fn($params) => AtividadeController::updateVolume($params));
 
 
 //CHECKLIST

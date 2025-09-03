@@ -248,10 +248,12 @@ final class AtividadeController {
         'SELECT A.*, B.nome AS nome_equipe, C.nome_categoria, D.titulo as titulo_remessa,
 				(SELECT COUNT(id) FROM dp_volumes WHERE id_atividade = A.id) AS volumes,
 				(SELECT COUNT(id) FROM dp_volumes WHERE id_atividade = A.id AND status = 0) AS volumes_pendentes,
+				(SELECT COUNT(id) FROM dp_checklists WHERE id_atividade = A.id AND status = 0) AS checklist_pendente,
         CASE 
             WHEN A.data <= DATE_SUB(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY), INTERVAL 1 DAY) THEN "atrasadas"
+						WHEN A.data = CURDATE() THEN "hoje"
             WHEN A.data >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY) 
-                 AND A.data <= DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY), INTERVAL 6 DAY) THEN "da_semana"
+                 AND A.data <= DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY), INTERVAL 6 DAY) THEN "semana"
             WHEN A.data > DATE_ADD(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY), INTERVAL 6 DAY) THEN "futuras"
         END as categoria
         FROM dp_atividades A
@@ -269,16 +271,17 @@ final class AtividadeController {
 
     // Organizar as atividades por categoria
     $atividades_organizadas = [
-        "atrasadas" => [],
-        "da_semana" => [],
-        "futuras" => []
+			"atrasadas" => [],
+			"hoje" => [],
+			"semana" => [],
+			"futuras" => []
     ];
 
     foreach ($todas_atividades as $atividade) {
         $categoria = $atividade['categoria'];
         
         // Aplicar filtro específico para atrasadas (status < 4)
-        if ($categoria === 'atrasadas' && $atividade['id_status'] >= 4 && $atividade['volumes_pendentes'] == 0) {
+        if ($categoria === 'atrasadas' && $atividade['id_status'] >= 4 && $atividade['volumes_pendentes'] == 0 && $atividade['checklist_pendente'] == 0) {
             continue;
         }
         
@@ -533,6 +536,88 @@ final class AtividadeController {
     ], 200);
 	}
 
+	public static function getVolumesAtividade(array $params): void {
+		$id_departamento = (int)($params['id_departamento'] ?? 0);
+		$id = (int)($params['id'] ?? 0);
+
+		$pdo = Database::pdo();
+		$query = 
+			'SELECT * FROM dp_volumes WHERE id_atividade = ?';
+
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id]);
+		$volumes = $stmt->fetchAll();
+
+		if (!$volumes) {
+			json_response(['Not Found']);
+			return;
+		}
+
+		json_response(['data' => $volumes]);
+		return;
+	}
+
+	public static function updateVolume(array $params): void {
+		$id = (int)($params['id'] ?? 0);
+		$body = read_json_body();
+
+		$id_user = (int)($body['id_user'] ?? null);
+		$id_departamento = (int)($body['id_departamento'] ?? null);
+		$id_ordem = (int)($body['id_ordem'] ?? null);
+		$id_atividade = (int)($body['id_atividade'] ?? null);
+		$id_equipe = (int)($body['id_equipe'] ?? null);
+		$codigo = (string)($body['codigo'] ?? null);
+		$titulo = (string)($body['titulo'] ?? '');
+		$comprimento = (float)($body['comprimento'] ?? '');
+		$largura = (float)($body['largura'] ?? '');
+		$altura = (float)($body['altura'] ?? '');
+		$peso = (float)($body['peso'] ?? '');
+		$status = (int)($body['status'] ?? '');
+
+		if ($id <= 0 || $id_user === null || $id_departamento === null || $id_equipe === null || $codigo === null || $titulo === '' || $comprimento === 0 || $largura === 0 || $altura === 0 || $peso === 0) {
+			json_response(['error' => 'Payload inválido'], 422);
+			return;
+		}
+
+		$funcionario = self::validarFuncionario($id_user, $id_departamento, $id_equipe, $codigo);
+
+		if (!$funcionario) {
+				json_response(['error' => 'Código inválido'], 200);
+				return;
+		}
+
+		$pdo = Database::pdo();
+
+		// Atualizar dados do volume
+		$query = 
+			'UPDATE dp_volumes 
+				SET status = ?, comprimento = ?, largura = ?, altura = ?, peso = ? WHERE id = ?';
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$status, $comprimento, $largura, $altura, $peso, $id]);
+
+		if($status === 1){
+			$descricao = 'Criou o volume: ' . $titulo;
+		} else {
+			$descricao = 'Deletou o volume: ' . $titulo;
+		}
+		$descricao = mb_substr($descricao, 0, 255);
+
+		// Inserir dado no histórico
+		$query = 'INSERT INTO dp_historico (id_departamento, id_ordem, id_equipe, id_funcionario, id_atividade, descricao, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())';
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([
+				$id_departamento,
+				$id_ordem, 
+				$funcionario['id_equipe'], 
+				$funcionario['id'], 
+				$id_atividade, 
+				$descricao
+		]);
+
+		json_response([
+				'message' => 'Volume criado com sucesso'
+		], 200);
+	}
 
 
 
