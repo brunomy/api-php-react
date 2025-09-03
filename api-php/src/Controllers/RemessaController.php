@@ -183,7 +183,7 @@ final class RemessaController {
 
 		$query = 
 		"SELECT 
-				A.*,
+				A.*, B.id_status,
 				COALESCE(JSON_ARRAYAGG(
 						JSON_OBJECT(
 								'requisito_id', r.id,
@@ -205,7 +205,7 @@ final class RemessaController {
 						)
 				), JSON_ARRAY()) AS requisitos
 		FROM dp_ordens A
-		LEFT JOIN dp_categoria_departamento B ON A.id_categoria = B.id_categoria
+		LEFT JOIN dp_ordem_departamento B ON A.id = B.id_ordem
 		LEFT JOIN dp_remessas C ON A.id_remessa = C.id
 		LEFT JOIN dp_requisitos r ON r.id_ordem = A.id
 		WHERE B.id_departamento = ? 

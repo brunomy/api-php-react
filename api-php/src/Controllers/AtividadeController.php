@@ -246,6 +246,8 @@ final class AtividadeController {
 
     $query = 
         'SELECT A.*, B.nome AS nome_equipe, C.nome_categoria, D.titulo as titulo_remessa,
+				(SELECT COUNT(id) FROM dp_volumes WHERE id_atividade = A.id) AS volumes,
+				(SELECT COUNT(id) FROM dp_volumes WHERE id_atividade = A.id AND status = 0) AS volumes_pendentes,
         CASE 
             WHEN A.data <= DATE_SUB(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY), INTERVAL 1 DAY) THEN "atrasadas"
             WHEN A.data >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY) 
@@ -276,7 +278,7 @@ final class AtividadeController {
         $categoria = $atividade['categoria'];
         
         // Aplicar filtro específico para atrasadas (status < 4)
-        if ($categoria === 'atrasadas' && $atividade['id_status'] >= 4) {
+        if ($categoria === 'atrasadas' && $atividade['id_status'] >= 4 && $atividade['volumes_pendentes'] == 0) {
             continue;
         }
         
@@ -300,6 +302,7 @@ final class AtividadeController {
 		$id_equipe = (int)($body['id_equipe'] ?? null);
 		$codigo = (string)($body['codigo'] ?? null);
 		$titulo = trim((string)($body['titulo'] ?? ''));
+		$inicio = (string)($body['inicio'] ?? null);
 
 		if ($id <= 0 || $id_user === null || $id_ordem === null || $id_equipe === null || $codigo === null || $titulo === '') {
 				json_response(['error' => 'Dado inválido'], 422);
@@ -316,12 +319,21 @@ final class AtividadeController {
 		$pdo = Database::pdo();
 
 		// Atualizar status da atividade
-		$query = 'UPDATE dp_atividades SET id_status = 2, inicio = IF(inicio IS NULL, NOW(), inicio) WHERE id = ? AND deleted_at IS NULL';
+		$query = 'UPDATE dp_atividades SET id_status = 2, inicio = IF(inicio IS NULL, NOW(), inicio), pausa = IF(pausa IS NOT NULL, NOW(), pausa) WHERE id = ? AND deleted_at IS NULL';
 		$stmt = $pdo->prepare($query);
 		$stmt->execute([$id]);
 
+		// Atualizar status da ordem
+		$query = 'UPDATE dp_ordem_departamento SET id_status = 2 WHERE id_ordem = ? AND id_departamento = ?';
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id_ordem, $id_departamento]);
+
+		if($inicio) {
+			$descricao = 'Retomou a atividade: ' . $titulo;
+		} else {
+			$descricao = 'Iniciou a atividade: ' . $titulo;
+		}
 		// Limitar drasticamente o tamanho da descrição
-		$descricao = 'Iniciou a atividade: ' . $titulo;
 		$descricao = mb_substr($descricao, 0, 255);
 
 		// Inserir dado no histórico
@@ -337,10 +349,189 @@ final class AtividadeController {
 		]);
 
 		json_response([
-				'message' => 'Atividade atualizada com sucesso'
+				'message' => 'Atividade iniciada com sucesso'
 		], 200);
 	}
 
+	public static function pararAtividade(array $params): void {
+    $id = (int)($params['id'] ?? 0);
+    $body = read_json_body();
+
+    $id_user = (int)($body['id_user'] ?? null);
+    $id_departamento = (int)($body['id_departamento'] ?? null);
+    $id_ordem = (int)($body['id_ordem'] ?? null);
+    $id_equipe = (int)($body['id_equipe'] ?? null);
+    $codigo = (string)($body['codigo'] ?? null);
+    $titulo = trim((string)($body['titulo'] ?? ''));
+    $tempo_atual = (int)($body['tempo'] ?? 0);
+    $inicio = trim((string)($body['inicio'] ?? ''));
+    $pausa_anterior = trim((string)($body['pausa'] ?? ''));
+
+    if ($id <= 0 || $id_user === null || $id_ordem === null || $id_equipe === null || $codigo === null || $titulo === '') {
+        json_response(['error' => 'Dado inválido'], 422);
+        return;
+    }
+
+    $funcionario = self::validarFuncionario($id_user, $id_departamento, $id_equipe, $codigo);
+
+    if (!$funcionario) {
+        json_response(['error' => 'Código inválido'], 200);
+        return;
+    }
+
+    $pdo = Database::pdo();
+
+    $tempo_adicional = 0;
+    
+    if (empty($pausa_anterior) && !empty($inicio)) {
+        $query_tempo = 'SELECT TIMESTAMPDIFF(SECOND, ?, NOW()) as segundos';
+        $stmt_tempo = $pdo->prepare($query_tempo);
+        $stmt_tempo->execute([$inicio]);
+        $result = $stmt_tempo->fetch();
+        $tempo_adicional = (int)($result['segundos'] ?? 0);
+    } elseif (!empty($pausa_anterior)) {
+        $query_tempo = 'SELECT TIMESTAMPDIFF(SECOND, ?, NOW()) as segundos';
+        $stmt_tempo = $pdo->prepare($query_tempo);
+        $stmt_tempo->execute([$pausa_anterior]);
+        $result = $stmt_tempo->fetch();
+        $tempo_adicional = (int)($result['segundos'] ?? 0);
+    }
+
+    $tempo_total = $tempo_atual + $tempo_adicional;
+
+    $query = 'UPDATE dp_atividades SET 
+                id_status = 3, 
+                pausa = NOW(),
+                tempo = ?
+              WHERE id = ? AND deleted_at IS NULL';
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$tempo_total, $id]);
+
+
+		//verificar se existem atividades em andamento
+		$query = 
+			'SELECT id
+				FROM dp_atividades
+			WHERE id_ordem = ? AND id_departamento = ? AND deleted_at IS NULL AND id_status = 2';
+
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id_ordem, $id_departamento]);
+		$atividadesEmAndamento = $stmt->fetch();
+
+		if(!$atividadesEmAndamento){
+			$query = 'UPDATE dp_ordem_departamento SET id_status = 3 WHERE id_ordem = ? AND id_departamento = ?';
+			$stmt = $pdo->prepare($query);
+			$stmt->execute([$id_ordem, $id_departamento]);
+		}
+
+
+    $descricao = 'Parou a atividade: ' . $titulo;
+    $descricao = mb_substr($descricao, 0, 255);
+
+    $query = 'INSERT INTO dp_historico (id_departamento, id_ordem, id_equipe, id_funcionario, id_atividade, descricao, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())';
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([
+        $id_departamento,
+        $id_ordem, 
+        $funcionario['id_equipe'], 
+        $funcionario['id'], 
+        $id, 
+        $descricao
+    ]);
+
+    json_response([
+        'message' => 'Atividade pausada com sucesso',
+    ], 200);
+	}
+
+	public static function finalizarAtividade(array $params): void {
+    $id = (int)($params['id'] ?? 0);
+    $body = read_json_body();
+
+    $id_user = (int)($body['id_user'] ?? null);
+    $id_departamento = (int)($body['id_departamento'] ?? null);
+    $id_ordem = (int)($body['id_ordem'] ?? null);
+    $id_equipe = (int)($body['id_equipe'] ?? null);
+    $codigo = (string)($body['codigo'] ?? null);
+    $titulo = trim((string)($body['titulo'] ?? ''));
+    $tempo_atual = (int)($body['tempo'] ?? 0);
+    $inicio = trim((string)($body['inicio'] ?? ''));
+    $pausa_anterior = trim((string)($body['pausa'] ?? ''));
+    $id_status = trim((string)($body['id_status'] ?? ''));
+
+    if ($id <= 0 || $id_user === null || $id_ordem === null || $id_equipe === null || $codigo === null || $titulo === '') {
+        json_response(['error' => 'Dado inválido'], 422);
+        return;
+    }
+
+    $funcionario = self::validarFuncionario($id_user, $id_departamento, $id_equipe, $codigo);
+
+    if (!$funcionario) {
+        json_response(['error' => 'Código inválido'], 200);
+        return;
+    }
+
+    $pdo = Database::pdo();
+
+		//Se a atividade estiver em andamento, precisa recalcular o tempo
+		if($id_status == 2){
+			$tempo_adicional = 0;
+			
+			if (empty($pausa_anterior) && !empty($inicio)) {
+					// Atividade estava rodando desde o início - calcular desde o início
+					$query_tempo = 'SELECT TIMESTAMPDIFF(SECOND, ?, NOW()) as segundos';
+					$stmt_tempo = $pdo->prepare($query_tempo);
+					$stmt_tempo->execute([$inicio]);
+					$result = $stmt_tempo->fetch();
+					$tempo_adicional = (int)($result['segundos'] ?? 0);
+			} elseif (!empty($pausa_anterior)) {
+					// Atividade foi retomada - calcular desde a última pausa
+					$query_tempo = 'SELECT TIMESTAMPDIFF(SECOND, ?, NOW()) as segundos';
+					$stmt_tempo = $pdo->prepare($query_tempo);
+					$stmt_tempo->execute([$pausa_anterior]);
+					$result = $stmt_tempo->fetch();
+					$tempo_adicional = (int)($result['segundos'] ?? 0);
+			}
+	
+			$tempo_total = $tempo_atual + $tempo_adicional;
+	
+			// Finalizar atividade: status = 4, fim = NOW(), tempo calculado
+			$query = 'UPDATE dp_atividades SET 
+									id_status = 4, 
+									fim = NOW(),
+									tempo = ?
+								WHERE id = ? AND deleted_at IS NULL';
+			$stmt = $pdo->prepare($query);
+			$stmt->execute([$tempo_total, $id]);
+		} else {
+			$query = 'UPDATE dp_atividades SET 
+									id_status = 4, 
+									fim = NOW()
+								WHERE id = ? AND deleted_at IS NULL';
+			$stmt = $pdo->prepare($query);
+			$stmt->execute([$id]);
+		}
+
+
+    $descricao = 'Finalizou a atividade: ' . $titulo;
+    $descricao = mb_substr($descricao, 0, 255);
+
+    // Inserir dado no histórico
+    $query = 'INSERT INTO dp_historico (id_departamento, id_ordem, id_equipe, id_funcionario, id_atividade, descricao, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())';
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([
+        $id_departamento,
+        $id_ordem, 
+        $funcionario['id_equipe'], 
+        $funcionario['id'], 
+        $id, 
+        $descricao
+    ]);
+
+    json_response([
+        'message' => 'Atividade finalizada com sucesso',
+    ], 200);
+	}
 
 
 

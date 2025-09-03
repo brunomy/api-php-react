@@ -21,12 +21,12 @@ final class OrderController {
                 (
                     SELECT COUNT(*) 
                     FROM dp_atividades at 
-                    WHERE at.id_ordem = A.id AND at.status = 4 AND at.deleted_at IS NULL
+                    WHERE at.id_ordem = A.id AND at.id_departamento = B.id_departamento AND at.id_status = 4 AND at.deleted_at IS NULL
                 ) AS atividades_finalizadas,
                 (
                     SELECT COUNT(*) 
                     FROM dp_atividades at 
-                    WHERE at.id_ordem = A.id AND at.deleted_at IS NULL
+                    WHERE at.id_ordem = A.id AND at.id_departamento = B.id_departamento AND at.deleted_at IS NULL
                 ) AS atividades,
                 COALESCE((
                     SELECT JSON_ARRAYAGG(
