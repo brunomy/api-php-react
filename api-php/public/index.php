@@ -22,6 +22,7 @@ $router->get('/api/ordem/{id}', fn($params) => OrderController::show($params));
 
 //USER
 $router->post('/api/login', fn($params) => UserController::login($params));
+$router->post('/api/verificarUser', fn($params) => UserController::verificarUser($params));
 $router->get('/api/getDepartamentos/{idUser}', fn($params) => UserController::getDepartamentos($params));
 $router->get('/api/getUsersDepartamento/{idDepartamento}', fn($params) => UserController::getUsersDepartamento($params));
 

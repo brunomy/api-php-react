@@ -41,6 +41,32 @@ final class UserController {
 		]);
 	}
 
+	public static function verificarUser(array $params): void {
+		$data = json_decode(file_get_contents('php://input'), true) ?? [];
+
+		$id  = trim((string)($data['id']  ?? ''));
+		$senha   = trim((string)($data['password'] ?? ''));
+
+		if ($id === '' || $senha === '') {
+			self::json_response(['error' => 'Invalid payload'], 422);
+			return;
+		}
+
+		$pdo = Database::pdo();
+		$stmt = $pdo->prepare("SELECT * FROM dp_users WHERE id = :id AND stats = 1 AND deleted_at IS NULL LIMIT 1");
+		$stmt->execute(['id' => $id]);
+		$userDb = $stmt->fetch();
+
+		if (!$userDb || !password_verify($senha, $userDb['senha'])) {
+				self::json_response(['error' => 'Senha Incorreta'], 200);
+				return;
+		}
+
+		self::json_response([
+			'message' => "Senha Correta",
+		]);
+	}
+
 	public static function getDepartamentos(array $params): void {
 		$idUser = (int)($params['idUser'] ?? 0);
 
