@@ -306,7 +306,7 @@ final class AtividadeController {
 		$codigo = (string)($body['codigo'] ?? null);
 		$titulo = trim((string)($body['titulo'] ?? ''));
 		$inicio = (string)($body['inicio'] ?? null);
-		$tempo = (string)($body['tempo'] ?? null);
+		$tempo = (string)($body['tempo'] ?? 0);
 
 		if ($id <= 0 || $id_user === null || $id_ordem === null || $id_equipe === null || $codigo === null || $titulo === '') {
 				json_response(['error' => 'Dado inválido'], 422);

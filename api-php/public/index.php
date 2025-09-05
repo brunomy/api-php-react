@@ -76,6 +76,7 @@ $router->get('/api/getRemessa/{id}', fn($params) => RemessaController::getRemess
 $router->put('/api/updateRemessa/{id}', fn($params) => RemessaController::updateRemessa($params));
 $router->get('/api/getOrdensRemessa/{id}', fn($params) => RemessaController::getOrdensRemessa($params));
 $router->get('/api/getOrdensRemessaDepartamento/{id_departamento}/{id}', fn($params) => RemessaController::getOrdensRemessaDepartamento($params));
+$router->get('/api/getRemessas', fn($params) => RemessaController::getRemessas($params));
 
 
 //ATIVIDADES

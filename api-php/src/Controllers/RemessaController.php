@@ -227,4 +227,44 @@ final class RemessaController {
 		return;
 	}
 
+	public static function getRemessas(array $params): void {
+		$pdo = Database::pdo();
+
+    $query = 
+		'SELECT A.id, A.titulo, A.id_status, A.entrega, A.nova_entrega, B.uf, C.cidade,
+				COALESCE((
+					SELECT JSON_ARRAYAGG(id_pedido) 
+					FROM (
+							SELECT DISTINCT id_pedido 
+							FROM dp_ordens 
+							WHERE id_remessa = A.id
+					) AS distinct_pedidos
+				), JSON_ARRAY()) AS pedidos,
+				(SELECT COUNT(*) FROM dp_embalagens WHERE id_remessa = A.id) AS embalagens,
+				(SELECT COUNT(*) FROM dp_volumes WHERE id_remessa = A.id) AS volumes,
+				(SELECT COUNT(*) FROM dp_volumes WHERE id_remessa = A.id AND id_embalagem IS NOT NULL) AS volumes_embalados,
+				(SELECT COUNT(DISTINCT v.id) 
+					FROM dp_volumes v
+					LEFT JOIN dp_checklists b ON v.id_atividade = b.id_atividade
+					WHERE v.id_remessa = A.id AND b.status = 1
+				) AS volumes_disponiveis
+
+				FROM dp_remessas A
+				LEFT JOIN tb_utils_estados B ON A.id_estado = B.id
+				LEFT JOIN tb_utils_cidades C ON A.id_cidade = C.id
+				WHERE A.id_status IN (0, 1, 2);';
+
+		$stmt = $pdo->prepare($query);
+		$stmt->execute();
+
+		$remessas = $stmt->fetchAll();
+
+		if (!$remessas) {
+			json_response(['error' => 'Not Found'], 404);
+			return;
+		}
+
+		json_response(['data' => $remessas]);
+		return;
+	}
 }
