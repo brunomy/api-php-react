@@ -252,7 +252,7 @@ final class RemessaController {
 				FROM dp_remessas A
 				LEFT JOIN tb_utils_estados B ON A.id_estado = B.id
 				LEFT JOIN tb_utils_cidades C ON A.id_cidade = C.id
-				WHERE A.id_status IN (0, 1, 2);';
+				WHERE A.id_status IN (0, 1, 2) ORDER BY volumes_disponiveis DESC;';
 
 		$stmt = $pdo->prepare($query);
 		$stmt->execute();
