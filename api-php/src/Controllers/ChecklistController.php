@@ -156,7 +156,7 @@ final class ChecklistController {
             '',
         ]);
 
-				$query = 'UPDATE dp_atividades SET id_status = 1 WHERE id = ?';
+				$query = 'UPDATE dp_atividades SET id_status = 1, inicio = null, pausa = null WHERE id = ?';
         $stmt = $pdo->prepare($query);
         $stmt->execute([$checklist['id_atividade']]);
 

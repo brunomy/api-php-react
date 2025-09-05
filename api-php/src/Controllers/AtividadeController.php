@@ -306,6 +306,7 @@ final class AtividadeController {
 		$codigo = (string)($body['codigo'] ?? null);
 		$titulo = trim((string)($body['titulo'] ?? ''));
 		$inicio = (string)($body['inicio'] ?? null);
+		$tempo = (string)($body['tempo'] ?? null);
 
 		if ($id <= 0 || $id_user === null || $id_ordem === null || $id_equipe === null || $codigo === null || $titulo === '') {
 				json_response(['error' => 'Dado inválido'], 422);
@@ -322,9 +323,9 @@ final class AtividadeController {
 		$pdo = Database::pdo();
 
 		// Atualizar status da atividade
-		$query = 'UPDATE dp_atividades SET id_status = 2, inicio = IF(inicio IS NULL, NOW(), inicio), pausa = IF(pausa IS NOT NULL, NOW(), pausa) WHERE id = ? AND deleted_at IS NULL';
+		$query = 'UPDATE dp_atividades SET id_status = 2, tempo = ?, inicio = IF(inicio IS NULL, NOW(), inicio), pausa = IF(pausa IS NOT NULL, NOW(), pausa) WHERE id = ? AND deleted_at IS NULL';
 		$stmt = $pdo->prepare($query);
-		$stmt->execute([$id]);
+		$stmt->execute([$tempo, $id]);
 
 		// Atualizar status da ordem
 		$query = 'UPDATE dp_ordem_departamento SET id_status = 2 WHERE id_ordem = ? AND id_departamento = ?';
