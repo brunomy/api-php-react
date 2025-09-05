@@ -287,10 +287,11 @@ final class OrderController {
 
         $pdo = Database::pdo();
         $query = 
-        "SELECT A.created_at, A.descricao, B.nome AS nome_funcionario, C.nome AS nome_equipe
+        "SELECT A.created_at, A.descricao, B.nome AS nome_funcionario, C.nome AS nome_equipe, D.nome AS nome_usuario
             FROM dp_historico A
             LEFT JOIN dp_funcionarios B ON A.id_funcionario = B.id
             LEFT JOIN dp_equipes C ON B.id_equipe = C.id
+            LEFT JOIN dp_users D ON A.id_user = D.id
             WHERE A.id_ordem = ? AND A.id_departamento = ? ORDER BY created_at ASC";
 
         $stmt = $pdo->prepare($query);

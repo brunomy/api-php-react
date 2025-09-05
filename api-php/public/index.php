@@ -93,6 +93,8 @@ $router->put('/api/updateVolume/{id}', fn($params) => AtividadeController::updat
 
 //CHECKLIST
 $router->get('/api/getChecklistOrdem/{id_departamento}/{id}', fn($params) => ChecklistController::getChecklistOrdem($params));
+$router->get('/api/getOrdensChecklist/{id}', fn($params) => ChecklistController::getOrdensChecklist($params));
+$router->put('/api/updateChecklist/{id}', fn($params) => ChecklistController::updateChecklist($params));
 
 //VOLUMES
 $router->get('/api/getVolumesOrdem/{id_departamento}/{id}', fn($params) => VolumesController::getVolumesOrdem($params));
