@@ -74,9 +74,16 @@ $router->get('/api/getEstados', fn() => RemessaController::getEstados());
 $router->get('/api/getCidades/{id}', fn($params) => RemessaController::getCidades($params));
 $router->get('/api/getRemessa/{id}', fn($params) => RemessaController::getRemessa($params));
 $router->put('/api/updateRemessa/{id}', fn($params) => RemessaController::updateRemessa($params));
+$router->post('/api/createRemessa', fn() => RemessaController::createRemessa());
 $router->get('/api/getOrdensRemessa/{id}', fn($params) => RemessaController::getOrdensRemessa($params));
 $router->get('/api/getOrdensRemessaDepartamento/{id_departamento}/{id}', fn($params) => RemessaController::getOrdensRemessaDepartamento($params));
-$router->get('/api/getRemessas', fn($params) => RemessaController::getRemessas($params));
+$router->get('/api/getRemessas', fn() => RemessaController::getRemessas());
+$router->get('/api/getRemessasEmAndamento', fn() => RemessaController::getRemessasEmAndamento());
+$router->get('/api/getVolumes/{id}', fn($params) => RemessaController::getVolumes($params));
+$router->post('/api/criarEmbalagem', fn($params) => RemessaController::createEmbalagem($params));
+$router->get('/api/getEmbalagens/{id}', fn($params) => RemessaController::getEmbalagens($params));
+$router->delete('/api/deleteEmbalagem/{id}', fn($params) => RemessaController::deleteEmbalagem($params));
+$router->put('/api/mudarRemessaOrdem/{id}', fn($params) => RemessaController::mudarRemessaOrdem($params));
 
 
 //ATIVIDADES

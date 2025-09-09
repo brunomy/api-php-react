@@ -255,7 +255,7 @@ final class UserController {
 		return;
 	}
 
-    public static function getFuncionarios(array $params): void {
+	public static function getFuncionarios(array $params): void {
 		$idEquipe = (int)($params['idEquipe'] ?? 0);
 
 		$pdo = Database::pdo();
