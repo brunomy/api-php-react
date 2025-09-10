@@ -249,7 +249,7 @@ final class AtividadeController {
 				(SELECT COUNT(id) FROM dp_volumes WHERE id_atividade = A.id) AS volumes,
 				(SELECT COUNT(id) FROM dp_volumes WHERE id_atividade = A.id AND status = 0) AS volumes_pendentes,
 				(SELECT COUNT(id) FROM dp_checklists WHERE id_atividade = A.id AND status = 0) AS checklist_pendente,
-        CASE 
+        CASE
             WHEN A.data <= DATE_SUB(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY), INTERVAL 1 DAY) THEN "atrasadas"
 						WHEN A.data = CURDATE() THEN "hoje"
             WHEN A.data >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY) 
@@ -260,9 +260,10 @@ final class AtividadeController {
         LEFT JOIN dp_equipes B ON A.id_equipe = B.id
         LEFT JOIN dp_ordens C ON A.id_ordem = C.id
         LEFT JOIN dp_remessas D ON C.id_remessa = D.id
-        WHERE A.id_departamento = ? 
-        AND A.id_status > 0 
-        AND A.deleted_at IS NULL 
+        WHERE A.id_departamento = ?
+        AND A.id_status > 0
+        AND A.deleted_at IS NULL
+				AND (D.id_status != 4 OR A.data >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) + 1 DAY))
         ORDER BY A.data ASC';
 
     $stmt = $pdo->prepare($query);
@@ -543,10 +544,13 @@ final class AtividadeController {
 
 		$pdo = Database::pdo();
 		$query = 
-			'SELECT * FROM dp_volumes WHERE id_atividade = ?';
+			'SELECT A.*,
+			(SELECT COUNT(*) FROM dp_checklists WHERE id_atividade = ? AND status = 0) AS chacklist_pendente
+			FROM dp_volumes A
+			WHERE A.id_atividade = ?';
 
 		$stmt = $pdo->prepare($query);
-		$stmt->execute([$id]);
+		$stmt->execute([$id, $id]);
 		$volumes = $stmt->fetchAll();
 
 		if (!$volumes) {

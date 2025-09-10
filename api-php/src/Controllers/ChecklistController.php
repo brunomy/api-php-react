@@ -15,12 +15,25 @@ final class ChecklistController {
 
 		$pdo = Database::pdo();
 		$query = 
-			'SELECT A.*, B.id_status as status_atividade, C.nome AS nome_equipe, D.id_conf_etapa as id_conf_etapa
+			"SELECT A.*, B.id_status as status_atividade, C.nome AS nome_equipe, D.id_conf_etapa as id_conf_etapa,
+				COALESCE((
+					SELECT JSON_ARRAYAGG(
+							JSON_OBJECT(
+								'volume', v.volume,
+								'comprimento', v.comprimento,
+								'largura', v.largura,
+								'altura', v.altura,
+								'peso', v.peso,
+								'status', v.status
+							)
+					) FROM dp_volumes v
+					WHERE v.id_atividade = A.id_atividade
+				), JSON_ARRAY()) AS volumes
 			FROM dp_checklists A
 			LEFT JOIN dp_atividades B ON A.id_atividade = B.id
 			LEFT JOIN dp_equipes C ON B.id_equipe = C.id
 			LEFT JOIN dp_etapas D ON B.id_etapa = D.id
-			WHERE B.id_ordem = ? AND B.id_departamento = ? ORDER BY D.id_conf_etapa ASC';
+			WHERE B.id_ordem = ? AND B.id_departamento = ? ORDER BY A.id_conf_checklist ASC";
 
 		$stmt = $pdo->prepare($query);
 		$stmt->execute([$id, $id_departamento]);
@@ -64,6 +77,51 @@ final class ChecklistController {
         LEFT JOIN dp_ordem_departamento B ON A.id = B.id_ordem
 				LEFT JOIN dp_remessas C ON A.id_remessa = C.id
         WHERE B.id_departamento = ? AND B.id_status IN (1,2,3)
+        AND A.deleted_at IS NULL
+        ORDER BY disponiveis DESC';
+
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$id, $id, $id, $id]);
+    $ordens = $stmt->fetchAll();
+
+    if (!$ordens) {
+        json_response(['data' => []], 404);
+        return;
+    }
+
+    json_response(['data' => $ordens]);
+    return;
+	}
+
+	public static function getOrdensChecklistFinalizados(array $params): void {
+    $id = (int)($params['id'] ?? 0);
+
+    $pdo = Database::pdo();
+    $query = 
+        'SELECT A.id, A.id_pedido, A.nome_produto,
+				B.id_status, C.titulo as nome_remessa,
+        (
+            SELECT COUNT(ch.id) 
+            FROM dp_checklists ch 
+            INNER JOIN dp_atividades at ON ch.id_atividade = at.id 
+            WHERE at.id_ordem = A.id AND at.id_departamento = ? AND ch.status >= 0
+        ) AS checklists,
+				(
+					SELECT COUNT(ch.id) 
+					FROM dp_checklists ch 
+					INNER JOIN dp_atividades at ON ch.id_atividade = at.id 
+					WHERE at.id_ordem = A.id AND at.id_departamento = ? AND ch.status = 1
+        ) AS checklists_concluidos,
+				(
+					SELECT COUNT(ch.id) 
+					FROM dp_checklists ch 
+					INNER JOIN dp_atividades at ON ch.id_atividade = at.id 
+					WHERE at.id_ordem = A.id AND at.id_departamento = ? AND ch.status = 0 AND at.id_status = 4
+        ) AS disponiveis
+        FROM dp_ordens A
+        LEFT JOIN dp_ordem_departamento B ON A.id = B.id_ordem
+				LEFT JOIN dp_remessas C ON A.id_remessa = C.id
+        WHERE B.id_departamento = ? AND B.id_status = 4 AND C.id_status != 4
         AND A.deleted_at IS NULL
         ORDER BY disponiveis DESC';
 
@@ -127,10 +185,30 @@ final class ChecklistController {
 					$id,
 					$descricao
 			]);
+
+			$query = 
+			'SELECT A.* 
+				FROM dp_checklists A
+				LEFT JOIN dp_atividades B ON A.id_atividade = B.id
+				WHERE B.id_ordem = ? AND A.status = 0;';
+
+			$stmt = $pdo->prepare($query);
+			$stmt->execute([$checklist['id_ordem']]);
+			$checklist_pendente = $stmt->fetch();
+
+			if (!$checklist_pendente) {
+				$query = 'UPDATE dp_ordem_departamento SET id_status = 4, fim_producao = NOW() WHERE id_departamento = ? AND id_ordem = ?';
+				$stmt = $pdo->prepare($query);
+				$stmt->execute([$checklist['id_departamento'], $checklist['id_ordem']]);
+			}
 		} else {
         $query = 'UPDATE dp_checklists SET status = -1, observacao = ?, updated_at = NOW() WHERE id = ?';
         $stmt = $pdo->prepare($query);
         $stmt->execute([$observacao, $id]);
+
+				$query = 'UPDATE dp_volumes SET status = 0, updated_at = NOW() WHERE id_atividade = ?';
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([$checklist['id_atividade']]);
 
 				$descricao = 'Recusou o checklist: ' . $checklist['checklist'];
 				$descricao = mb_substr($descricao, 0, 255);

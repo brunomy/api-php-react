@@ -26,7 +26,7 @@ final class VolumesController {
                     WHERE ch.id_atividade = A.id_atividade AND ch.status = 1
                 ) AS checklist_finalizado
             FROM dp_volumes A
-            LEFT JOIN dp_atividades B ON A.id_atividade = B.id  
+            LEFT JOIN dp_atividades B ON A.id_atividade = B.id
             WHERE B.id_ordem = ? AND B.id_departamento = ?
             ORDER BY B.data ASC";
 

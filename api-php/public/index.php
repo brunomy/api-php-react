@@ -84,6 +84,7 @@ $router->post('/api/criarEmbalagem', fn($params) => RemessaController::createEmb
 $router->get('/api/getEmbalagens/{id}', fn($params) => RemessaController::getEmbalagens($params));
 $router->delete('/api/deleteEmbalagem/{id}', fn($params) => RemessaController::deleteEmbalagem($params));
 $router->put('/api/mudarRemessaOrdem/{id}', fn($params) => RemessaController::mudarRemessaOrdem($params));
+$router->put('/api/finalizarRemessa/{id}', fn($params) => RemessaController::finalizarRemessa($params));
 
 
 //ATIVIDADES
@@ -102,6 +103,7 @@ $router->put('/api/updateVolume/{id}', fn($params) => AtividadeController::updat
 //CHECKLIST
 $router->get('/api/getChecklistOrdem/{id_departamento}/{id}', fn($params) => ChecklistController::getChecklistOrdem($params));
 $router->get('/api/getOrdensChecklist/{id}', fn($params) => ChecklistController::getOrdensChecklist($params));
+$router->get('/api/getOrdensChecklistFinalizados/{id}', fn($params) => ChecklistController::getOrdensChecklistFinalizados($params));
 $router->put('/api/updateChecklist/{id}', fn($params) => ChecklistController::updateChecklist($params));
 
 //VOLUMES

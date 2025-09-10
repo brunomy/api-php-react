@@ -185,7 +185,7 @@ final class RemessaController {
 			$query = 
 			'SELECT titulo FROM dp_remessas 
 				WHERE deleted_at IS NULL AND id_pedido = ? 
-				ORDER BY id DESC 
+				ORDER BY titulo ASC 
 				LIMIT 1';
 
 			$stmt = $pdo->prepare($query);
@@ -460,20 +460,22 @@ final class RemessaController {
     $query = 
 		'SELECT A.id, A.titulo, A.id_status, A.saida, A.nova_saida, A.entrega, A.nova_entrega, B.uf, C.cidade,
 			COALESCE((
-				SELECT JSON_ARRAYAGG(id_pedido) 
+				SELECT JSON_ARRAYAGG(id_pedido)
 				FROM (
-						SELECT DISTINCT id_pedido 
-						FROM dp_ordens 
+						SELECT DISTINCT id_pedido
+						FROM dp_ordens
 						WHERE id_remessa = A.id
 				) AS distinct_pedidos
 			), JSON_ARRAY()) AS pedidos,
 			(SELECT COUNT(*) FROM dp_embalagens WHERE id_remessa = A.id) AS embalagens,
 			(SELECT COUNT(*) FROM dp_volumes WHERE id_remessa = A.id) AS volumes,
 			(SELECT COUNT(*) FROM dp_volumes WHERE id_remessa = A.id AND id_embalagem IS NOT NULL) AS volumes_embalados,
-			(SELECT COUNT(DISTINCT v.id) 
+			(SELECT COUNT(DISTINCT v.id)
 				FROM dp_volumes v
 				LEFT JOIN dp_checklists b ON v.id_atividade = b.id_atividade
-				WHERE v.id_remessa = A.id AND b.status = 1
+				LEFT JOIN dp_atividades a ON v.id_atividade = a.id
+				WHERE v.id_remessa = A.id AND a.id_status = 4
+    		AND (b.status = 1 OR b.id IS NULL)
 			) AS volumes_disponiveis
 
 			FROM dp_remessas A
@@ -692,5 +694,55 @@ final class RemessaController {
     }
 	}
 
+	public static function finalizarRemessa(array $params): void {
+		$id = (int)($params['id'] ?? 0);
 
+		if ($id <= 0) {
+			json_response([
+					'error' => 'ID inválido',
+			], 422);
+			return;
+		}
+
+		$pdo = Database::pdo();
+
+		try {
+				$pdo->beginTransaction();
+
+				$query_check = 'SELECT id, id_status FROM dp_remessas WHERE id = ? AND deleted_at IS NULL';
+				$stmt_check = $pdo->prepare($query_check);
+				$stmt_check->execute([$id]);
+				$remessa = $stmt_check->fetch();
+
+				if (!$remessa) {
+						throw new Exception('Remessa não encontrada');
+				}
+
+				if ((int)$remessa['id_status'] === 4) {
+						throw new Exception('Remessa já está finalizada');
+				}
+
+				$query = 'UPDATE dp_remessas SET id_status = 4, updated_at = NOW() WHERE id = ? AND deleted_at IS NULL';
+				$stmt = $pdo->prepare($query);
+				$stmt->execute([$id]);
+
+				if ($stmt->rowCount() === 0) {
+						throw new Exception('Remessa não encontrada ou não foi possível atualizar');
+				}
+
+				$pdo->commit();
+
+				json_response([
+						'message' => 'Remessa finalizada com sucesso',
+						'data' => [
+								'id' => $id,
+								'id_status' => 4
+						]
+				], 200);
+
+		} catch (Exception $e) {
+				$pdo->rollBack();
+				json_response(['error' => 'Erro ao finalizar remessa: ' . $e->getMessage()], 500);
+		}
+	}
 }
