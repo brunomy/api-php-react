@@ -140,13 +140,12 @@ final class AtividadeController {
 
 			// Se não existir, criar o volume
 			try {
-				$query = 'INSERT INTO dp_volumes (id_conf_volume, id_atividade, id_embalagem, id_remessa, etapa, atividade, volume, comprimento, largura, altura, peso, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())';
+				$query = 'INSERT INTO dp_volumes (id_conf_volume, id_atividade, id_embalagem, etapa, atividade, volume, comprimento, largura, altura, peso, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())';
 				$stmt = $pdo->prepare($query);
 				$result = $stmt->execute([
 					$id_conf_volume,
 					$id_atividade,
 					null,
-					$id_remessa,
 					$etapa,
 					$atividade,
 					$volume,

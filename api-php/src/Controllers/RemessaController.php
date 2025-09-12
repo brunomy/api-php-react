@@ -164,7 +164,6 @@ final class RemessaController {
     $telefone = trim((string)($body['telefone'] ?? ''));
     $cpf_cnpj = trim((string)($body['cpf_cnpj'] ?? ''));
     $cep = trim((string)($body['cep'] ?? ''));
-    $cep = trim((string)($body['cep'] ?? ''));
     $id_estado = (int)($body['id_estado'] ?? null);
     $id_cidade = (int)($body['id_cidade'] ?? null);
     $endereco = trim((string)($body['endereco'] ?? ''));
@@ -185,7 +184,7 @@ final class RemessaController {
 			$query = 
 			'SELECT titulo FROM dp_remessas 
 				WHERE deleted_at IS NULL AND id_pedido = ? 
-				ORDER BY titulo ASC 
+				ORDER BY titulo DESC 
 				LIMIT 1';
 
 			$stmt = $pdo->prepare($query);
@@ -200,7 +199,7 @@ final class RemessaController {
 				$number = (int)end($parts);
 				$title = $id_pedido . '-' . ($number + 1);
 			}
-
+			
 			//adicionar nova remessa
 			$query = 'INSERT INTO dp_remessas (id_pedido, id_status, titulo, entrega, nova_entrega, saida, nova_saida, nome, telefone, cpf_cnpj, cep, id_estado, id_cidade, endereco, numero, bairro, complemento, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())';
 			$stmt = $pdo->prepare($query);
@@ -216,14 +215,6 @@ final class RemessaController {
 			if ($stmt->rowCount() === 0) {
 				throw new Exception('Não foi possível atualizar a ordem');
 			}
-
-			//Atualizar volumes da ordem para a nova remessa
-			$query = 'UPDATE dp_volumes A 
-				LEFT JOIN dp_atividades B ON A.id_atividade = B.id
-				SET A.id_remessa = ?, A.id_embalagem = NULL
-				WHERE B.id_ordem = ?';
-			$stmt = $pdo->prepare($query);
-			$stmt->execute([$id_new_remessa, $id_ordem]);
 
 			//deleta todas as embalagens da remessa antiga
 			$query = 'DELETE FROM dp_embalagens WHERE id_remessa = ?';
@@ -314,14 +305,6 @@ final class RemessaController {
 			if ($stmt->rowCount() === 0) {
 				throw new Exception('Não foi possível atualizar a ordem');
 			}
-
-			// 4. Atualizar volumes da ordem para a nova remessa
-			$query = 'UPDATE dp_volumes A 
-				LEFT JOIN dp_atividades B ON A.id_atividade = B.id
-				SET A.id_remessa = ?, A.id_embalagem = NULL
-				WHERE B.id_ordem = ?';
-			$stmt = $pdo->prepare($query);
-			$stmt->execute([$new_remessa, $id]);
 
 			// deleta todas as embalagens da remessa antiga
 			$query = 'DELETE FROM dp_embalagens WHERE id_remessa = ?';
@@ -457,31 +440,35 @@ final class RemessaController {
 	public static function getRemessas(): void {
 		$pdo = Database::pdo();
 
-    $query = 
-		'SELECT A.id, A.titulo, A.id_status, A.saida, A.nova_saida, A.entrega, A.nova_entrega, B.uf, C.cidade,
+    $query =
+		'SELECT
+			A.id, A.titulo, A.id_status, A.saida, A.nova_saida, A.entrega, A.nova_entrega, B.uf, C.cidade,
 			COALESCE((
-				SELECT JSON_ARRAYAGG(id_pedido)
-				FROM (
-						SELECT DISTINCT id_pedido
-						FROM dp_ordens
-						WHERE id_remessa = A.id
-				) AS distinct_pedidos
+					SELECT JSON_ARRAYAGG(id_pedido)
+					FROM (
+							SELECT DISTINCT o.id_pedido
+							FROM dp_ordens o
+							WHERE o.id_remessa = A.id
+					) AS distinct_pedidos
 			), JSON_ARRAY()) AS pedidos,
-			(SELECT COUNT(*) FROM dp_embalagens WHERE id_remessa = A.id) AS embalagens,
-			(SELECT COUNT(*) FROM dp_volumes WHERE id_remessa = A.id) AS volumes,
-			(SELECT COUNT(*) FROM dp_volumes WHERE id_remessa = A.id AND id_embalagem IS NOT NULL) AS volumes_embalados,
-			(SELECT COUNT(DISTINCT v.id)
-				FROM dp_volumes v
-				LEFT JOIN dp_checklists b ON v.id_atividade = b.id_atividade
-				LEFT JOIN dp_atividades a ON v.id_atividade = a.id
-				WHERE v.id_remessa = A.id AND a.id_status = 4
-    		AND (b.status = 1 OR b.id IS NULL)
-			) AS volumes_disponiveis
-
-			FROM dp_remessas A
-			LEFT JOIN tb_utils_estados B ON A.id_estado = B.id
-			LEFT JOIN tb_utils_cidades C ON A.id_cidade = C.id
-			WHERE A.id_status IN (0, 1, 2) AND A.deleted_at IS NULL ORDER BY volumes_disponiveis DESC;';
+			COUNT(DISTINCT e.id) AS embalagens,
+			COUNT(DISTINCT v.id) AS volumes,
+			COUNT(DISTINCT CASE WHEN v.id_embalagem IS NOT NULL THEN v.id END) AS volumes_embalados,
+			COUNT(DISTINCT CASE
+					WHEN a.id_status = 4 AND (ch.status = 1 OR ch.id IS NULL)
+					THEN v.id
+			END) AS volumes_disponiveis
+    FROM dp_remessas A
+    LEFT JOIN tb_utils_estados B ON A.id_estado = B.id
+    LEFT JOIN tb_utils_cidades C ON A.id_cidade = C.id
+    LEFT JOIN dp_ordens o ON o.id_remessa = A.id
+    LEFT JOIN dp_atividades a ON a.id_ordem = o.id
+    LEFT JOIN dp_volumes v ON v.id_atividade = a.id
+    LEFT JOIN dp_embalagens e ON e.id_remessa = A.id
+    LEFT JOIN dp_checklists ch ON ch.id_atividade = v.id_atividade
+    WHERE A.id_status IN (0, 1, 2, 3) AND A.deleted_at IS NULL
+    GROUP BY A.id, A.titulo, A.id_status, A.saida, A.nova_saida, A.entrega, A.nova_entrega, B.uf, C.cidade
+    ORDER BY volumes_disponiveis DESC;';
 
 		$stmt = $pdo->prepare($query);
 		$stmt->execute();
@@ -532,7 +519,7 @@ final class RemessaController {
 				FROM dp_volumes A
 				LEFT JOIN dp_atividades B ON A.id_atividade = B.id
 				LEFT JOIN dp_ordens C ON B.id_ordem = C.id
-				WHERE A.id_remessa = ?;';
+				WHERE C.id_remessa = ?;';
 
 		$stmt = $pdo->prepare($query);
 		$stmt->execute([$id]);
