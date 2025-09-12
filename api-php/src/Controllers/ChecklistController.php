@@ -164,8 +164,8 @@ final class ChecklistController {
 		$checklist = $stmt->fetch();
 
 		if (!$checklist) {
-				json_response(['error' => 'Checklist não encontrado'], 404);
-				return;
+			json_response(['error' => 'Checklist não encontrado'], 404);
+			return;
 		}
 
 		if($status === 1) {
@@ -179,21 +179,21 @@ final class ChecklistController {
 			$query = 'INSERT INTO dp_historico (id_departamento, id_user, id_ordem, id_checklist, descricao, created_at) VALUES (?, ?, ?, ?, ?, NOW())';
 			$stmt = $pdo->prepare($query);
 			$stmt->execute([
-					$checklist['id_departamento'],
-					$id_user,
-					$checklist['id_ordem'],
-					$id,
-					$descricao
+				$checklist['id_departamento'],
+				$id_user,
+				$checklist['id_ordem'],
+				$id,
+				$descricao
 			]);
 
 			$query = 
 			'SELECT A.* 
 				FROM dp_checklists A
 				LEFT JOIN dp_atividades B ON A.id_atividade = B.id
-				WHERE B.id_ordem = ? AND A.status = 0;';
+				WHERE B.id_ordem = ? AND B.id_departamento = ? AND A.status = 0;';
 
 			$stmt = $pdo->prepare($query);
-			$stmt->execute([$checklist['id_ordem']]);
+			$stmt->execute([$checklist['id_ordem'], $checklist['id_departamento']]);
 			$checklist_pendente = $stmt->fetch();
 
 			if (!$checklist_pendente) {

@@ -75,7 +75,7 @@ final class UserController {
             'SELECT A.*
                 FROM dp_departamentos A
                 LEFT JOIN dp_user_departamento B ON A.id = B.id_departamento
-                WHERE B.id_user = ? AND A.stats = 1 AND A.deleted_at IS NULL
+                WHERE B.id_user = ? AND A.deleted_at IS NULL
                 ORDER BY A.ordem ASC';
 
 		$stmt = $pdo->prepare($query);

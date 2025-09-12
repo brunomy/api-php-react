@@ -58,7 +58,7 @@ final class OrderController {
             LEFT JOIN dp_remessas D ON A.id_remessa = D.id
             LEFT JOIN tb_utils_cidades E ON D.id_cidade = E.id
             LEFT JOIN tb_utils_estados F ON E.id_estado = F.id
-            WHERE A.deleted_at IS NULL AND C.id_departamento = ?
+            WHERE A.deleted_at IS NULL AND B.id_departamento = ?
             GROUP BY A.id
             ORDER BY A.created_at ASC";
 
