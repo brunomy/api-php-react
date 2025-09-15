@@ -66,7 +66,9 @@ $router->get('/api/getProduto/{ordem_id}', fn($params) => OrderController::getPr
 $router->put('/api/enviarProducao/{id_departamento}/{id}', fn($params) => OrderController::enviarProducao($params));
 $router->put('/api/concluirDependencia/{id}', fn($params) => OrderController::concluirDependencia($params));
 $router->put('/api/concluirRequisito/{id}', fn($params) => OrderController::concluirRequisito($params));
+$router->post('/api/uploadAnexoRequisito/{id}', fn($params) => OrderController::uploadAnexoRequisito($params));
 $router->get('/api/getHistorico/{id_departamento}/{id}', fn($params) => OrderController::getHistorico($params));
+$router->put('/api/enviarProducao/{id_departamento}/{id}', fn($params) => OrderController::enviarProducao($params));
 
 
 //REMESSAS

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Database;
+use Exception; 
 
 final class OrderController {
 	public static function getOrdensDepartamento(array $params): void {
@@ -130,6 +131,7 @@ final class OrderController {
                         'nome', r.nome,
                         'ordem', r.ordem,
                         'status', r.status,
+                        'anexo', r.anexo,
                         'updated_at', r.updated_at,
                         'dependencias', (
                             SELECT JSON_ARRAYAGG(
@@ -280,6 +282,89 @@ final class OrderController {
 			]
 		], 200);
 	}
+
+    public static function uploadAnexoRequisito(array $params): void {
+        try {
+            $pdo = Database::pdo();
+            
+            $id_requisito = $params['id'] ?? null;
+            
+            if (!$id_requisito) {
+                json_response(['error' => 'ID do requisito não fornecido'], 400);
+                return;
+            }
+
+            if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+                json_response(['error' => 'Nenhum arquivo foi enviado'], 400);
+                return;
+            }
+
+            $stmt = $pdo->prepare("SELECT id, nome, anexo FROM dp_requisitos WHERE id = ?");
+            $stmt->execute([$id_requisito]);
+            $requisito = $stmt->fetch();
+            
+            if (!$requisito) {
+                json_response(['error' => 'Requisito não encontrado'], 404);
+                return;
+            }
+
+            // CORRIGIDO: Caminho para pasta public
+            $uploadDir = __DIR__ . '/../../public/uploads/requisitos/';
+            $allowedTypes = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
+            $maxFileSize = 10 * 1024 * 1024; // 10MB
+            
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            $file = $_FILES['file'];
+
+            if ($file['size'] > $maxFileSize) {
+                json_response(['error' => 'Arquivo muito grande (max: 10MB)'], 400);
+                return;
+            }
+
+            $fileExtension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            if (!in_array($fileExtension, $allowedTypes)) {
+                json_response(['error' => 'Tipo de arquivo não permitido'], 400);
+                return;
+            }
+
+            if (!empty($requisito['anexo']) && file_exists($requisito['anexo'])) {
+                unlink($requisito['anexo']);
+            }
+
+            $fileName = 'requisito_' . $id_requisito . '_' . time() . '.' . $fileExtension;
+            $filePath = $uploadDir . $fileName;
+            
+            // CORRIGIDO: Caminho relativo para salvar no banco (acessível via web)
+            $relativePath = 'uploads/requisitos/' . $fileName;
+
+            if (move_uploaded_file($file['tmp_name'], $filePath)) {
+                // Salva o caminho relativo no banco
+                $stmt = $pdo->prepare("UPDATE dp_requisitos SET anexo = ?, updated_at = NOW() WHERE id = ?");
+                $stmt->execute([$relativePath, $id_requisito]);
+
+                json_response([
+                    'message' => 'Upload realizado com sucesso',
+                    'data' => [
+                        'id_requisito' => $id_requisito,
+                        'nome_original' => $file['name'],
+                        'nome_arquivo' => $fileName,
+                        'caminho' => $relativePath, // Retorna caminho relativo
+                        'url' => '/' . $relativePath, // URL para acessar o arquivo
+                        'tamanho' => $file['size']
+                    ]
+                ], 200);
+            } else {
+                json_response(['error' => 'Falha ao mover arquivo'], 500);
+            }
+
+        } catch (Exception $e) {
+            error_log("Erro no upload de anexo: " . $e->getMessage());
+            json_response(['error' => 'Erro interno do servidor'], 500);
+        }
+    }
 
     public static function getHistorico(array $params): void {
         $id = (int)($params['id'] ?? 0);
