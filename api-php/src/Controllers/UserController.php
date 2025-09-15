@@ -306,6 +306,7 @@ final class UserController {
 
 	public static function createFuncionario(array $params): void {
 		$body = read_json_body();
+		$id  = trim((string)($body['id']  ?? ''));
 		$id_equipe  = trim((string)($body['id_equipe']  ?? ''));
 		$nome  = trim((string)($body['nome']  ?? ''));
 		$funcao  = trim((string)($body['funcao']  ?? ''));
@@ -320,22 +321,30 @@ final class UserController {
 
 		$pdo = Database::pdo();
 
-		$query = 'INSERT INTO dp_funcionarios (id_equipe, nome, funcao, usuario, senha, codigo) VALUES (?, ?, ?, ?, ?, ?)';
+		if(!$id){
+			$query = 'INSERT INTO dp_funcionarios (id_equipe, nome, funcao, usuario, senha, codigo) VALUES (?, ?, ?, ?, ?, ?)';
+	
+			$stmt = $pdo->prepare($query);
+			$stmt->execute([$id_equipe, $nome, $funcao, $usuario, $senha, $codigo]);
+	
+			json_response([
+				'data' => [
+					'message' => 'Funcionário criado com sucesso',
+				]
+			], 200);
+		} else{
+			$query = 'UPDATE dp_funcionarios SET nome = ?, funcao = ?, senha = ?, codigo = ? WHERE id = ? AND deleted_at IS NULL';
 
-		$stmt = $pdo->prepare($query);
-		$stmt->execute([$id_equipe, $nome, $funcao, $usuario, $senha, $codigo]);
+			$stmt = $pdo->prepare($query);
+			$stmt->execute([$nome, $funcao, $senha, $codigo, $id]);
 
-		json_response([
-			'data' => [
-				'id'    => (int)$pdo->lastInsertId(),
-				'id_equipe'  => $id_equipe,
-				'nome' => $nome,
-				'funcao' => $funcao,
-				'usuario' => $usuario,
-				'senha' => $senha,
-				'codigo' => $codigo,
-			]
-		], 201);
+			json_response([
+				'data' => [
+					'message' => 'Funcionário atualizado com sucesso',
+				]
+			], 200);
+		}
+
 		return;
 	}
 
