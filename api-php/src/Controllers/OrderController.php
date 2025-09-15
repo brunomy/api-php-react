@@ -178,16 +178,17 @@ final class OrderController {
 
         $pdo = Database::pdo();
         $query = 
-            "SELECT 
-                A.nome_produto,
-                A.nome_categoria,
-                A.observacao,
-                A.anexo,
-                A.foto_final,
-                A.agrupavel,
-                A.quantidade,
-                B.id,
-                COALESCE(JSON_ARRAYAGG(
+        "SELECT 
+            A.nome_produto,
+            A.nome_categoria,
+            A.observacao,
+            A.anexo,
+            A.foto_final,
+            A.agrupavel,
+            A.quantidade,
+            B.id,
+            COALESCE((
+                SELECT JSON_ARRAYAGG(
                     CASE 
                         WHEN C.nome_conjunto IS NOT NULL THEN
                             JSON_OBJECT(
@@ -199,12 +200,23 @@ final class OrderController {
                             )
                         ELSE NULL
                     END
-                ), JSON_ARRAY()) AS atributos
-            FROM dp_ordens A
-            LEFT JOIN tb_carrinho_produtos_historico B ON A.id_carrinho_produto = B.id
-            LEFT JOIN tb_carrinho_atributos_historico C ON B.id = C.id_carrinho_produto_historico
-            WHERE A.id = ? AND A.deleted_at IS NULL
-            GROUP BY A.id, B.id";
+                )
+                FROM tb_carrinho_atributos_historico C 
+                WHERE C.id_carrinho_produto_historico = B.id
+            ), JSON_ARRAY()) AS atributos,
+            COALESCE((
+                SELECT JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'nome_requisito', D.nome,
+                        'anexo', D.anexo
+                    )
+                )
+                FROM dp_requisitos D 
+                WHERE D.id_ordem = A.id
+            ), JSON_ARRAY()) AS requisitos
+        FROM dp_ordens A
+        LEFT JOIN tb_carrinho_produtos_historico B ON A.id_carrinho_produto = B.id
+        WHERE A.id = ? AND A.deleted_at IS NULL";
 
         $stmt = $pdo->prepare($query);
         $stmt->execute([$id]);
@@ -347,14 +359,6 @@ final class OrderController {
 
                 json_response([
                     'message' => 'Upload realizado com sucesso',
-                    'data' => [
-                        'id_requisito' => $id_requisito,
-                        'nome_original' => $file['name'],
-                        'nome_arquivo' => $fileName,
-                        'caminho' => $relativePath, // Retorna caminho relativo
-                        'url' => '/' . $relativePath, // URL para acessar o arquivo
-                        'tamanho' => $file['size']
-                    ]
                 ], 200);
             } else {
                 json_response(['error' => 'Falha ao mover arquivo'], 500);
