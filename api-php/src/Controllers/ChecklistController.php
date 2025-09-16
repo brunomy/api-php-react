@@ -197,9 +197,25 @@ final class ChecklistController {
 			$checklist_pendente = $stmt->fetch();
 
 			if (!$checklist_pendente) {
-				$query = 'UPDATE dp_ordem_departamento SET id_status = 4, fim_producao = NOW() WHERE id_departamento = ? AND id_ordem = ?';
+				$query = 'SELECT * FROM dp_atividades WHERE id_ordem = ? AND id_departamento = ? AND id_status != 4;';
+
 				$stmt = $pdo->prepare($query);
-				$stmt->execute([$checklist['id_departamento'], $checklist['id_ordem']]);
+				$stmt->execute([$checklist['id_ordem'], $checklist['id_departamento']]);
+				$atividades_pendentes = $stmt->fetch();
+
+				if(!$atividades_pendentes){
+					$query = 'UPDATE dp_ordem_departamento SET id_status = 4, fim_producao = NOW() WHERE id_departamento = ? AND id_ordem = ?';
+					$stmt = $pdo->prepare($query);
+					$stmt->execute([$checklist['id_departamento'], $checklist['id_ordem']]);
+
+					$query = 'INSERT INTO dp_historico (id_departamento, id_ordem, descricao, created_at) VALUES (?, ?, ?, NOW())';
+					$stmt = $pdo->prepare($query);
+					$stmt->execute([
+							$checklist['id_departamento'],
+							$checklist['id_ordem'],
+							'Finalizou a produção da ordem'
+					]);
+				}
 			}
 		} else {
         $query = 'UPDATE dp_checklists SET status = -1, observacao = ?, updated_at = NOW() WHERE id = ?';

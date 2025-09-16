@@ -526,11 +526,43 @@ final class AtividadeController {
     $stmt->execute([
         $id_departamento,
         $id_ordem, 
-        $funcionario['id_equipe'], 
-        $funcionario['id'], 
+        $funcionario['id_equipe'],
+        $funcionario['id'],
         $id, 
         $descricao
     ]);
+
+		$query = 'SELECT * FROM dp_atividades WHERE id_ordem = ? AND id_departamento = ? AND id_status != 4;';
+
+		$stmt = $pdo->prepare($query);
+		$stmt->execute([$id_ordem, $id_departamento]);
+		$atividades_pendentes = $stmt->fetch();
+
+		if(!$atividades_pendentes){
+			$query = 
+			'SELECT A.* 
+				FROM dp_checklists A
+				LEFT JOIN dp_atividades B ON A.id_atividade = B.id
+				WHERE B.id_ordem = ? AND B.id_departamento = ? AND A.status = 0;';
+	
+			$stmt = $pdo->prepare($query);
+			$stmt->execute([$id_ordem, $id_departamento]);
+			$checklist_pendente = $stmt->fetch();
+	
+			if (!$checklist_pendente) {
+				$query = 'UPDATE dp_ordem_departamento SET id_status = 4, fim_producao = NOW() WHERE id_departamento = ? AND id_ordem = ?';
+				$stmt = $pdo->prepare($query);
+				$stmt->execute([$id_departamento, $id_ordem]);
+
+				$query = 'INSERT INTO dp_historico (id_departamento, id_ordem, descricao, created_at) VALUES (?, ?, ?, NOW())';
+				$stmt = $pdo->prepare($query);
+				$stmt->execute([
+						$id_departamento,
+						$id_ordem,
+						'Finalizou a produção da ordem'
+				]);
+			}
+		}
 
     json_response([
         'message' => 'Atividade finalizada com sucesso',
