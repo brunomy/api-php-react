@@ -68,6 +68,7 @@ $router->put('/api/concluirDependencia/{id}', fn($params) => OrderController::co
 $router->put('/api/concluirRequisito/{id}', fn($params) => OrderController::concluirRequisito($params));
 $router->post('/api/uploadAnexoRequisito/{id}', fn($params) => OrderController::uploadAnexoRequisito($params));
 $router->get('/api/getHistorico/{id_departamento}/{id}', fn($params) => OrderController::getHistorico($params));
+$router->get('/api/getHistoricoAtividade/{id}', fn($params) => OrderController::getHistoricoAtividade($params));
 $router->put('/api/enviarProducao/{id_departamento}/{id}', fn($params) => OrderController::enviarProducao($params));
 
 

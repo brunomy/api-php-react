@@ -59,7 +59,7 @@ final class OrderController {
             LEFT JOIN dp_remessas D ON A.id_remessa = D.id
             LEFT JOIN tb_utils_cidades E ON D.id_cidade = E.id
             LEFT JOIN tb_utils_estados F ON E.id_estado = F.id
-            WHERE A.deleted_at IS NULL AND B.id_departamento = ?
+            WHERE A.deleted_at IS NULL AND B.id_departamento = ? AND B.id_status != 4
             GROUP BY A.id
             ORDER BY A.created_at ASC";
 
@@ -381,10 +381,36 @@ final class OrderController {
             LEFT JOIN dp_funcionarios B ON A.id_funcionario = B.id
             LEFT JOIN dp_equipes C ON B.id_equipe = C.id
             LEFT JOIN dp_users D ON A.id_user = D.id
-            WHERE A.id_ordem = ? AND A.id_departamento = ? ORDER BY created_at ASC";
+            WHERE A.id_ordem = ? AND A.id_departamento = ? ORDER BY created_at DESC";
 
         $stmt = $pdo->prepare($query);
         $stmt->execute([$id, $id_departamento]);
+
+        $historico = $stmt->fetchAll();
+
+        if (!$historico) {
+            json_response(['error' => 'Not Found'], 404);
+            return;
+        }
+
+        json_response(['data' => $historico]);
+        return;
+	}
+
+    public static function getHistoricoAtividade(array $params): void {
+        $id = (int)($params['id'] ?? 0);
+
+        $pdo = Database::pdo();
+        $query = 
+        "SELECT A.created_at, A.descricao, B.nome AS nome_funcionario, C.nome AS nome_equipe, D.nome AS nome_usuario
+            FROM dp_historico A
+            LEFT JOIN dp_funcionarios B ON A.id_funcionario = B.id
+            LEFT JOIN dp_equipes C ON B.id_equipe = C.id
+            LEFT JOIN dp_users D ON A.id_user = D.id
+            WHERE A.id_atividade = ? ORDER BY created_at DESC";
+
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([$id]);
 
         $historico = $stmt->fetchAll();
 
